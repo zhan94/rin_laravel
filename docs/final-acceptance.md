@@ -50,9 +50,16 @@ The substring filter scans the candidate text fields. These timings cover reposi
 
 Docker Desktop Engine 29.9.3 and Compose v5.7.0 ran on an Apple Silicon Mac. The corrected Laravel install took **137.92 seconds** from a clean source export with no installed dependencies, a fresh BuildKit builder, and fresh application and database volumes. The timer stopped after the expected Laravel health body and the Inertia login page responded. The Docker daemon already had the MySQL, Redis, and Alpine service images. The test used a source export because the workspace does not contain Git metadata.
 
-**Clean Git checkout** The acceptance commit records the cold and warm timings for the sanitized repository.
+**Clean Git checkout** Both measurements used independent `git clone --no-local` checkouts of `b3ed179` with clean working trees. The isolated ARM64 Docker Engine was 29.10.0 with Compose v5.7.1. The timer covered `docker compose up --build --wait` through the Laravel health response and the rendered Inertia sign-in page.
 
-The OOP app started from its existing read-only checkout into a separate Docker project. A fresh OOP Compose install took **12.23 seconds** with cached images and build layers. Inspection verified separate HTTP ports, bridge networks, and MySQL data volumes. A separate clean Git clone started both projects. Chrome signed in to Laravel and OOP in the same browser and confirmed the OOP session did not grant Laravel access. Both sessions continued to work independently. The procedural legacy application was outside both Compose projects.
+| Run | Cache and database state | Time |
+| --- | --- | ---: |
+| Cold | Empty isolated Docker image store and build cache, fresh demo volumes | **167.35 s** |
+| Warm | Same daemon and retained images and build cache, fresh demo volumes | **11.19 s** |
+
+The later acceptance commit changes documentation only. It preserves the benchmarked application, Docker and CI inputs.
+
+The OOP app started from its existing read-only checkout into a separate Docker project. A fresh OOP Compose install took **12.23 seconds** with cached images and build layers. Inspection verified separate HTTP ports, bridge networks, and MySQL data volumes. A clean clone of the sanitized Laravel revision ran alongside the separate OOP Compose project. Chrome signed in to both in the same browser and confirmed the OOP session did not grant Laravel access. Both sessions continued to work independently. The procedural legacy application was outside both Compose projects.
 
 The isolated MySQL 8.4.13 Laravel demo had 5 staff accounts, 60 customers, 2 services, 2 locations, 2 cards, 8 bookings, 16 booking-date links, and 8 payment mirrors. With utf8mb4 and foreign-key checks enabled, the aggregate checks returned zero payment disagreements, duplicate customer emails, or customer addresses outside the reserved demo domain.
 
@@ -72,7 +79,7 @@ The owner supplied the GitLab project `VV-jan/rin_lara`. The project API reporte
 
 ### Handoff and publication
 
-The new local repository starts from the verified Laravel source on `main`. The source import includes the application and its existing documentation. A separate CI commit adds the shared verification gates. A separate documentation commit records the checkout timings and acceptance. The initialization was owner-approved after the GitLab destination and previous candidate were investigated. The initial import does not assert continuity with the older checkout. The new commits use current dates and explicit agent attribution. The initial audit and prior migration and remediation records are included. The new repository passed object integrity, source and reachable-history credential scans, and an object-level confidentiality review. No credential requiring rotation or revocation was confirmed. Two manuals contained a workstation path. The references were generalized before sealing the shareable initial history. The earlier unpublished draft was retained separately for private recovery.
+The new local repository starts from the verified Laravel source on `main`. Commit `42f6172` imports the application and its existing documentation. Commit `b3ed179` adds the shared verification gates. A separate documentation commit records the checkout timings and acceptance. The initialization was owner-approved after the GitLab destination and previous candidate were investigated. The initial import does not assert continuity with the older checkout. The new commits use current dates and explicit agent attribution. The initial audit and prior migration and remediation records are included. The new repository passed object integrity, source and reachable-history credential scans, and an object-level confidentiality review. No credential requiring rotation or revocation was confirmed. Two manuals contained a workstation path. The references were generalized before sealing the shareable initial history. The earlier unpublished draft was retained separately for private recovery.
 
 After the history review and clean-checkout verification, GitLab and GitHub should receive the same reviewed commit IDs. The supplied GitLab destination is public. Publication requires separate owner approval and confirmation of the application and asset rights. Any confirmed credentials need rotation or revocation before publication. Review the publication rights and approved visibility before sharing these commits. GitLab and GitHub should receive the same reviewed history.
 
