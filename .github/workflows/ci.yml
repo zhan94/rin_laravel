@@ -1,0 +1,36 @@
+name: Verification
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - develop
+      - dev
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - name: Verify the application
+        run: sh scripts/ci-verify.sh quality
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Scan source and reachable history
+        run: |
+          docker run --rm --network none --volume "$PWD:/repo:ro" --workdir /repo \
+            --entrypoint sh ghcr.io/gitleaks/gitleaks:v8.30.1 scripts/ci-verify.sh secrets
