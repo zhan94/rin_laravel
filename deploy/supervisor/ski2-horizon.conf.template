@@ -1,0 +1,13 @@
+[program:ski2-horizon]
+command=__PHP_BIN__ __APP_DIR__/artisan horizon
+directory=__APP_DIR__
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+user=__RUN_USER__
+numprocs=1
+redirect_stderr=true
+stdout_logfile=__LOG_FILE__
+stopwaitsecs=3600
+environment=APP_ENV="production",QUEUE_CONNECTION="redis"

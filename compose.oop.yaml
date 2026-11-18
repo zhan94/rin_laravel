@@ -1,0 +1,66 @@
+name: rin-oop-demo
+
+services:
+  keys:
+    image: alpine:3.22
+    entrypoint: ["/bin/sh", "/seed/keys.sh"]
+    volumes:
+      - ./docker/keys.sh:/seed/keys.sh:ro
+      - keys:/run/rin
+
+  mysql:
+    image: mysql:8.4
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    depends_on:
+      keys:
+        condition: service_completed_successfully
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: "true"
+      MYSQL_DATABASE: rin_demo
+      MYSQL_USER: oop_demo
+      MYSQL_PASSWORD_FILE: /run/rin/db-password
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=$$(cat /run/rin/db-password) mysql --protocol=TCP -h 127.0.0.1 -u oop_demo rin_demo -e 'SELECT 1' >/dev/null"]
+      interval: 2s
+      timeout: 3s
+      retries: 35
+    volumes:
+      - mysql:/var/lib/mysql
+      - keys:/run/rin:ro
+
+  app:
+    build:
+      context: .
+      target: php-tools
+    entrypoint: ["/bin/sh", "/runner/oop-start.sh"]
+    init: true
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      RIN_OOP_PORT: ${RIN_OOP_PORT:-8080}
+    ports:
+      - "127.0.0.1:${RIN_OOP_PORT:-8080}:8080"
+    volumes:
+      - type: bind
+        source: ${RIN_OOP_SOURCE:-../rin}
+        target: /oop-source
+        read_only: true
+        bind:
+          create_host_path: false
+      - ./docker/oop-start.sh:/runner/oop-start.sh:ro
+      - ./docker/oop-seed.php:/runner/oop-seed.php:ro
+      - keys:/run/rin:ro
+      - composer:/root/.cache/composer
+      - uploads:/app/storage
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(@file_get_contents('http://127.0.0.1:8080/') === false ? 1 : 0);"]
+      interval: 2s
+      timeout: 3s
+      retries: 35
+
+volumes:
+  mysql:
+  keys:
+  composer:
+  uploads:

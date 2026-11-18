@@ -1,0 +1,27 @@
+# AI-assisted development
+
+## Audit
+
+The owner commissioned a read-only audit of the Laravel CRM against the existing OOP application. Codex traced HTTP entry points, authorization, credential handling, booking and payment writes, reporting, dependency lockfiles, and the legacy import. It used the OOP and procedural applications as references. The audit findings below are a summary of the engineering work. The [initial read-only audit](initial-audit.md) preserves the original findings and measured baseline, with workstation paths removed.
+
+| Finding | Remediation and verification |
+| --- | --- |
+| Public registration allowed staff enrollment. Administrator routes accepted a higher role or a higher-privilege target. | Disabled public registration and implemented Laravel policy checks for actor, target, and role assignment. API and feature regressions exercise the role matrix and prohibited actions. |
+| Account disabling and credential changes left inconsistent authentication paths. A stored password hash could be accepted as a submitted password. | Unified current-account checks, invalidated sessions and tokens, bounded token scopes and lifetime, and hardened recovery and passkey handling. Regressions cover the authentication boundaries. |
+| Browsers could reach some API writes outside the expected CSRF boundary. | Used Sanctum's stateful CSRF middleware for first-party sessions. Tested legitimate browser requests and rejected untrusted or missing CSRF state. |
+| Default seeding could modify a prepared database. The manual contained screenshots whose data provenance was unverified. | Guarded seeding, stopped the destructive setup path, removed the former screenshots, and generated replacements in an isolated demo seeded with synthetic records. |
+| Report printing treated editable values as HTML. CSV cells could be interpreted as spreadsheet formulas. | Rendered text nodes and escaped CSV cells. Unit tests cover unsafe input shapes. Chrome verified a real CSV download and print window. |
+| Booking capacity and payment writes had gaps under parallel requests or retries. | Used database transactions, row locks, idempotency receipts, and a stale-balance check. Independent MySQL processes raced for one remaining seat and one outstanding balance. |
+| Dashboard statistics were placeholders. The dependency audits and static checks exposed outstanding issues. | Added database-backed aggregates and fixed the identified quality issues. The initial scans identified 50 Composer advisories and 32 vulnerable npm packages. Compatible updates brought both lockfile scans to zero reports at verification time. |
+
+## Human decisions and review
+
+The owner authorized the private legacy import, including the one season-default replacement and the records whose synthetic provenance could not be established. Those approvals applied to the import only. The owner later approved the phased remediation and accepted the local verification results before authorizing repository preparation. After confirming the supplied GitLab project had no refs, the owner explicitly authorized a new local Git history from the verified source. The approval covers local commits and checkout verification. The prepared database remained untouched during remediation and repository preparation.
+
+Codex wrote and reviewed the remediation, regression tests, and CI configuration. Automated checks produced the test, scan, and timing results documented in the acceptance report. The owner's approvals constitute the human decisions recorded here. No independent human code review or hosted CI sign-off has been recorded. Publication and any historical cleanup require the owner's separate approval.
+
+## Engineering decisions
+
+The application kept its Vue interface and existing service and repository structure. Laravel policies, middleware, Eloquent relationships, and transaction APIs cover common behavior. The custom receipt and locking code addresses writes that need an atomic retry boundary. Older API callers can still omit a receipt key. Full report exports retain browser pagination, which was verified for correctness on the demo rather than benchmarked at the 100,000-customer size.
+
+Tests used isolated in-memory SQLite, a disposable MySQL server, and Chrome with generated demo accounts. Docker verification used separate Compose networks and database volumes for Laravel and OOP. GitLab and GitHub now call the same verification script. The repository starts with the verified source import. It records current development activity with actual commit times and explicit AI attribution. The older candidate retains its own history. The local source import and CI changes use the agent identity `Codex <codex@example.test>` with normal Git commit dates. The cold and warm Docker measurements came from fresh Git clones. No source was pushed to the public destination. See the acceptance report for the measured results and publication gates. [Final acceptance report](final-acceptance.md)

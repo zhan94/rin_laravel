@@ -1,0 +1,417 @@
+.report-ui .filter-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.report-ui .filter-presets .is-active {
+    background: var(--accent-2);
+    border-color: var(--accent-2);
+    color: #fff;
+}
+
+.report-ui.is-compact .report-table th,
+.report-ui.is-compact .report-table td {
+    padding: 6px 8px;
+    font-size: 12px;
+}
+
+.report-ui .table-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#print-area .report-output {
+    width: 100%;
+    max-width: none;
+}
+
+.report-ui .hero-actions {
+    position: sticky;
+    top: 12px;
+    z-index: 6;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.8) 100%);
+    padding: 10px 12px;
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(4px);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.report-ui .hero-actions .btn {
+    white-space: nowrap;
+}
+
+.report-ui .sort-link {
+    color: inherit;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.report-ui .sort-link:hover {
+    text-decoration: underline;
+}
+
+.column-toggle summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--stroke);
+    background: var(--surface);
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.column-toggle summary::-webkit-details-marker {
+    display: none;
+}
+
+.column-toggle .column-panel {
+    margin-top: 8px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--stroke);
+    background: #fff;
+    display: grid;
+    gap: 6px;
+    min-width: 220px;
+}
+
+.column-toggle label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+}
+
+.col-hidden {
+    display: none !important;
+}
+
+.report-ui .table-wrap {
+    max-height: 70vh;
+    overflow: auto;
+}
+
+.report-ui .report-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.report-ui .pagination {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+    margin-top: 12px;
+}
+
+.report-ui .report-pager {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-top: 12px;
+}
+
+.report-ui .report-pager .pagedisplay {
+    font-size: 12px;
+    color: var(--muted);
+    padding: 6px 10px;
+    border: 1px solid var(--stroke);
+    border-radius: 10px;
+    min-width: 120px;
+    text-align: center;
+}
+
+.report-ui .report-pager .pagesize {
+    width: auto;
+    min-width: 120px;
+}
+
+.report-ui .pagination a,
+.report-ui .pagination span {
+    padding: 6px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--stroke);
+    font-size: 12px;
+    text-decoration: none;
+    color: var(--ink);
+}
+
+.report-ui .pagination .is-active {
+    background: var(--accent-2);
+    color: #fff;
+    border-color: var(--accent-2);
+}
+
+.report-ui .pagination .is-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.report-ui .results-meta {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 10px;
+}
+
+.report-ui.tablesorter-active .pagination,
+.report-ui.tablesorter-active .results-meta,
+.report-ui.tablesorter-active .field-per-page {
+    display: none;
+}
+
+.report-ui .tfoot-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: flex-end;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.print-all-container {
+    display: none;
+}
+
+@media print {
+    @page {
+        size: A4;
+        margin: 10mm;
+    }
+
+    html,
+    body {
+        height: auto !important;
+        overflow: visible !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+    }
+
+    * {
+        max-width: none !important;
+    }
+
+    .topbar,
+    .sidebar,
+    .report-filters,
+    .hero-actions,
+    .no-print {
+        display: none !important;
+    }
+
+    .app-shell,
+    .app-main,
+    .container,
+    .row,
+    .report-ui {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .app-shell {
+        display: block !important;
+        grid-template-columns: 1fr !important;
+        gap: 0 !important;
+    }
+
+    .app-main {
+        width: 100% !important;
+    }
+
+    .customer-shell {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .table-shell,
+    .table-wrap,
+    .customer-table {
+        width: 100% !important;
+        max-width: none !important;
+    }
+
+    #print-area,
+    .customer-shell,
+    .customer-shell > *,
+    #print-area,
+    #print-area .table-shell,
+    #print-area .table-wrap,
+    #print-area .customer-table {
+        overflow: visible !important;
+        height: auto !important;
+        max-height: none !important;
+    }
+
+    .customer-shell {
+        background: #ffffff !important;
+        box-shadow: none !important;
+        border: none !important;
+        backdrop-filter: none !important;
+    }
+
+    .customer-shell::before,
+    .customer-shell::after {
+        display: none !important;
+    }
+
+    .table-wrap,
+    .table-shell,
+    .customer-table {
+        overflow: visible !important;
+        max-height: none !important;
+    }
+
+    .customer-table {
+        display: table !important;
+        width: 100% !important;
+    }
+
+    table {
+        page-break-inside: auto;
+    }
+
+    tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+
+    thead {
+        display: table-header-group;
+    }
+
+    /* Print exactly 3 columns only */
+    .report-table th,
+    .report-table td,
+    .report-table colgroup col {
+        display: none !important;
+    }
+
+    .report-table th[data-col="name"],
+    .report-table th[data-col="location"],
+    .report-table th[data-col="parent"],
+    .report-table td[data-col="name"],
+    .report-table td[data-col="location"],
+    .report-table td[data-col="parent"] {
+        display: table-cell !important;
+    }
+
+    .no-print,
+    .pay_input,
+    .pay_btn {
+        display: none !important;
+    }
+
+    .table-actions {
+        display: none !important;
+    }
+
+    .pagination,
+    .results-meta {
+        display: none !important;
+    }
+
+    a[href]::after {
+        content: "" !important;
+    }
+
+    a[href^="tel:"]::after {
+        content: "" !important;
+    }
+
+    .admin-only,
+    .report-dates,
+    .report-sub,
+    .stat-card.admin-only {
+        display: none !important;
+    }
+
+    body.print-all .report-output {
+        display: none !important;
+    }
+
+    body.print-all #print-all-container .report-output {
+        display: block !important;
+    }
+
+    body.print-all .print-all-container {
+        display: block !important;
+    }
+
+    /* Keep print layout as real tables so columns fill available width */
+    #print-area,
+    .report-output,
+    .table-shell,
+    .table-wrap {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+    }
+
+    .report-table,
+    .customer-table,
+    #print-area table {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 100% !important;
+        margin: 0 !important;
+        table-layout: fixed !important;
+        border-collapse: collapse !important;
+        display: table !important;
+    }
+
+    .report-table thead {
+        display: table-header-group !important;
+    }
+
+    .report-table tbody,
+    .report-table tfoot {
+        display: table-row-group !important;
+    }
+
+    .report-table tr {
+        display: table-row !important;
+    }
+
+    .report-table th[data-col="name"],
+    .report-table td[data-col="name"] {
+        width: 24% !important;
+    }
+
+    .report-table th[data-col="location"],
+    .report-table td[data-col="location"] {
+        width: 44% !important;
+    }
+
+    .report-table th[data-col="parent"],
+    .report-table td[data-col="parent"] {
+        width: 32% !important;
+    }
+
+    .report-table td,
+    .report-table th {
+        white-space: normal !important;
+        word-break: break-word !important;
+        overflow-wrap: anywhere !important;
+        padding: 6px 8px !important;
+        vertical-align: top !important;
+    }
+}

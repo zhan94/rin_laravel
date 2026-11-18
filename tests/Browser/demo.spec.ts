@@ -1,0 +1,167 @@
+import { expect, test, type Page } from '@playwright/test';
+import { mkdir, readFile } from 'node:fs/promises';
+import { join } from 'node:path';
+
+const username = process.env.RIN_BROWSER_USERNAME ?? 'demo.super_admin';
+
+async function signIn(page: Page): Promise<void> {
+    const password = process.env.RIN_BROWSER_PASSWORD;
+    if (!password)
+        throw new Error(
+            'RIN_BROWSER_PASSWORD must contain the isolated demo account password.',
+        );
+
+    await page.goto('/login?lang=en');
+    await page.locator('input[name="email"]').fill(username);
+    await page.locator('input[name="password"]').fill(password);
+    await page.locator('button[type="submit"]').click();
+    await expect(page).toHaveURL(/\/(dashboard|crm\/customers)$/);
+}
+
+test('protects staff pages and serves the synthetic dashboard and catalogs', async ({
+    page,
+}) => {
+    const browserErrors: string[] = [];
+    page.on('pageerror', (error) => browserErrors.push(error.message));
+    const login = await page.goto('/crm/customers');
+    await expect(page).toHaveURL(/\/login$/);
+    expect(login?.headers()['content-security-policy']).toContain(
+        "frame-ancestors 'none'",
+    );
+    expect((await page.request.get('/register')).status()).toBe(404);
+    await signIn(page);
+    await page.goto('/dashboard?lang=en');
+    await expect(page.locator('.dashboard .subline')).toContainText(
+        /60\s*\/\s*60/,
+    );
+    await expect(page.locator('.dashboard h1')).toContainText(
+        /Season \d{4}\/\d{4}/,
+    );
+
+    for (const [path, value] of [
+        ['customers', 'Sample Customer 060'],
+        ['locations', 'Example Central Station'],
+        ['cards', 'Ski school day pass'],
+    ]) {
+        const api = page.waitForResponse(
+            (response) =>
+                response.url().includes('/api/v1/' + path) &&
+                response.request().method() === 'GET',
+        );
+        await page.goto('/crm/' + path);
+        expect((await api).status()).toBe(200);
+        await expect(
+            page.getByText(value, { exact: false }).first(),
+        ).toBeVisible();
+    }
+
+    await page.goto('/crm/customers?lang=de');
+    await expect(page.locator('html')).toHaveAttribute('lang', 'de');
+    await expect(
+        page.getByRole('heading', { name: 'Kunden', exact: true }),
+    ).toBeVisible();
+    expect(browserErrors).toEqual([]);
+});
+
+test('exports a real CSV and opens an independent print window', async ({
+    page,
+}) => {
+    await signIn(page);
+    await page.goto('/crm/reports?lang=en');
+    await expect(
+        page.getByText('Sample Customer 001', { exact: false }).first(),
+    ).toBeVisible();
+
+    const [download] = await Promise.all([
+        page.waitForEvent('download'),
+        page.getByRole('button', { name: 'CSV (All)', exact: true }).click(),
+    ]);
+    expect(download.suggestedFilename()).toBe('report-all.csv');
+    const contents = await readFile(await download.path(), 'utf8');
+    expect(contents).toContain('Sample Customer 001');
+    expect(contents).toContain('\r\n');
+
+    const [popup] = await Promise.all([
+        page.waitForEvent('popup'),
+        page.getByRole('button', { name: 'Print (All)', exact: true }).click(),
+    ]);
+    await expect(popup.locator('table th').first()).toHaveAttribute(
+        'scope',
+        'col',
+    );
+    await expect(
+        popup.getByText('Sample Customer 001', { exact: false }).first(),
+    ).toBeVisible();
+    expect(await popup.evaluate(() => window.opener === null)).toBe(true);
+    await popup.close();
+});
+
+test('mobile navigation supports Escape, announces state, and restores focus', async ({
+    page,
+}) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await signIn(page);
+    await page.goto('/crm/customers?lang=en');
+    const toggle = page.getByRole('button', { name: 'Menu', exact: true });
+    const navigation = page.locator('#mobile-nav');
+    await expect(toggle).toHaveAttribute('aria-controls', 'mobile-nav');
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await expect(navigation).toBeHidden();
+    await toggle.click();
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    await expect(navigation).toBeVisible();
+    const bounds = await navigation.boundingBox();
+    const main = await page.locator('.app-main').boundingBox();
+    expect(bounds?.width).toBeGreaterThan(300);
+    expect(main?.width).toBeGreaterThan(300);
+    await expect(navigation.getByRole('link').first()).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(navigation).toBeHidden();
+    await expect(toggle).toBeFocused();
+    expect(
+        await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(375);
+});
+
+test('captures approved synthetic demo views when requested', async ({
+    page,
+}) => {
+    const directory = process.env.RIN_SCREENSHOT_DIR;
+    if (!directory) return;
+
+    // Keep screenshot output limited to the isolated, identified demo.
+    expect(
+        new URL(process.env.PLAYWRIGHT_BASE_URL ?? 'http://localhost:8081')
+            .hostname,
+    ).toBe('localhost');
+    await signIn(page);
+    await page.goto('/dashboard?lang=en');
+    await expect(page.locator('.dashboard .subline')).toContainText(
+        /60\s*\/\s*60/,
+    );
+    await expect(
+        page.getByText('Sample Customer 001', { exact: false }).first(),
+    ).toBeVisible();
+    await mkdir(directory, { recursive: true });
+    await page.screenshot({
+        path: join(directory, 'dashboard.png'),
+        animations: 'disabled',
+    });
+
+    await page.goto('/crm/customers?lang=en');
+    await expect(
+        page.getByText('customer.60@example.test', { exact: false }).first(),
+    ).toBeVisible();
+    await page.screenshot({
+        path: join(directory, 'customers.png'),
+        animations: 'disabled',
+    });
+
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.getByRole('button', { name: 'Menu', exact: true }).click();
+    await expect(page.locator('#mobile-nav')).toBeVisible();
+    await page.screenshot({
+        path: join(directory, 'mobile-navigation.png'),
+        animations: 'disabled',
+    });
+});

@@ -1,0 +1,83 @@
+name: rin-laravel-demo
+
+services:
+  keys:
+    image: alpine:3.22
+    entrypoint: ["/bin/sh", "/seed/keys.sh"]
+    volumes:
+      - ./docker/keys.sh:/seed/keys.sh:ro
+      - keys:/run/rin
+
+  mysql:
+    image: mysql:8.4
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    depends_on:
+      keys:
+        condition: service_completed_successfully
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: "true"
+      MYSQL_DATABASE: rin_laravel_demo
+      MYSQL_USER: rin_demo
+      MYSQL_PASSWORD_FILE: /run/rin/db-password
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=$$(cat /run/rin/db-password) mysql --protocol=TCP -h 127.0.0.1 -u rin_demo rin_laravel_demo -e 'SELECT 1' >/dev/null"]
+      interval: 2s
+      timeout: 3s
+      retries: 35
+    volumes:
+      - mysql:/var/lib/mysql
+      - keys:/run/rin:ro
+
+  redis:
+    image: redis:7.4-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+
+  app:
+    build:
+      context: .
+      target: demo
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    init: true
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "false"
+      APP_NAME: RIN
+      APP_URL: http://localhost:${RIN_LARAVEL_PORT:-8081}
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: rin_laravel_demo
+      DB_USERNAME: rin_demo
+      REDIS_HOST: redis
+      SESSION_DRIVER: database
+      SESSION_COOKIE: rin_laravel_demo_session
+      CACHE_STORE: database
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: array
+      SANCTUM_STATEFUL_DOMAINS: localhost:${RIN_LARAVEL_PORT:-8081}
+      SENTRY_LARAVEL_DSN: ""
+    ports:
+      - "127.0.0.1:${RIN_LARAVEL_PORT:-8081}:8080"
+    volumes:
+      - keys:/run/rin:ro
+      - uploads:/app/storage/app/private
+      - logs:/app/storage/logs
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(str_contains((string) @file_get_contents('http://127.0.0.1:8080/up'), 'Application up') ? 0 : 1);"]
+      interval: 2s
+      timeout: 3s
+      retries: 35
+
+volumes:
+  mysql:
+  keys:
+  uploads:
+  logs:
