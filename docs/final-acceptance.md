@@ -57,7 +57,7 @@ Docker Desktop Engine 29.9.3 and Compose v5.7.0 ran on an Apple Silicon Mac. The
 | Cold | Empty isolated Docker image store and build cache, fresh demo volumes | **167.35 s** |
 | Warm | Same daemon and retained images and build cache, fresh demo volumes | **11.19 s** |
 
-The later acceptance commit changes documentation only. It preserves the benchmarked application, Docker and CI inputs.
+Subsequent commits record acceptance and format the redacted manual references. They preserve application behavior and the benchmarked Docker and CI configuration.
 
 The OOP app started from its existing read-only checkout into a separate Docker project. A fresh OOP Compose install took **12.23 seconds** with cached images and build layers. Inspection verified separate HTTP ports, bridge networks, and MySQL data volumes. A clean clone of the sanitized Laravel revision ran alongside the separate OOP Compose project. Chrome signed in to both in the same browser and confirmed the OOP session did not grant Laravel access. Both sessions continued to work independently. The procedural legacy application was outside both Compose projects.
 
