@@ -8,7 +8,9 @@ use App\Enums\RoleKey;
 use App\Models\Bonus;
 use App\Models\Location;
 use App\Models\Role;
+use App\Models\SeasonDefault;
 use App\Models\Service;
+use App\Models\ServiceSlot;
 use App\Models\User;
 use App\Support\Roles\RoleCatalog;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -85,6 +87,103 @@ class BookingApiTest extends TestCase
         $this->postJson('/api/v1/bookings', array_replace($payload, ['lastname' => 'Other']))->assertConflict();
         $this->assertDatabaseCount('bookings', 1);
         $this->assertDatabaseCount('customers', 1);
+    }
+
+    public function test_booking_in_a_gap_creates_a_period_without_overlapping_either_neighbor(): void
+    {
+        $this->actingAs($this->makeAuthenticatedUser());
+        $service = Service::factory()->create(['max' => 10]);
+        $location = Location::factory()->create(['service_id' => $service->id]);
+        ServiceSlot::factory()->create([
+            'service_id' => $service->id, 'name' => 'Opening block',
+            'date_start' => '2026-12-01', 'date_end' => '2026-12-03',
+        ]);
+        ServiceSlot::factory()->create([
+            'service_id' => $service->id, 'name' => 'Holiday block',
+            'date_start' => '2026-12-10', 'date_end' => '2026-12-15',
+        ]);
+
+        $this->getJson("/api/v1/booking-support/services/{$service->id}/slots")
+            ->assertOk()->assertJsonCount(2, 'data');
+        $this->assertDatabaseCount('service_slots', 2);
+
+        $booking = $this->postJson('/api/v1/bookings', [
+            'firstname' => 'Synthetic', 'lastname' => 'Gap',
+            'service_id' => $service->id, 'location_id' => $location->id,
+            'dates' => ['2026-12-06'], 'skill_id' => 1,
+        ])->assertCreated()->assertJsonPath('data.booking_dates.0.slot_date', '2026-12-06');
+
+        $slot = ServiceSlot::query()->findOrFail($booking->json('data.booking_dates.0.slot_id'));
+        self::assertSame('2026-12-04', substr((string) $slot->getRawOriginal('date_start'), 0, 10));
+        self::assertSame('2026-12-09', substr((string) $slot->getRawOriginal('date_end'), 0, 10));
+        $this->assertDatabaseCount('service_slots', 3);
+    }
+
+    public function test_booking_uses_the_containing_period_before_a_label_match(): void
+    {
+        $this->actingAs($this->makeAuthenticatedUser());
+        $service = Service::factory()->create(['max' => 10]);
+        $location = Location::factory()->create(['service_id' => $service->id]);
+        $labeled = ServiceSlot::factory()->create([
+            'service_id' => $service->id, 'name' => 'Season 2026/2027',
+            'date_start' => '2026-12-01', 'date_end' => '2026-12-03',
+        ]);
+        $containing = ServiceSlot::factory()->create([
+            'service_id' => $service->id, 'name' => 'Holiday block',
+            'date_start' => '2026-12-10', 'date_end' => '2026-12-15',
+        ]);
+        $payload = [
+            'firstname' => 'Synthetic', 'lastname' => 'Contained',
+            'service_id' => $service->id, 'location_id' => $location->id,
+            'dates' => ['2026-12-12'], 'skill_id' => 1,
+        ];
+
+        $this->postJson('/api/v1/bookings', $payload + ['slot_id' => $labeled->id])
+            ->assertUnprocessable()->assertJsonPath('errors.0.code', 'booking_slot_overlap');
+        $this->postJson('/api/v1/bookings', $payload)->assertCreated()
+            ->assertJsonPath('data.booking_dates.0.slot_id', $containing->id);
+        self::assertSame('2026-12-03', substr((string) $labeled->refresh()->getRawOriginal('date_end'), 0, 10));
+        $this->assertDatabaseCount('bookings', 1);
+    }
+
+    public function test_off_season_booking_gets_a_period_containing_the_selected_day(): void
+    {
+        $this->actingAs($this->makeAuthenticatedUser());
+        SeasonDefault::query()->whereKey(1)->update(['end_month' => 5, 'end_day' => 31]);
+        $service = Service::factory()->create();
+        $location = Location::factory()->create(['service_id' => $service->id]);
+
+        $response = $this->postJson('/api/v1/bookings', [
+            'firstname' => 'Synthetic', 'lastname' => 'Summer',
+            'service_id' => $service->id, 'location_id' => $location->id,
+            'dates' => ['2027-07-12'], 'skill_id' => 1,
+        ])->assertCreated();
+        $slot = ServiceSlot::query()->findOrFail($response->json('data.booking_dates.0.slot_id'));
+        self::assertSame('2027-07-12', substr((string) $slot->getRawOriginal('date_start'), 0, 10));
+        self::assertSame('2027-07-12', substr((string) $slot->getRawOriginal('date_end'), 0, 10));
+    }
+
+    public function test_cancellation_releases_availability_while_retaining_booking_history(): void
+    {
+        $this->actingAs($this->makeAuthenticatedUser());
+        $service = Service::factory()->create(['max' => 1]);
+        $location = Location::factory()->create(['service_id' => $service->id]);
+        $payload = [
+            'firstname' => 'Synthetic', 'lastname' => 'Cancellation',
+            'service_id' => $service->id, 'location_id' => $location->id,
+            'dates' => ['2026-12-10'], 'skill_id' => 1,
+        ];
+        $booking = $this->postJson('/api/v1/bookings', $payload)->assertCreated();
+        $id = $booking->json('data.id');
+        $customer = $booking->json('data.customer_id');
+
+        $this->deleteJson("/api/v1/bookings/{$id}")->assertOk()
+            ->assertJsonPath('data.active', false);
+        $this->getJson("/api/v1/booking-support/services/{$service->id}/availability?customer_id={$customer}")
+            ->assertOk()->assertJsonPath('data.disabled_dates', []);
+        $this->postJson('/api/v1/bookings', $payload + ['customer_id' => $customer])->assertCreated();
+        $this->assertDatabaseHas('bookings', ['id' => $id, 'active' => false]);
+        $this->assertDatabaseHas('booking_dates', ['booking_id' => $id]);
     }
 
     public function test_same_customer_cannot_be_booked_twice_for_same_date_and_service(): void

@@ -140,23 +140,27 @@ final class BookingRepository implements BookingRepositoryInterface
         }
 
         if ($requestedSlotId > 0 && $this->slotBelongsToService($requestedSlotId, $serviceId)) {
-            $this->ensureSlotBoundsIncludeDate($requestedSlotId, $slotDate);
+            if (! $this->extendSlotToDate($requestedSlotId, $slotDate)) {
+                throw new ApiException(
+                    errorCode: 'booking_slot_overlap',
+                    message: 'The selected service period cannot be extended across another period.',
+                    statusCode: 422,
+                );
+            }
 
             return $requestedSlotId;
-        }
-
-        $date = CarbonImmutable::parse($slotDate);
-
-        $labelSlotId = $this->findSeasonSlotByLabelForDate($serviceId, $date);
-        if ($labelSlotId > 0) {
-            $this->ensureSlotBoundsIncludeDate($labelSlotId, $slotDate);
-
-            return $labelSlotId;
         }
 
         $existingSlotId = $this->findSeasonSlotForDate($serviceId, $slotDate);
         if ($existingSlotId > 0) {
             return $existingSlotId;
+        }
+
+        $date = CarbonImmutable::parse($slotDate);
+
+        $labelSlotId = $this->findSeasonSlotByLabelForDate($serviceId, $date);
+        if ($labelSlotId > 0 && $this->extendSlotToDate($labelSlotId, $slotDate)) {
+            return $labelSlotId;
         }
 
         $extendedSlotId = $this->extendAdjacentSeasonToDate($serviceId, $date);
@@ -206,6 +210,7 @@ final class BookingRepository implements BookingRepositoryInterface
             ->where('b.customer_id', $customerId)
             ->where('b.service', $serviceId)
             ->where('b.service_type', $serviceType)
+            ->where('b.active', true)
             ->where('b.id', '<>', $bookingId)
             ->exists();
     }
@@ -215,11 +220,12 @@ final class BookingRepository implements BookingRepositoryInterface
         $row = DB::table('service_dates as sd')
             ->join('service_slots as ss', 'ss.id', '=', 'sd.slot_id')
             ->leftJoin('booking_dates as bd', 'bd.service_date_id', '=', 'sd.id')
+            ->leftJoin('bookings as b', fn ($join) => $join->on('b.id', '=', 'bd.booking_id')->where('b.active', true))
             ->where('sd.id', $serviceDateId)
             ->groupBy('sd.id', 'ss.max')
             ->selectRaw('ss.max AS slot_max')
-            ->selectRaw('COUNT(bd.booking_id) AS booked')
-            ->selectRaw('SUM(CASE WHEN bd.booking_id = ? THEN 1 ELSE 0 END) AS already_booked', [$bookingId])
+            ->selectRaw('COUNT(b.id) AS booked')
+            ->selectRaw('SUM(CASE WHEN b.id = ? THEN 1 ELSE 0 END) AS already_booked', [$bookingId])
             ->first();
 
         if ($row === null) {
@@ -398,12 +404,12 @@ final class BookingRepository implements BookingRepositoryInterface
             ->exists();
     }
 
-    private function ensureSlotBoundsIncludeDate(int $slotId, string $slotDate): void
+    private function extendSlotToDate(int $slotId, string $slotDate): bool
     {
         /** @var ServiceSlot|null $slot */
         $slot = ServiceSlot::query()->find($slotId);
         if ($slot === null) {
-            return;
+            return false;
         }
 
         $currentStart = $this->normalizeDateValue($slot->date_start);
@@ -413,18 +419,27 @@ final class BookingRepository implements BookingRepositoryInterface
         $newEnd = $currentEnd !== null ? max($currentEnd, $slotDate) : $slotDate;
 
         if ($newStart === $currentStart && $newEnd === $currentEnd) {
-            return;
+            return true;
+        }
+
+        if ($this->hasSeasonOverlap((int) $slot->service_id, $slotId, $newStart, $newEnd)) {
+            return false;
         }
 
         $slot->date_start = $newStart;
         $slot->date_end = $newEnd;
         $slot->save();
+
+        return true;
     }
 
     private function findSeasonSlotByLabelForDate(int $serviceId, CarbonImmutable $date): int
     {
         $defaults = $this->getSeasonDefaults();
         $range = SeasonCalendar::rangeForDate($date, $defaults);
+        if ($date->toDateString() < $range['start'] || $date->toDateString() > $range['end']) {
+            return 0;
+        }
 
         $startYear = (int) substr($range['start'], 0, 4);
         $endYear = (int) substr($range['end'], 0, 4);
@@ -565,6 +580,9 @@ final class BookingRepository implements BookingRepositoryInterface
         $slotDate = $date->toDateString();
         $defaults = $this->getSeasonDefaults();
         $defaultRange = SeasonCalendar::rangeForDate($date, $defaults);
+        if ($slotDate < $defaultRange['start'] || $slotDate > $defaultRange['end']) {
+            $defaultRange = ['start' => $slotDate, 'end' => $slotDate];
+        }
         $range = $this->adjustRangeToAvailableGap(
             $serviceId,
             $slotDate,
@@ -622,30 +640,30 @@ final class BookingRepository implements BookingRepositoryInterface
         $start = $startYmd;
         $end = $endYmd;
 
-        $prevSlotEnd = ServiceSlot::query()
+        $prevSlotEnd = $this->normalizeDateValue(ServiceSlot::query()
             ->where('service_id', $serviceId)
             ->whereNotNull('date_start')
             ->whereNotNull('date_end')
             ->whereDate('date_end', '<', $slotDate)
             ->orderByDesc('date_end')
-            ->value('date_end');
+            ->value('date_end'));
 
-        if (is_string($prevSlotEnd)) {
+        if ($prevSlotEnd !== null) {
             $nextAfterPrev = CarbonImmutable::parse($prevSlotEnd)->addDay()->toDateString();
             if ($nextAfterPrev > $start) {
                 $start = $nextAfterPrev;
             }
         }
 
-        $nextSlotStart = ServiceSlot::query()
+        $nextSlotStart = $this->normalizeDateValue(ServiceSlot::query()
             ->where('service_id', $serviceId)
             ->whereNotNull('date_start')
             ->whereNotNull('date_end')
             ->whereDate('date_start', '>', $slotDate)
             ->orderBy('date_start')
-            ->value('date_start');
+            ->value('date_start'));
 
-        if (is_string($nextSlotStart)) {
+        if ($nextSlotStart !== null) {
             $prevBeforeNext = CarbonImmutable::parse($nextSlotStart)->subDay()->toDateString();
             if ($prevBeforeNext < $end) {
                 $end = $prevBeforeNext;

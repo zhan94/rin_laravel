@@ -6,17 +6,14 @@ namespace App\Services;
 
 use App\Exceptions\ApiException;
 use App\Models\Service;
-use App\Repositories\Contracts\Bookings\BookingRepositoryInterface;
 use App\Repositories\Contracts\Bookings\BookingSupportRepositoryInterface;
 use App\Support\Bookings\BookingSeasonRangeResolver;
 use App\Support\Bookings\BookingSupportPresenter;
-use Carbon\CarbonImmutable;
 
 final readonly class BookingSupportService
 {
     public function __construct(
         private BookingSupportRepositoryInterface $repository,
-        private BookingRepositoryInterface $bookingRepository,
         private BookingSupportPresenter $presenter,
         private BookingSeasonRangeResolver $seasonRangeResolver,
     ) {}
@@ -74,9 +71,6 @@ final readonly class BookingSupportService
     public function serviceSlots(int $serviceId): array
     {
         $this->assertServiceExists($serviceId);
-
-        $today = CarbonImmutable::today()->toDateString();
-        $this->bookingRepository->resolveSlotIdForDate($serviceId, $today);
 
         return $this->repository->listServiceSlots($serviceId);
     }

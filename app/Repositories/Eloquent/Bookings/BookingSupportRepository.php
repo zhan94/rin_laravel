@@ -209,6 +209,7 @@ final class BookingSupportRepository implements BookingSupportRepositoryInterfac
             ->where('b.customer_id', $customerId)
             ->where('b.service', $serviceId)
             ->where('b.service_type', 1)
+            ->where('b.active', true)
             ->where('sd.is_active', 1)
             ->when($slotId > 0, fn ($builder) => $builder->where('sd.slot_id', $slotId))
             ->selectRaw('DISTINCT DATE(sd.slot_date) AS slot_date')
