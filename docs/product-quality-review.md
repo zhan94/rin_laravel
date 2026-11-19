@@ -5,7 +5,7 @@
 | Decision | Result |
 | --- | --- |
 | Local acceptance | **GO** for the isolated synthetic ARM64 demo and the documented workflows. |
-| Publication | **NO-GO** pending the owner's explicit publication approval, rights clearance for the remaining bundled assets, the exact GitLab and GitHub destinations and visibility, and hosted CI verification. |
+| Publication | **NO-GO**. See the [current publication readiness report](publication-readiness.md) for rights, GitHub access and release approval. |
 
 The review reused the earlier authentication, migration, OOP coexistence, architecture, and booking acceptance evidence. Verification for this release used isolated synthetic MySQL and in-memory SQLite. The procedural application, the OOP application, and the prepared database were outside the change scope. [Earlier acceptance evidence](final-acceptance.md)
 
@@ -70,12 +70,8 @@ The customer query continues to use server-side offset pagination and substring 
 
 - Authorization remains in Laravel policies and middleware. Payment parsing reuses the booking helper, and overlap checks run under the existing service lock. Dependencies, data models, and database schema were kept in place.
 - Grouped season presentation helpers remain reachable only from older frontend tests, while service labels, bonus grouping, and daily report link helpers are still used. The single-implementation repository contracts and forwarding service methods remain candidates for later simplification when related features change.
-- The app has English fallbacks for 356 English catalog keys in German and 356 in Spanish. The counts measure direct keys and include some legacy labels. The English manual is served for all three locale choices. Full localization, accessibility conformance, physical passkeys and x86-64 execution remain unverified. The auth and operational screens have automated coverage beyond the sampled browser workflows.
+- At this review, German and Spanish each lacked 356 UI strings, and all locales shared the English manual. The [publication review](publication-readiness.md) records the corrections and practical accessibility results. Full accessibility conformance, physical passkeys and x86-64 execution remain unverified.
 - Booking rows retain their full date itinerary within a matched report record. Header filters refine the current page, and whole-range CSV/print still collect server pages in the browser. Unpaid balances and whole-result exports were verified on the demo fixture. Their performance at enterprise scale remains unmeasured.
 - Review and testing were agent-assisted. The owner provided the task scope and earlier approvals. Human review of this release and permission to publish are separate, outstanding steps. The local commits preserve the existing Git history. [Engineering record](ai-development.md)
 
-## Publication checklist
-
-- Confirm rights to distribute the existing photographs, logo, and any other bundled assets. The two localized fonts retain their upstream SIL Open Font License notices.
-- Confirm the employer's GitHub repository and preferred visibility, along with the GitLab destination and visibility. Keep the same reviewed history on both platforms.
-- Obtain explicit publication approval and run both hosted pipelines on their intended runners. The local run covers the shared script and secret check. Hosted runner and repository settings require separate verification.
+The current [publication checklist](publication-readiness.md#publication-checklist) supersedes this review's publication gates.

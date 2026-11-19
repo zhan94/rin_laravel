@@ -7,7 +7,7 @@ The [final product quality review](product-quality-review.md) records the most r
 | Decision | Status |
 | --- | --- |
 | Local technical evaluation | **GO** for the synthetic ARM64 demo and documented verification scope. |
-| Repository publication | **NO-GO** until the owner confirms rights to share the application and bundled assets, approves the exact repositories and visibility, and explicitly authorizes publication. The supplied GitLab project is public. Hosted CI is pending. |
+| Repository publication | **NO-GO**. The [publication readiness report](publication-readiness.md) tracks the remaining rights, GitHub access, and approval requirements. |
 
 ## Booking acceptance follow-up
 
@@ -57,7 +57,7 @@ The table revisits the [original Laravel audit](initial-audit.md). The [engineer
 | Chrome and Playwright | Four Chromium checks passed in 5.2 seconds in the clean Docker quality run. The opt-in screenshot test was skipped in CI and run separately on the synthetic demo. A separate Chrome run exercised customer creation, validation, details, update, filtering, deletion, notifications, and the empty state on disposable MySQL. It also verified Driver report masking, permitted full-name search, and denial of direct customer API access. |
 | MySQL | Both concurrency races passed on disposable MySQL 8.4. Demo integrity checks verified relationship counts, payment mirrors and encoding. |
 | Native startup | A clean Git clone installed via Composer and npm under PHP 8.5.3 and Node 24.22.3, migrated and seeded an isolated SQLite file, compiled Vue, and signed in through Chrome. The customers API succeeded and rendered the empty-list state. |
-| CI configurations | GitHub Actions passed actionlint 1.7.12. Local YAML parsing and job-structure checks passed for GitLab. The two platforms call the shared shell gate. GitLab's hosted CI lint and both hosted executions remain pending. |
+| CI configurations at this review | GitHub Actions passed actionlint 1.7.12. The then-present GitLab configuration passed local YAML and job-structure checks. The [current workflow and hosted status](publication-readiness.md#github-actions) are documented separately. |
 
 ## Architecture assessment
 
@@ -101,8 +101,7 @@ The isolated MySQL 8.4.13 demo started with five staff, 60 customers, two servic
 
 ## Outstanding decisions and limitations
 
-- The intended GitLab destination is public. Confirm the rights to distribute the application, bundled photographs, fonts and logo, then agree to exact visibility and the employer's GitHub destination. Keep the same reviewed commit history on both platforms. Explicit publication approval is pending.
-- Run hosted GitLab lint and both CI pipelines after access and publication approval. GitLab quality needs a trusted privileged Docker-in-Docker runner with its shared TLS client certificate mount.
+- Follow the [current GitHub publication checklist](publication-readiness.md#publication-checklist).
 - Physical passkeys, full accessibility conformance and x86-64 execution remain outside the verified results. Some customer success notifications and older service-period controls are still English. The tablet booking table uses horizontal scrolling, and the customer list's active badge counts the visible page. Complex forms and role combinations are covered by a combination of feature tests and selected browser checks.
 - A Driver can load reports, but the existing service picker depends on the privileged catalog API, so the Driver sees the all-services option. The broader enterprise search and export workloads need separate MySQL and browser benchmarking before changing the UI contracts.
 - The prepared database still requires an authorized migration rollout for the two additive receipts and date-index migrations. A staff email-verification rollout remains an owner policy decision for imported identities.
