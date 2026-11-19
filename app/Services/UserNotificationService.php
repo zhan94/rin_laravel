@@ -8,14 +8,14 @@ use App\DTOs\Notifications\NotificationFilterData;
 use App\Exceptions\ApiException;
 use App\Models\User;
 use App\Models\UserNotification;
-use App\Repositories\Contracts\Notifications\UserNotificationRepositoryInterface;
+use App\Repositories\Eloquent\Notifications\UserNotificationRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
 final readonly class UserNotificationService
 {
     public function __construct(
-        private UserNotificationRepositoryInterface $repository,
+        private UserNotificationRepository $repository,
     ) {}
 
     /**

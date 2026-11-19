@@ -8,13 +8,13 @@ use App\DTOs\Logs\LogFilterData;
 use App\Enums\RoleKey;
 use App\Exceptions\ApiException;
 use App\Models\User;
-use App\Repositories\Contracts\Logs\LogRepositoryInterface;
+use App\Repositories\Eloquent\Logs\LogRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 final readonly class LogService
 {
     public function __construct(
-        private LogRepositoryInterface $repository,
+        private LogRepository $repository,
     ) {}
 
     /**
@@ -60,30 +60,14 @@ final readonly class LogService
 
     private function resolveExcludedUserId(User $actor): int
     {
-        if (! $this->canAccessLogs($actor)) {
-            throw new ApiException(
+        return match ($actor->resolvedRoleKey()) {
+            RoleKey::SUPER_ADMIN => 0,
+            RoleKey::ADMIN => (int) $actor->id,
+            default => throw new ApiException(
                 errorCode: 'logs_forbidden',
                 message: 'You are not allowed to access logs.',
                 statusCode: 403,
-            );
-        }
-
-        if ($this->isSuperAdmin($actor)) {
-            return 0;
-        }
-
-        return (int) $actor->id;
-    }
-
-    private function canAccessLogs(User $actor): bool
-    {
-        $roleKey = $actor->resolvedRoleKey();
-
-        return in_array($roleKey, [RoleKey::SUPER_ADMIN, RoleKey::ADMIN], true);
-    }
-
-    private function isSuperAdmin(User $actor): bool
-    {
-        return $actor->resolvedRoleKey() === RoleKey::SUPER_ADMIN;
+            ),
+        };
     }
 }

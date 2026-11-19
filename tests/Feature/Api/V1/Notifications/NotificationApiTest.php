@@ -147,9 +147,10 @@ class NotificationApiTest extends TestCase
             ->assertJsonPath('errors.0.code', 'notification_not_found');
     }
 
-    public function test_user_can_mark_all_notifications_as_read(): void
+    public function test_user_can_mark_all_visible_notifications_as_read(): void
     {
         $user = $this->createUserWithRole(RoleKey::MANAGER);
+        $otherUser = $this->createUserWithRole(RoleKey::DRIVER);
 
         UserNotification::query()->create([
             'user_id' => $user->id,
@@ -176,7 +177,24 @@ class NotificationApiTest extends TestCase
             'read_at' => now(),
         ]);
 
+        $deleted = UserNotification::factory()->for($user)->create([
+            'status' => 'unread',
+            'deleted_at' => now(),
+        ]);
+        $foreign = UserNotification::factory()->for($otherUser)->create([
+            'status' => 'unread',
+        ]);
+
         $this->actingAs($user);
+
+        $this->getJson('/api/v1/notifications?status=unread')
+            ->assertOk()
+            ->assertJsonPath('meta.unread_count', 2)
+            ->assertJsonPath('meta.pagination.total', 2);
+
+        $this->postJson("/api/v1/notifications/{$deleted->id}/read")
+            ->assertNotFound()
+            ->assertJsonPath('errors.0.code', 'notification_not_found');
 
         $response = $this->postJson('/api/v1/notifications/read-all');
 
@@ -188,9 +206,12 @@ class NotificationApiTest extends TestCase
         $remainingUnread = UserNotification::query()
             ->where('user_id', $user->id)
             ->where('status', 'unread')
+            ->whereNull('deleted_at')
             ->count();
 
         $this->assertSame(0, $remainingUnread);
+        $this->assertSame('unread', $deleted->refresh()->status);
+        $this->assertSame('unread', $foreign->refresh()->status);
     }
 
     private function createUserWithRole(RoleKey $roleKey): User

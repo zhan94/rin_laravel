@@ -119,6 +119,10 @@ class LogApiTest extends TestCase
 
         $this->actingAs($admin);
 
+        $this->deleteJson("/api/v1/logs/{$ownLog->id}")
+            ->assertNotFound()
+            ->assertJsonPath('errors.0.code', 'log_not_found');
+
         $response = $this->postJson('/api/v1/logs/delete-selected', [
             'ids' => [$ownLog->id, $logA->id, $logB->id],
         ]);
@@ -131,6 +135,12 @@ class LogApiTest extends TestCase
         $this->assertDatabaseHas('logs', ['id' => $ownLog->id]);
         $this->assertDatabaseMissing('logs', ['id' => $logA->id]);
         $this->assertDatabaseMissing('logs', ['id' => $logB->id]);
+
+        $this->deleteJson('/api/v1/logs')
+            ->assertOk()
+            ->assertJsonPath('data.deleted', 0);
+
+        $this->assertDatabaseHas('logs', ['id' => $ownLog->id]);
     }
 
     private function createUserWithRole(RoleKey $roleKey): User
