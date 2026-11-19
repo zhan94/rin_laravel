@@ -137,6 +137,19 @@ test('mobile navigation supports Escape, announces state, and restores focus', a
     expect(
         await page.evaluate(() => document.documentElement.scrollWidth),
     ).toBeLessThanOrEqual(375);
+    await toggle.click();
+    await expect(
+        navigation.getByRole('link', { name: 'Profile', exact: true }),
+    ).toBeVisible();
+    await expect(
+        navigation.getByRole('link', { name: 'Manual', exact: true }),
+    ).toBeVisible();
+    await navigation
+        .getByRole('button', { name: 'Logout', exact: true })
+        .click();
+    await expect(
+        page.getByRole('heading', { name: 'Access the system' }),
+    ).toBeVisible();
 });
 
 test('renders all staff modules and the German Super Admin profile', async ({
@@ -541,7 +554,7 @@ test('Group Leader sees customer and season records with read-only controls', as
 
     await page.goto('/crm/seasons?lang=en');
     await expect(page.locator('.season-range').first()).toBeVisible();
-    await expect(page.locator('form')).toHaveCount(0);
+    await expect(page.locator('main form')).toHaveCount(0);
 });
 
 test('records a payment from the Customer unpaid view and refreshes its balance', async ({

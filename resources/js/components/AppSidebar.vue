@@ -2,10 +2,14 @@
 import { useCurrentUrl } from '@/composables/useCurrentUrl';
 import { usePageAuth } from '@/composables/usePageAuth';
 import { useUiI18n } from '@/composables/useUiI18n';
+import { logout } from '@/routes';
 import horizon from '@/routes/horizon';
+import { edit as editProfile } from '@/routes/profile';
 import { type AuthPermissions, type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
+
+defineProps<{ mobileActions?: boolean }>();
 
 type SidebarItem = NavItem & {
     permission?: keyof AuthPermissions;
@@ -19,7 +23,7 @@ type SidebarSection = {
 
 const auth = usePageAuth();
 const { isCurrentUrl } = useCurrentUrl();
-const { t } = useUiI18n();
+const { currentLocale, t } = useUiI18n();
 const permissions = computed<Partial<AuthPermissions>>(
     () => auth.value.permissions ?? {},
 );
@@ -160,6 +164,52 @@ const visibleSections = computed<SidebarSection[]>(() =>
                             :class="item.iconClass"
                         />
                         <span class="sidebar-text">{{ item.title }}</span>
+                    </Link>
+                </li>
+            </ul>
+        </div>
+        <div v-if="mobileActions" class="sidebar-group">
+            <ul class="sidebar-nav">
+                <li>
+                    <Link :href="editProfile()" class="sidebar-link">
+                        <span
+                            aria-hidden="true"
+                            class="glyphicon glyphicon-user sidebar-icon"
+                        />
+                        <span class="sidebar-text">{{
+                            t('common.profile')
+                        }}</span>
+                    </Link>
+                </li>
+                <li>
+                    <a
+                        :href="`/manual/${currentLocale}`"
+                        target="_blank"
+                        rel="noopener"
+                        class="sidebar-link"
+                    >
+                        <span
+                            aria-hidden="true"
+                            class="glyphicon glyphicon-book sidebar-icon"
+                        />
+                        <span class="sidebar-text">{{
+                            t('common.manual')
+                        }}</span>
+                    </a>
+                </li>
+                <li>
+                    <Link
+                        :href="logout()"
+                        as="button"
+                        class="sidebar-link w-full text-left"
+                    >
+                        <span
+                            aria-hidden="true"
+                            class="glyphicon glyphicon-log-out sidebar-icon"
+                        />
+                        <span class="sidebar-text">{{
+                            t('common.logout')
+                        }}</span>
                     </Link>
                 </li>
             </ul>

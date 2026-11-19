@@ -45,6 +45,7 @@ async function toggleMenu(): Promise<void> {
         <div class="crm-sidebar-layout" :class="{ 'app-shell': !mobileLayout }">
             <AppSidebar
                 id="mobile-nav"
+                :mobile-actions="mobileLayout"
                 :class="{ 'sidebar-mobile-open': menuOpen }"
             />
             <main class="app-main">

@@ -58,7 +58,10 @@ const { formatNumber } = useUiI18n();
                             v-if="canManage"
                             @click="openCreateForm"
                         >
-                            <span class="glyphicon glyphicon-plus" />
+                            <span
+                                class="glyphicon glyphicon-plus"
+                                aria-hidden="true"
+                            />
                             {{ t('customers.add_customer') }}
                         </button>
                         <button
@@ -69,7 +72,10 @@ const { formatNumber } = useUiI18n();
                             "
                             @click="activateUnpaidMode"
                         >
-                            <span class="glyphicon glyphicon-list-alt" />
+                            <span
+                                class="glyphicon glyphicon-list-alt"
+                                aria-hidden="true"
+                            />
                             {{ t('customers.unpaid_fees') }}
                         </button>
                     </div>
@@ -345,6 +351,7 @@ const { formatNumber } = useUiI18n();
                                             >
                                                 <span
                                                     class="glyphicon glyphicon-search"
+                                                    aria-hidden="true"
                                                 />
                                             </button>
                                             <button
@@ -356,6 +363,7 @@ const { formatNumber } = useUiI18n();
                                             >
                                                 <span
                                                     class="glyphicon glyphicon-edit"
+                                                    aria-hidden="true"
                                                 />
                                             </button>
                                             <button
@@ -373,6 +381,7 @@ const { formatNumber } = useUiI18n();
                                             >
                                                 <span
                                                     class="glyphicon glyphicon-trash"
+                                                    aria-hidden="true"
                                                 />
                                             </button>
                                         </div>
@@ -510,6 +519,11 @@ const { formatNumber } = useUiI18n();
                                                     step="0.01"
                                                     min="0"
                                                     inputmode="decimal"
+                                                    :aria-label="
+                                                        t(
+                                                            'customers.unpaid_pay_eur',
+                                                        )
+                                                    "
                                                     placeholder="0.00"
                                                     class="form-control pay_input"
                                                 />

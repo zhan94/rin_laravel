@@ -921,6 +921,14 @@ export const UI_MESSAGES = {
         'roles.user': 'User',
     },
     de: {
+        'customers.unpaid_customer': 'Kunde',
+        'customers.unpaid_birth': 'Geburtsdatum',
+        'customers.unpaid_service': 'Leistung',
+        'customers.unpaid_due': 'Offener Betrag',
+        'customers.unpaid_pay_eur': 'Zahlung (EUR)',
+        'customers.pay': 'Zahlung buchen',
+        'customers.applying': 'Wird gebucht …',
+        'customers.open_customer': 'Kunde öffnen',
         'reports.services_load_failed':
             'Die Leistungen für den Bericht konnten nicht geladen werden.',
         'customers.active_on_page': 'Aktiv auf dieser Seite',
@@ -1472,6 +1480,14 @@ export const UI_MESSAGES = {
         'roles.user': 'Benutzer',
     },
     es: {
+        'customers.unpaid_customer': 'Cliente',
+        'customers.unpaid_birth': 'Nacimiento',
+        'customers.unpaid_service': 'Servicio',
+        'customers.unpaid_due': 'Importe pendiente',
+        'customers.unpaid_pay_eur': 'Pago (EUR)',
+        'customers.pay': 'Registrar pago',
+        'customers.applying': 'Registrando…',
+        'customers.open_customer': 'Abrir cliente',
         'reports.services_load_failed':
             'No se pudo cargar la lista de servicios del informe.',
         'customers.active_on_page': 'Activos en esta página',

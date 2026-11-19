@@ -450,7 +450,7 @@ export function useReportsPage() {
             case 'equip':
                 return row.equip;
             case 'location':
-                return `${row.location} ${row.dates.join(' ')}`;
+                return `${row.location} ${row.dates.map((date) => formatDateLabel(date)).join(' ')}`;
             case 'due':
                 return row.due;
             case 'payment':
