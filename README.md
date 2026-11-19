@@ -6,11 +6,11 @@ RIN gives ski-school staff one place to manage customer records, reserve places 
 
 [Customer list](docs/screenshots/customers.png) · [Mobile navigation](docs/screenshots/mobile-navigation.png)
 
-The screenshots use the isolated synthetic demo.
+Screenshots show the isolated synthetic demo.
 
 ## Run the demo
 
-From a checkout with Docker Desktop and Docker Compose installed, run:
+Clone the repository. From its root, with Docker Desktop and Docker Compose running, use:
 
 ```sh
 docker compose up --build --detach --wait
@@ -19,7 +19,7 @@ docker compose exec -T app cat /run/rin/demo-password
 
 Open [localhost:8081](http://localhost:8081) and sign in as `demo.super_admin` using the generated password. The same local password works for `demo.admin`, `demo.manager`, `demo.group_leader`, and `demo.driver`. Each role has a different access level.
 
-Compose installs the locked dependencies, compiles the frontend, migrates an isolated MySQL database, and seeds 60 synthetic customers and 16 past, current, and future bookings. Ski school and Mountain hiking have bookable dates on a fresh install. The database and demo credentials persist across `docker compose down`. [Native setup, restart, and isolation instructions](docs/operations.md)
+Compose installs locked dependencies, builds the frontend, migrates its own MySQL database, and seeds 60 synthetic customers and 16 bookings. The checkout supplies the schema and seeders for the standalone Laravel demo. The demo database and generated credentials persist across `docker compose down`. [Native setup, restart, and isolation instructions](docs/operations.md)
 
 ## Features and architecture
 
@@ -28,9 +28,9 @@ Compose installs the locked dependencies, compiles the frontend, migrates an iso
 - Separate service-season entries with daily capacity and availability, pickup locations, cards, equipment, and bonus services.
 - Seasonal dashboard, role-scoped reports, CSV and print output, staff notifications, and issues with private attachments.
 
-The application uses PHP 8.5, Laravel 12, MySQL 8.4, Fortify, Sanctum, Inertia 2, Vue 3, TypeScript, Tailwind CSS 4, and Vite 7. English, German, and Spanish are available in the staff interface. Form Requests validate input, middleware and policies enforce access, and Eloquent handles persistence. Booking and payment services coordinate database locks and retry handling. Vue pages use typed API clients. [Architecture and trade-offs](docs/architecture.md)
+The application uses PHP 8.5, Laravel 12, MySQL 8.4, Fortify, Sanctum, Inertia 2, Vue 3, TypeScript, Tailwind CSS 4, and Vite 7. Form Requests and policies keep validation and authorization at the HTTP boundary. Booking and payment services use row locks to protect capacity and balances, and request receipts make supported retries safe. Report queries shape the data each staff role can receive. [Architecture and trade-offs](docs/architecture.md)
 
-The signed-in staff manual covers role access, bookings, payments, service availability, and reports. Open it from the account controls or choose [English](http://localhost:8081/manual/en), [Deutsch](http://localhost:8081/manual/de), or [Español](http://localhost:8081/manual/es). Dates display as DD.MM.YYYY across interface languages.
+The interface and signed-in staff manual support [English](http://localhost:8081/manual/en), [Deutsch](http://localhost:8081/manual/de), and [Español](http://localhost:8081/manual/es). Dates display as DD.MM.YYYY.
 
 ## Verify the application
 
@@ -38,16 +38,14 @@ The signed-in staff manual covers role access, bookings, payments, service avail
 sh scripts/ci-verify.sh quality
 ```
 
-This runs the container-based quality gate used by GitHub Actions, including locked dependency audits, PHP and frontend checks, and Chromium against an isolated synthetic demo. GitHub Actions also checks source and Git history for secrets. [Native test, MySQL concurrency, and benchmark commands](docs/operations.md)
+This runs the GitHub Actions quality gate locally, including locked dependency audits, static analysis, PHP and frontend tests, and Chromium on an isolated synthetic demo. The separate MySQL race harness verifies booking and payment contention using independent processes. GitHub Actions also scans source and Git history for secrets. [Test and benchmark commands](docs/operations.md)
 
-The latest 100,000-customer MySQL benchmark measured median repository calls of 3.65 ms for the first page, 20.59 ms for a deep page, and 82.79 ms for a substring match on ARM64. [Performance results, SQLite comparison and measurement boundaries](docs/product-quality-review.md#performance)
+On ARM64 with 100,000 synthetic customers, MySQL median repository calls took 3.65 ms for the first page, 20.59 ms for page 3,900, and 82.79 ms for a substring match. Each median uses seven samples after a warm-up. The benchmark excludes HTTP, browser rendering, and concurrent workloads. [Performance results and SQLite comparison](docs/product-quality-review.md#performance)
 
-The Driver report API restricts confidential fields, and regression tests exercise staff role boundaries, account revocation, and CSRF. Reports that export every matching row assemble paginated results in the browser. The local demo was verified on ARM64. Hosted CI, x86-64 execution, physical passkeys, and full accessibility conformance remain unverified. [Local product acceptance](docs/product-quality-review.md) · [Publication readiness and rights inventory](docs/publication-readiness.md)
+Deep customer pages use offset pagination, and full report exports assemble server pages in the browser. The local demo was verified on ARM64. Hosted CI, x86-64 execution, physical passkeys, and full accessibility conformance remain open. [Local product acceptance](docs/product-quality-review.md) · [Publication readiness and handover](docs/publication-readiness.md)
 
-## Engineering records
+## AI-assisted development
 
-- [Initial Laravel security and architecture audit](docs/initial-audit.md)
-- [AI-assisted development, verification, and human approvals](docs/ai-development.md)
-- [Legacy migration mapping and integrity results](docs/legacy-data-migration.md)
-- [Bootstrap and Normalize license notices](public/css/styles/)
-- [Glyphicons Halflings from Bootstrap](https://getbootstrap.com/docs/3.3/components/#glyphicons) · [Glyphicons](https://www.glyphicons.com/)
+Codex assisted with code tracing, patches, regression tests, and documentation. Verification combined focused tests, MySQL race checks, and browser evidence. The owner defined the requirements and approved local acceptance. [Engineering decisions and approval record](docs/ai-development.md)
+
+[Bootstrap and Normalize notices](public/css/styles/) · [Glyphicons Halflings credit](https://www.glyphicons.com/)

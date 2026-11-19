@@ -1,6 +1,6 @@
 # Local operations
 
-Use the [README](../README.md) to start either Compose app. Docker Desktop provides PHP 8.5, Node 24 during the frontend build, and an isolated MySQL 8.4 instance for each app. Laravel captures demo mail in memory and uses database-backed sessions. The OOP application runs from the supplied read-only source tree copied into its own container.
+Use the [README](../README.md) to start the standalone Laravel demo. The Compose build provides PHP 8.5, Node 24 during the frontend build, and isolated MySQL 8.4. Laravel captures demo mail in memory and uses database-backed sessions. The optional OOP demo uses its own Compose file and requires a separate source checkout.
 
 Compose allocates resources under the project names `rin-laravel-demo` and `rin-oop-demo`. Start another evaluation with a distinct project name and a different `RIN_LARAVEL_PORT` or `RIN_OOP_PORT`.
 
