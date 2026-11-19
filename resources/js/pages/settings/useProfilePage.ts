@@ -71,6 +71,7 @@ export function useProfilePage() {
     const roleLabel = computed(() => {
         switch (user.value?.role_key ?? '') {
             case 'super_admin':
+                return t('roles.super_admin');
             case 'admin':
                 return t('roles.administrator');
             case 'manager':
