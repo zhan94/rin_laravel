@@ -168,18 +168,21 @@ test('renders all staff modules and the German Super Admin profile', async ({
         );
         expect((await page.goto(`/crm/${module}?lang=en`))?.ok()).toBe(true);
         expect((await result).status()).toBe(200);
-        await expect(page.locator('main h1')).toBeVisible();
+        await expect(
+            page.locator('main').getByRole('heading', { level: 1 }).first(),
+        ).toBeVisible();
         await expect(
             page.getByText('Unauthenticated.', { exact: true }),
         ).toHaveCount(0);
     }
     await page.goto('/settings/profile?lang=de');
-    await expect(
-        page.getByText('Benutzerebene', { exact: true }),
-    ).toBeVisible();
-    await expect(
-        page.getByText('Super-Administrator', { exact: true }),
-    ).toBeVisible();
+    const roleField = page
+        .locator('.field--readonly')
+        .filter({ hasText: 'Benutzerebene' });
+    await expect(roleField).toBeVisible();
+    await expect(roleField.locator('.readonly-value')).toHaveText(
+        'Super-Administrator',
+    );
     expect(failures).toEqual([]);
 });
 
