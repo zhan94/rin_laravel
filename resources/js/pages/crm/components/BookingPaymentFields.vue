@@ -35,6 +35,7 @@ const { state, t } = useBookingPageContext();
                 min="0"
                 step="0.01"
                 :placeholder="t('bookings.paid_eur')"
+                :readonly="state.editingBooking !== null"
                 class="form-control"
             />
         </div>

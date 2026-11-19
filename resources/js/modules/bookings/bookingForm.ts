@@ -134,7 +134,6 @@ export function applyCustomerPrefillToBookingForm(
     form.ski_height = Number.isFinite(height) && height > 0 ? height : null;
 
     form.sum_paid = bgnToEur(booking.sum_paid);
-    form.paid = bgnToEur(booking.paid);
 
     if (form.note.trim() === '' && booking.note !== null) {
         form.note = booking.note;

@@ -67,6 +67,16 @@ export function createBooking(
     return submitMutation<BookingRecord>(bookingsBasePath, payload);
 }
 
+export function updateBooking(
+    bookingId: number,
+    payload: BookingCreatePayload,
+): Promise<ApiEnvelope<BookingRecord>> {
+    return httpRequest<BookingRecord>(`${bookingsBasePath}/${bookingId}`, {
+        method: 'PUT',
+        body: payload,
+    });
+}
+
 export function deactivateBooking(
     bookingId: number,
 ): Promise<ApiEnvelope<BookingRecord>> {

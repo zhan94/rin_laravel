@@ -56,7 +56,9 @@ import {
 import {
     applyBookingPayment,
     createBooking,
+    deactivateBooking,
     listBookings,
+    updateBooking,
 } from '@/modules/bookings/bookingService';
 import {
     reconcileBookingSupportSelections,
@@ -76,12 +78,14 @@ import {
     formatMonthCursor,
     uniqueSortedDateTokens,
 } from '@/modules/calendar/dateUtils';
+import { bgnToEur } from '@/modules/money/currency';
 import { readFirstDeepLinkParam } from '@/modules/notifications/deepLinkQuery';
 import { listServices } from '@/modules/services/serviceService';
 import { firstApiErrorMessage, normalizeApiErrors } from '@/services/apiErrors';
 import { paginationFromMeta } from '@/services/pagination';
 import {
     computed,
+    nextTick,
     onBeforeUnmount,
     onMounted,
     reactive,
@@ -100,6 +104,7 @@ export function useBookingsPage() {
     const todayIso = formatIsoDate(new Date());
 
     const state = reactive(createDefaultBookingPageState());
+    let supportRequest = 0;
 
     const locationPickerRef = ref<HTMLElement | null>(null);
     const {
@@ -153,7 +158,9 @@ export function useBookingsPage() {
             },
             stepTwo: {
                 eyebrow: t('bookings.step2_eyebrow'),
-                title: t('bookings.step2_title'),
+                title: state.editingBooking
+                    ? t('bookings.edit_booking')
+                    : t('bookings.step2_title'),
                 subtitle: t('bookings.step2_subtitle'),
             },
         }),
@@ -260,8 +267,15 @@ export function useBookingsPage() {
     }
 
     async function loadServiceSupport(): Promise<void> {
-        if (state.form.service_id <= 0) {
+        const request = ++supportRequest;
+        const {
+            service_id: serviceId,
+            slot_id: slotId,
+            customer_id: customerId,
+        } = state.form;
+        if (serviceId <= 0 || state.form.service_type !== 1) {
             resetBookingServiceSupport(state);
+            state.loadingSupport = false;
 
             return;
         }
@@ -269,29 +283,35 @@ export function useBookingsPage() {
         state.loadingSupport = true;
 
         try {
-            const [optionsResponse, slotsResponse] = await Promise.all([
-                getServiceOptions(state.form.service_id),
-                getServiceSlots(state.form.service_id),
-            ]);
+            const [optionsResponse, slotsResponse, availabilityResponse] =
+                await Promise.all([
+                    getServiceOptions(serviceId),
+                    getServiceSlots(serviceId),
+                    getServiceAvailability(serviceId, {
+                        customerId: customerId ?? undefined,
+                        slotId: selectedSlotIdForAvailability(slotId),
+                    }),
+                ]);
+            if (request !== supportRequest) return;
 
             state.cards = optionsResponse.data.cards;
             state.equips = optionsResponse.data.equips;
             state.slots = slotsResponse.data;
-
-            const availabilityResponse = await getServiceAvailability(
-                state.form.service_id,
-                {
-                    customerId: state.form.customer_id ?? undefined,
-                    slotId: selectedSlotIdForAvailability(state.form.slot_id),
-                },
-            );
 
             state.locations = availabilityResponse.data.locations;
             state.locationGroups = resolveBookingLocationGroups(
                 state.locations,
                 availabilityResponse.data.location_groups,
             );
-            state.disabledDates = availabilityResponse.data.disabled_dates;
+            const editing = state.editingBooking;
+            const existingDates =
+                editing?.service_id === serviceId
+                    ? editing.booking_dates.map((date) => date.slot_date)
+                    : [];
+            state.disabledDates =
+                availabilityResponse.data.disabled_dates.filter(
+                    (date) => !existingDates.includes(date),
+                );
 
             const reconciliation = reconcileBookingSupportSelections(
                 {
@@ -318,14 +338,16 @@ export function useBookingsPage() {
             }
 
             removeInvalidSelectedDates();
-            initializeCalendarCursor();
+            if (state.calendarCursor === '') initializeCalendarCursor();
         } catch (error) {
+            if (request !== supportRequest) return;
+
             state.errors = normalizeApiErrors(
                 error,
                 'Failed to load booking support data.',
             );
         } finally {
-            state.loadingSupport = false;
+            if (request === supportRequest) state.loadingSupport = false;
         }
     }
 
@@ -478,12 +500,19 @@ export function useBookingsPage() {
     }
 
     function backToStepOne(): void {
+        if (state.editingBooking) {
+            resetCreateFlow();
+            state.errors = [];
+            return;
+        }
+
         state.createStep = 1;
         state.createStepError = '';
         closeLocationPicker();
     }
 
     function resetCreateFlow(): void {
+        state.editingBooking = null;
         state.createStep = 1;
         state.createStepError = '';
         state.isNewCustomer = false;
@@ -495,7 +524,8 @@ export function useBookingsPage() {
     }
 
     async function loadCustomerPrefill(): Promise<void> {
-        if ((state.form.customer_id ?? 0) <= 0 || state.form.service_id <= 0) {
+        const { customer_id: customerId, service_id: serviceId } = state.form;
+        if (state.editingBooking || !customerId || serviceId <= 0) {
             return;
         }
 
@@ -505,10 +535,19 @@ export function useBookingsPage() {
             const selectedDate = normalizeDateCsv()[0];
 
             const response = await getCustomerServicePrefill(
-                state.form.customer_id as number,
-                state.form.service_id,
+                customerId,
+                serviceId,
                 selectedDate,
             );
+
+            if (
+                state.editingBooking ||
+                state.form.customer_id !== customerId ||
+                state.form.service_id !== serviceId ||
+                normalizeDateCsv()[0] !== selectedDate
+            ) {
+                return;
+            }
 
             if (!response.data.found || response.data.booking === null) {
                 return;
@@ -550,7 +589,71 @@ export function useBookingsPage() {
         }
     }
 
-    async function createNewBooking(): Promise<void> {
+    function editBooking(booking: BookingRecord): void {
+        if (state.submitting || !booking.active || !booking.customer_id) return;
+
+        resetCreateFlow();
+        state.errors = [];
+        state.editingBooking = booking;
+        const detail = booking.winter_detail;
+        Object.assign(state.form, {
+            customer_id: booking.customer_id,
+            service_type: booking.service_type === 2 ? 2 : 1,
+            service_id: booking.service_id ?? 0,
+            location_id: booking.location_id ?? 0,
+            approved: booking.approved,
+            sum_paid: bgnToEur(booking.sum_paid),
+            paid: bgnToEur(booking.paid),
+            note: (booking.note ?? '').replace(
+                /\n*\[\[SKI_META\]\][\s\S]*\[\[\/SKI_META\]\]\s*$/,
+                '',
+            ),
+            skill_id: detail?.skill_id ?? null,
+            card_id: detail?.card_id ?? 0,
+            equip_id: detail?.equip_id ?? 0,
+            equip_enabled:
+                (detail?.equip_id ?? 0) > 0 || detail?.equip_enabled === true,
+            ski_shoe_size: detail?.shoe_size ?? null,
+            ski_height: detail?.height ?? null,
+        });
+        setSelectedDates(
+            booking.booking_dates.flatMap((date) =>
+                date.slot_date ? [date.slot_date] : [],
+            ),
+        );
+        const firstDate = normalizeDateCsv()[0];
+        if (firstDate)
+            setCalendarCursorFromDate(new Date(`${firstDate}T00:00:00`));
+        state.createStep = 2;
+        void nextTick(() =>
+            document.querySelector('.booking-shell')?.scrollIntoView(),
+        );
+    }
+
+    async function cancelBooking(booking: BookingRecord): Promise<void> {
+        if (
+            state.cancellingBookingId ||
+            !window.confirm(t('bookings.confirm_cancel'))
+        )
+            return;
+
+        state.cancellingBookingId = booking.id;
+        state.errors = [];
+        try {
+            await deactivateBooking(booking.id);
+            if (state.editingBooking?.id === booking.id) resetCreateFlow();
+            await loadBookings();
+        } catch (error) {
+            state.errors = normalizeApiErrors(
+                error,
+                t('bookings.cancel_failed'),
+            );
+        } finally {
+            state.cancellingBookingId = 0;
+        }
+    }
+
+    async function saveBooking(): Promise<void> {
         if (state.submitting) return;
 
         state.submitting = true;
@@ -587,7 +690,15 @@ export function useBookingsPage() {
                 dates,
             );
 
-            await createBooking(payload);
+            if (state.editingBooking) {
+                delete payload.paid;
+                await updateBooking(state.editingBooking.id, {
+                    ...payload,
+                    lunch: state.editingBooking.lunch,
+                });
+            } else {
+                await createBooking(payload);
+            }
 
             resetCreateFlow();
 
@@ -658,47 +769,31 @@ export function useBookingsPage() {
     watch(
         () => state.form.service_type,
         () => {
-            resetBookingServiceSupport(state, { resetBonusContext: true });
-            resetBookingServiceSelection(state.form);
+            if (!state.editingBooking) {
+                resetBookingServiceSupport(state, { resetBonusContext: true });
+                resetBookingServiceSelection(state.form);
+            }
         },
     );
 
     watch(
-        () => state.form.service_id,
+        () => [
+            state.form.service_type,
+            state.form.service_id,
+            state.form.slot_id,
+            state.form.customer_id,
+            state.editingBooking?.id,
+        ],
         () => {
             closeLocationPicker();
 
+            void loadServiceSupport();
             if (state.form.service_type === 2) {
                 void loadBonusServiceContext();
 
                 return;
             }
 
-            void loadServiceSupport();
-            void loadCustomerPrefill();
-        },
-    );
-
-    watch(
-        () => state.form.slot_id,
-        () => {
-            if (state.form.service_type !== 1 || state.form.service_id <= 0) {
-                return;
-            }
-
-            void loadServiceSupport();
-            void loadCustomerPrefill();
-        },
-    );
-
-    watch(
-        () => state.form.customer_id,
-        () => {
-            if (state.form.service_type === 2) {
-                return;
-            }
-
-            void loadServiceSupport();
             void loadCustomerPrefill();
         },
     );
@@ -771,7 +866,9 @@ export function useBookingsPage() {
         onCustomerSearchInput,
         selectCustomerSuggestion,
         onToggleNewCustomer,
-        createNewBooking,
+        saveBooking,
+        editBooking,
+        cancelBooking,
         moveCalendarMonth,
         toggleCalendarDate,
         toggleLocationPicker,

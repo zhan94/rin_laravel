@@ -20,6 +20,7 @@ export interface BookingWinterDetail {
     booking_id: number;
     skill_id: number | null;
     equip_id: number | null;
+    equip_enabled: boolean | null;
     card_id: number | null;
     shoe_size: number | null;
     height: number | null;

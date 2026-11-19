@@ -4,7 +4,10 @@ import { join } from 'node:path';
 
 const username = process.env.RIN_BROWSER_USERNAME ?? 'demo.super_admin';
 
-async function signIn(page: Page): Promise<void> {
+// The last scenario writes to the shared synthetic demo after the read-only checks.
+test.describe.configure({ mode: 'default' });
+
+async function signIn(page: Page, account = username): Promise<void> {
     const password = process.env.RIN_BROWSER_PASSWORD;
     if (!password)
         throw new Error(
@@ -12,7 +15,7 @@ async function signIn(page: Page): Promise<void> {
         );
 
     await page.goto('/login?lang=en');
-    await page.locator('input[name="email"]').fill(username);
+    await page.locator('input[name="email"]').fill(account);
     await page.locator('input[name="password"]').fill(password);
     await page.locator('button[type="submit"]').click();
     await expect(page).toHaveURL(/\/(dashboard|crm\/customers)$/);
@@ -231,4 +234,218 @@ test('captures approved synthetic demo views when requested', async ({
         path: join(directory, 'mobile-navigation.png'),
         animations: 'disabled',
     });
+});
+
+function dateOffset(days: number): Date {
+    const date = new Date();
+    date.setDate(date.getDate() + days);
+    return date;
+}
+
+function isoDate(date: Date): string {
+    return [
+        date.getFullYear(),
+        String(date.getMonth() + 1).padStart(2, '0'),
+        String(date.getDate()).padStart(2, '0'),
+    ].join('-');
+}
+
+async function toggleDate(page: Page, date: Date): Promise<void> {
+    const month = page.locator('.ui-datepicker-month');
+    const target = new Intl.DateTimeFormat('en-US', {
+        month: 'long',
+        year: 'numeric',
+    }).format(date);
+    const visible = await month.innerText();
+    if (visible !== target) {
+        const backward = new Date(`1 ${visible}`) > date;
+        await page
+            .locator(backward ? '.ui-datepicker-prev' : '.ui-datepicker-next')
+            .click();
+    }
+    await expect(month).toHaveText(target);
+    await page
+        .locator(`.ui-datepicker-calendar a[data-date="${isoDate(date)}"]`)
+        .click();
+}
+
+function apiResponse(page: Page, path: string, method: string) {
+    return page.waitForResponse(
+        (response) =>
+            new URL(response.url()).pathname === `/api/v1/${path}` &&
+            response.request().method() === method,
+    );
+}
+
+test('completes the customer and booking workflow with the synthetic ski service', async ({
+    page,
+}) => {
+    test.setTimeout(90_000);
+    await signIn(page, 'demo.manager');
+    await page.goto('/dashboard?lang=en');
+    const todayRecords = page
+        .locator('.stat-card')
+        .filter({ hasText: 'Today records' })
+        .locator('.stat-value');
+    const before = Number(await todayRecords.innerText());
+    expect(before).toBeGreaterThan(0);
+
+    const surname = `Acceptance ${Date.now()}`;
+    const fullName = `Synthetic ${surname}`;
+    await page.goto('/crm/customers?lang=en');
+    await expect(
+        page.getByText('Sample Customer 060', { exact: true }),
+    ).toBeVisible();
+    await page
+        .locator('.list-hero .hero-actions button')
+        .filter({ hasText: 'Add customer' })
+        .click();
+    const customerForm = page.locator('form.customer-form-grid');
+    await customerForm.getByPlaceholder('First name').fill('Synthetic');
+    await customerForm.getByPlaceholder('Last name').fill(surname);
+    const customerResponse = apiResponse(page, 'customers', 'POST');
+    await customerForm.locator('button[type="submit"]').click();
+    expect((await customerResponse).status()).toBe(201);
+    await expect(page.getByText(fullName, { exact: true })).toBeVisible();
+
+    await page.goto('/crm/bookings?lang=en');
+    await page
+        .getByPlaceholder('First and last name', { exact: true })
+        .fill(surname);
+    await page
+        .locator('.booking-suggest-item')
+        .filter({ hasText: fullName })
+        .click();
+    await page
+        .getByRole('button', { name: 'Continue to form', exact: true })
+        .click();
+    const form = page.locator('.booking-details-card form');
+    await form.locator('select').first().selectOption({ label: 'Ski school' });
+    await page.locator('.booking-location-trigger').click();
+    await page
+        .locator('.booking-location-option')
+        .filter({ hasText: 'Example Central Station' })
+        .click();
+    const today = dateOffset(0);
+    const tomorrow = dateOffset(1);
+    const gapDay = dateOffset(17);
+    await toggleDate(page, today);
+    await toggleDate(page, gapDay);
+    await form.locator('input[name="skill"][value="1"]').check();
+    await form.getByPlaceholder('Total amount (€)', { exact: true }).fill('84');
+    const bookingResponse = apiResponse(page, 'bookings', 'POST');
+    await form.locator('button[type="submit"]').click();
+    const creation = await bookingResponse;
+    expect(creation.status()).toBe(201);
+    const booking = (await creation.json()).data;
+    expect(
+        booking.booking_dates.map(
+            (day: { slot_date: string }) => day.slot_date,
+        ),
+    ).toEqual([isoDate(today), isoDate(gapDay)]);
+
+    const row = page.getByRole('row').filter({ hasText: fullName });
+    await row.getByPlaceholder('Amount', { exact: true }).fill('24');
+    const paymentResponse = apiResponse(
+        page,
+        `bookings/${booking.id}/payments/apply`,
+        'POST',
+    );
+    await row.getByRole('button', { name: 'Apply', exact: true }).click();
+    const payment = await paymentResponse;
+    expect(payment.status()).toBe(200);
+    expect((await payment.json()).data.payment.paid_bgn).toBe(47);
+
+    await row.getByRole('button', { name: 'Edit', exact: true }).click();
+    await expect(
+        page.getByRole('heading', { name: 'Edit booking', exact: true }),
+    ).toBeVisible();
+    await expect(form.locator('button[type="submit"]')).toBeEnabled();
+    await toggleDate(page, tomorrow);
+    await toggleDate(page, gapDay);
+    await form.getByRole('checkbox', { name: 'Card', exact: true }).check();
+    await form
+        .getByRole('checkbox', { name: 'Equipment', exact: true })
+        .check();
+    await form
+        .getByRole('checkbox', { name: 'Scanned parental consent form' })
+        .check();
+    await form
+        .getByPlaceholder('Note', { exact: true })
+        .fill('Synthetic acceptance update');
+    const updateResponse = apiResponse(page, `bookings/${booking.id}`, 'PUT');
+    await form.getByRole('button', { name: 'Save', exact: true }).click();
+    const updated = await updateResponse;
+    expect(updated.status()).toBe(200);
+    const beforeCancellation = (await updated.json()).data;
+    expect(beforeCancellation.approved).toBe(true);
+    expect(beforeCancellation.paid).toBe(47);
+    expect(beforeCancellation.winter_detail.card_id).toBeGreaterThan(0);
+    expect(beforeCancellation.winter_detail.equip_id).toBeGreaterThan(0);
+    expect(
+        beforeCancellation.booking_dates.map(
+            (day: { slot_date: string }) => day.slot_date,
+        ),
+    ).toEqual([isoDate(today), isoDate(tomorrow)]);
+    await expect(row).toContainText('Consent received');
+
+    await page.goto('/dashboard?lang=en');
+    await expect(todayRecords).toHaveText(String(before + 1));
+    await expect(page.getByText(fullName, { exact: true })).toBeVisible();
+
+    await page.goto('/crm/reports?lang=en');
+    await expect(page.getByText(fullName, { exact: true })).toBeVisible();
+    const report = apiResponse(page, 'reports', 'GET');
+    await page
+        .locator('.report-filters')
+        .getByRole('button', { name: 'Generate', exact: true })
+        .click();
+    expect((await report).status()).toBe(200);
+    await expect(page.getByText(fullName, { exact: true })).toBeVisible();
+
+    await page.goto('/crm/bookings?lang=en');
+    page.once('dialog', (dialog) => dialog.accept());
+    const cancellationResponse = apiResponse(
+        page,
+        `bookings/${booking.id}`,
+        'DELETE',
+    );
+    await row
+        .getByRole('button', { name: 'Cancel booking', exact: true })
+        .click();
+    const cancellation = await cancellationResponse;
+    expect(cancellation.status()).toBe(200);
+    expect((await cancellation.json()).data).toMatchObject({
+        active: false,
+        paid: 47,
+    });
+    await expect(row).toContainText('Cancelled');
+
+    await page
+        .getByPlaceholder('First and last name', { exact: true })
+        .fill(surname);
+    await page
+        .locator('.booking-suggest-item')
+        .filter({ hasText: fullName })
+        .click();
+    await page
+        .getByRole('button', { name: 'Continue to form', exact: true })
+        .click();
+    await form
+        .locator('select')
+        .first()
+        .selectOption({ label: 'Mountain hiking' });
+    await page.locator('.booking-location-trigger').click();
+    await page
+        .locator('.booking-location-option')
+        .filter({ hasText: 'Example Central Station' })
+        .click();
+    await toggleDate(page, today);
+    const hikingResponse = apiResponse(page, 'bookings', 'POST');
+    await form.locator('button[type="submit"]').click();
+    const hiking = await hikingResponse;
+    expect(hiking.status()).toBe(201);
+    const hikingBooking = (await hiking.json()).data;
+    expect(hikingBooking.service_id).not.toBe(booking.service_id);
+    expect(hikingBooking.booking_dates[0].slot_date).toBe(isoDate(today));
 });

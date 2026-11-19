@@ -127,7 +127,7 @@ describe('bookingForm', () => {
         expect(form.lastname).toBe('');
     });
 
-    it('applies customer service prefill values and keeps existing note text', () => {
+    it('prefills service details without carrying over a prior payment or overwriting a note', () => {
         const form = createDefaultBookingForm();
         form.note = 'Manual note';
 
@@ -165,7 +165,7 @@ describe('bookingForm', () => {
             ski_shoe_size: 32,
             ski_height: 120,
             sum_paid: 100,
-            paid: 50,
+            paid: null,
             note: 'Manual note',
         });
     });

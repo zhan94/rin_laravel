@@ -1,8 +1,15 @@
 <script setup lang="ts">
 import { useBookingPageContext } from '@/pages/crm/composables/bookingPageContext';
 
-const { applyInlinePayment, goToPage, loadBookings, state, t } =
-    useBookingPageContext();
+const {
+    applyInlinePayment,
+    cancelBooking,
+    editBooking,
+    goToPage,
+    loadBookings,
+    state,
+    t,
+} = useBookingPageContext();
 
 defineProps<{
     summaryLabel: string;
@@ -51,12 +58,14 @@ defineProps<{
                             <th>{{ t('bookings.table_sum') }}</th>
                             <th>{{ t('bookings.table_paid') }}</th>
                             <th>{{ t('bookings.table_due') }}</th>
+                            <th>{{ t('bookings.status') }}</th>
                             <th>{{ t('bookings.table_add_payment') }}</th>
+                            <th>{{ t('common.actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-if="state.loading">
-                            <td colspan="8" class="empty-row">
+                            <td colspan="10" class="empty-row">
                                 {{ t('bookings.loading_rows') }}
                             </td>
                         </tr>
@@ -83,6 +92,20 @@ defineProps<{
                             </td>
                             <td :data-label="t('bookings.table_due')">
                                 {{ booking.due ?? '-' }}
+                            </td>
+                            <td :data-label="t('bookings.status')">
+                                {{
+                                    booking.active
+                                        ? t('common.active')
+                                        : t('bookings.cancelled')
+                                }}
+                                <p v-if="booking.active" class="filters-note">
+                                    {{
+                                        booking.approved
+                                            ? t('bookings.consent_received')
+                                            : t('bookings.consent_pending')
+                                    }}
+                                </p>
                             </td>
                             <td :data-label="t('bookings.table_add_payment')">
                                 <div class="pay-stack">
@@ -120,9 +143,36 @@ defineProps<{
                                     {{ state.paymentMessages[booking.id] }}
                                 </p>
                             </td>
+                            <td :data-label="t('common.actions')">
+                                <div v-if="booking.active" class="action-group">
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline btn-xs"
+                                        :disabled="
+                                            state.submitting ||
+                                            state.cancellingBookingId !== 0 ||
+                                            !booking.customer_id
+                                        "
+                                        @click="editBooking(booking)"
+                                    >
+                                        {{ t('common.edit') }}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline btn-xs"
+                                        :disabled="
+                                            state.submitting ||
+                                            state.cancellingBookingId !== 0
+                                        "
+                                        @click="cancelBooking(booking)"
+                                    >
+                                        {{ t('bookings.cancel_booking') }}
+                                    </button>
+                                </div>
+                            </td>
                         </tr>
                         <tr v-if="!state.loading && state.rows.length === 0">
-                            <td colspan="8" class="empty-row">
+                            <td colspan="10" class="empty-row">
                                 {{ t('bookings.no_rows') }}
                             </td>
                         </tr>

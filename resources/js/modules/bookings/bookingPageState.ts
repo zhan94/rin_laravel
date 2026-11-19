@@ -38,6 +38,8 @@ export interface BookingPageState {
     paymentDrafts: Record<number, string>;
     paymentMessages: Record<number, string>;
     applyingPaymentId: number;
+    cancellingBookingId: number;
+    editingBooking: BookingRecord | null;
     loading: boolean;
     loadingServices: boolean;
     loadingBonusServices: boolean;
@@ -77,6 +79,8 @@ export function createDefaultBookingPageState(): BookingPageState {
         paymentDrafts: {},
         paymentMessages: {},
         applyingPaymentId: 0,
+        cancellingBookingId: 0,
+        editingBooking: null,
         loading: false,
         loadingServices: false,
         loadingBonusServices: false,

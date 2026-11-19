@@ -13,7 +13,7 @@ const {
     backToStepOne,
     calendarMonthLabel,
     calendarWeeks,
-    createNewBooking,
+    saveBooking,
     groupedLocations,
     isCardService,
     isEquipService,
@@ -32,9 +32,13 @@ const {
     <section class="form-card booking-details-card">
         <form
             class="customer-form-grid form-horizontal"
-            @submit.prevent="createNewBooking"
+            @submit.prevent="saveBooking"
         >
-            <BookingCustomerFields />
+            <p v-if="state.editingBooking" class="booking-note">
+                {{ t('bookings.customer') }}:
+                <strong>{{ state.editingBooking.customer?.full_name }}</strong>
+            </p>
+            <BookingCustomerFields v-else />
 
             <hr class="section-divider" />
 
@@ -136,12 +140,14 @@ const {
                 <button
                     type="submit"
                     class="btn btn-solid"
-                    :disabled="state.submitting"
+                    :disabled="state.submitting || state.loadingSupport"
                 >
                     {{
                         state.submitting
                             ? t('bookings.saving')
-                            : t('bookings.add')
+                            : state.editingBooking
+                              ? t('common.save')
+                              : t('bookings.add')
                     }}
                 </button>
             </div>

@@ -19,6 +19,7 @@ class BookingWinterDetailResource extends JsonResource
             'booking_id' => (int) $this->booking_id,
             'skill_id' => $this->skill_id !== null ? (int) $this->skill_id : null,
             'equip_id' => $this->equip_id !== null ? (int) $this->equip_id : null,
+            'equip_enabled' => $this->equip_enabled !== null ? (bool) $this->equip_enabled : null,
             'card_id' => $this->card_id !== null ? (int) $this->card_id : null,
             'shoe_size' => $this->shoe_size !== null ? (int) $this->shoe_size : null,
             'height' => $this->height !== null ? (int) $this->height : null,

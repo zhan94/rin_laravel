@@ -136,6 +136,7 @@ const emit = defineEmits<{
                                         <a
                                             v-else
                                             href="#"
+                                            :data-date="cell.iso"
                                             class="ui-state-default"
                                             :class="{
                                                 'ui-state-active':
