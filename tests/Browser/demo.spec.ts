@@ -473,6 +473,13 @@ test('shows distinct service seasons with prices, status filters, sorting, and m
         rows.getByRole('button', { name: 'Availability', exact: true }),
     ).toBeFocused();
     await expectServiceActionsToFit(rows.first());
+    expect(
+        await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(390);
+    await page.setViewportSize({ width: 820, height: 1024 });
+    expect(
+        await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(820);
 });
 
 test('Driver can open a linked report and exports the generated range after editing draft filters', async ({
@@ -855,4 +862,8 @@ test('completes the customer and booking workflow with the synthetic ski service
     const hikingBooking = (await hiking.json()).data;
     expect(hikingBooking.service_id).not.toBe(booking.service_id);
     expect(hikingBooking.booking_dates[0].slot_date).toBe(isoDate(today));
+    await page.setViewportSize({ width: 390, height: 844 });
+    expect(
+        await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(390);
 });

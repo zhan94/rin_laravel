@@ -1393,6 +1393,16 @@ code {
     overflow: visible;
 }
 
+.service-list .customer-shell::before {
+    right: 0;
+    width: 160px;
+}
+
+.service-list .customer-shell::after {
+    left: 0;
+    width: 160px;
+}
+
 .service-list .list-hero {
     position: sticky;
     top: 84px;
@@ -3723,6 +3733,27 @@ code {
     .booking-form .customer-shell,
     .booking-form .form-card {
         overflow: visible;
+    }
+
+    .booking-form .customer-shell::before {
+        right: 0;
+        width: 160px;
+    }
+
+    .booking-form .customer-shell::after {
+        left: 0;
+        width: 160px;
+    }
+
+    .service-list .customer-table.table-stack-mobile,
+    .booking-form .customer-table.table-stack-mobile {
+        min-width: 0;
+    }
+
+    .service-list .customer-table.table-stack-mobile td,
+    .booking-form .customer-table.table-stack-mobile td {
+        white-space: normal;
+        overflow-wrap: anywhere;
     }
 
     .booking-form #location_div {
