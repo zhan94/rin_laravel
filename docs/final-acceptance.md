@@ -19,6 +19,12 @@ The revised demo installed from a clean ARM64 Git clone with fresh MySQL volumes
 
 The test databases were isolated Compose projects. The original prepared database remains outside this rollout. The missing `crm_mutation_receipts` table previously reported in `rin_lara` requires its separately authorized migration before that installation can accept booking writes.
 
+## Service-season availability follow-up
+
+The Services view shows each persisted service period separately, with its date range, daily capacity, status and the service's configured duration prices. Daily availability and booking validation count active bookings on the same service dates. The date detail retains cancelled bookings in its history. The booking calendar blocks full dates and still lets the transaction schedule an eligible date with no existing slot. A booking edit now normalizes stored dates before matching the existing date links, which prevents duplicate link inserts when SQLite returns a midnight timestamp.
+
+A clean checkout on Docker with a fresh synthetic MySQL database passed seven Google Chrome scenarios. The opt-in screenshot scenario was skipped. Chrome verified the six initial service-season entries, price and status displays, search and sorting, and mobile availability with keyboard focus restoration. A manager created a booking on a configured day and in a calendar gap, moved the gap day to another date, and cancelled the booking. A Group Leader session independently confirmed each change in the daily counts and booking history. The full PHP suite passed 197 tests, the frontend suite passed 81 tests, and PHPStan, Pint, ESLint, Prettier, type checking and the frontend build passed. The disposable MySQL races allowed one successful write each and rejected the competing last-place booking and overpayment.
+
 ## Security and functional coverage
 
 The table revisits the [original Laravel audit](initial-audit.md). The [engineering record](ai-development.md) distinguishes owner decisions, agent-authored work, and automated evidence.
