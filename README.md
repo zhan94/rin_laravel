@@ -1,66 +1,47 @@
 # RIN Laravel CRM
 
-RIN coordinates ski school and activity bookings, customer records, transport locations, equipment, cards, payments, and reports. The application uses PHP 8.5, Laravel 12, MySQL 8.4, Vue 3, and Inertia. The staff interface supports English, German, and Spanish.
+RIN gives ski-school staff one place to manage customer records, reserve places in dated activities, track outstanding payments, and coordinate transport and equipment. Staff use role-specific views for operations, reporting, and administration.
 
-This checkout is prepared for private engineering evaluation using generated demonstration data. Application redistribution and licensing require confirmation from the rights holder. Third-party dependencies retain their own licenses.
+![Season dashboard with synthetic demonstration data](docs/screenshots/dashboard.png)
 
-## Start the Laravel demo
+[Customer list](docs/screenshots/customers.png) · [Mobile navigation](docs/screenshots/mobile-navigation.png)
 
-Install Docker Desktop with Docker Compose. From the project directory, run:
+## Run the demo
+
+From a checkout with Docker Desktop and Docker Compose installed, run:
 
 ```sh
 docker compose up --build --detach --wait
 docker compose exec -T app cat /run/rin/demo-password
 ```
 
-Open [the local Laravel demo](http://localhost:8081) and sign in as `demo.super_admin`. Other demonstration accounts are `demo.admin`, `demo.manager`, `demo.group_leader`, and `demo.driver`. The first startup generates the shared demo-only password and stores it in the private Compose volume.
+Open [localhost:8081](http://localhost:8081) and sign in as `demo.super_admin` using the generated password. The same local password works for `demo.admin`, `demo.manager`, `demo.group_leader`, and `demo.driver`. Each role has a different access level.
 
-Compose installs the locked dependencies, builds the frontend, migrates a private MySQL database, and seeds 60 synthetic customers and their sample bookings. It binds HTTP to loopback. The demo database and application keys persist across `docker compose down`. To run a clean isolated installation, use a new Compose project name and a free `RIN_LARAVEL_PORT`. Use `localhost` consistently for browser sessions and passkeys.
+Compose installs the locked dependencies, compiles the frontend, migrates an isolated MySQL database, and seeds 60 synthetic customers with sample bookings. The database and demo credentials persist across `docker compose down`. [Native setup, restart, and isolation instructions](docs/operations.md)
 
-To start the framework-free OOP application alongside Laravel, use its existing source checkout with the separate Compose file:
+## Features and architecture
 
-```sh
-RIN_OOP_SOURCE=/absolute/path/to/rin docker compose -f compose.oop.yaml up --build --detach --wait
-docker compose -f compose.oop.yaml exec -T app cat /run/rin/demo-password
-```
+- Staff authentication and account administration, with Super Admin, Admin, Manager, Group Leader, and Driver roles.
+- Customer search and pagination, multi-date bookings with capacity checks, and payment applications and corrections.
+- Service calendars and seasons, pickup locations, cards, equipment, and bonus services.
+- Seasonal dashboard, role-scoped reports, CSV and print output, staff notifications, and issues with private attachments.
 
-Open [the local OOP demo](http://localhost:8080) and sign in as `demo.superadmin`. Compose mounts the OOP checkout read-only and gives each app its own MySQL volume, Docker network, credentials, and HTTP port. Both Compose apps support Apple Silicon and keep database ports internal.
+The application uses PHP 8.5, Laravel 12, MySQL 8.4, Fortify, Sanctum, Inertia 2, Vue 3, TypeScript, Tailwind CSS 4, and Vite 7. English, German, and Spanish are available in the staff interface. Form Requests validate input, middleware and policies enforce access, and Eloquent handles persistence. Booking and payment services coordinate database locks and retry handling. Vue pages use typed API clients. [Architecture and trade-offs](docs/architecture.md)
 
-![Season dashboard with synthetic demonstration data](docs/screenshots/dashboard.png)
-
-## Run checks locally
-
-Use PHP 8.5 with the extensions in `composer.lock`, Composer 2, and Node 24. Tests use isolated SQLite memory databases.
+## Verify the application
 
 ```sh
-composer install
-npm ci
-npm run build
-test -f .env.testing || cp .env.testing.example .env.testing
-vendor/bin/pest
-vendor/bin/phpstan analyse --debug --no-progress --memory-limit=512M
-vendor/bin/pint --test
-composer audit --locked
-npm audit
-npm run lint
-npm run format:check
-npm run typecheck
-npm run test:unit
+sh scripts/ci-verify.sh quality
 ```
 
-Run the Playwright suite against a running synthetic Compose demo:
+This runs the same container-based gates used by GitLab CI and GitHub Actions, including the locked dependency audits, PHP and frontend checks, and Chromium against an isolated demo. The checks use generated data. [Native test, MySQL concurrency, and benchmark commands](docs/operations.md)
 
-```sh
-npx playwright install chromium
-RIN_BROWSER_PASSWORD="$(docker compose exec -T app cat /run/rin/demo-password)" npm run test:browser
-```
+The 100,000-customer benchmark measured median repository calls of 0.12 ms for the first page, 0.48 ms for a deep page, and 25.54 ms for a substring match. It ran on an Apple Silicon Mac using PHP 8.5.3 and in-memory SQLite. [Results and measurement boundaries](docs/final-acceptance.md#100000-customer-benchmark)
 
-The MySQL race harness requires a new database named `rin_laravel_test` on a disposable MySQL instance. See [local operations](docs/operations.md) for the exact setup. GitLab CI and GitHub Actions run the same quality checks, dependency audits, and browser suite. Both perform a redacted worktree and reachable-history secret scan from a full checkout. GitLab quality jobs require a trusted, privileged Docker-in-Docker runner with a shared `/certs/client` volume. The local equivalent is `sh scripts/ci-verify.sh quality`. [GitLab runner configuration](https://docs.gitlab.com/ci/docker/docker_in_docker/)
+The Driver report API restricts confidential fields, and regression tests exercise staff role boundaries, account revocation, and CSRF. Reports that export every matching row still assemble paginated results in the browser. The local demo was verified on ARM64. Hosted CI, x86-64 execution, physical passkeys, and full accessibility conformance remain unverified. Application and asset redistribution require rights-holder confirmation. [Final acceptance and publication gates](docs/final-acceptance.md)
 
-## Migration and verification
+## Engineering records
 
-- [Legacy database mapping and original migration results](docs/legacy-data-migration.md)
-- [Architecture and business invariants](docs/architecture.md)
-- [Local operations and concurrency verification](docs/operations.md)
-- [AI-assisted development and human decisions](docs/ai-development.md)
-- [Final acceptance and sharing readiness](docs/final-acceptance.md)
+- [Initial Laravel security and architecture audit](docs/initial-audit.md)
+- [AI-assisted development, verification, and human approvals](docs/ai-development.md)
+- [Legacy migration mapping and integrity results](docs/legacy-data-migration.md)
