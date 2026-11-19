@@ -40,6 +40,7 @@ YAML
         cp .env.testing.example .env.testing
         composer validate --no-check-publish
         composer check-platform-reqs
+        find app bootstrap config database lang resources routes scripts tests -name "*.php" -type f -exec php -l {} +
         vendor/bin/pint --test
         vendor/bin/phpstan analyse --debug --no-progress --memory-limit=512M
         vendor/bin/pest

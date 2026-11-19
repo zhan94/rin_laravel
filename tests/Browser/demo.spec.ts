@@ -123,10 +123,74 @@ test('mobile navigation supports Escape, announces state, and restores focus', a
     ).toBeLessThanOrEqual(375);
 });
 
+test('renders all staff modules and the German Super Admin profile', async ({
+    page,
+}) => {
+    test.skip(
+        username !== 'demo.super_admin',
+        'Requires the synthetic Super Admin account',
+    );
+    test.setTimeout(90_000);
+
+    const failures: string[] = [];
+    page.on('pageerror', (error) => failures.push(error.message));
+    page.on('response', (response) => {
+        if (response.status() >= 400) {
+            failures.push(
+                `${response.status()} ${new URL(response.url()).pathname}`,
+            );
+        }
+    });
+
+    await signIn(page);
+    for (const [index, module] of [
+        'bookings',
+        'bonus',
+        'cards',
+        'customers',
+        'equips',
+        'issues',
+        'locations',
+        'logs',
+        'reports',
+        'seasons',
+        'services',
+        'users',
+    ].entries()) {
+        await page.setViewportSize({
+            width: [1440, 820, 390][index % 3],
+            height: 900,
+        });
+        const result = page.waitForResponse(
+            (response) =>
+                new URL(response.url()).pathname === `/api/v1/${module}` &&
+                response.request().method() === 'GET',
+        );
+        expect((await page.goto(`/crm/${module}?lang=en`))?.ok()).toBe(true);
+        expect((await result).status()).toBe(200);
+        await expect(page.locator('main h1')).toBeVisible();
+        await expect(
+            page.getByText('Unauthenticated.', { exact: true }),
+        ).toHaveCount(0);
+    }
+    await page.goto('/settings/profile?lang=de');
+    await expect(
+        page.getByText('Benutzerebene', { exact: true }),
+    ).toBeVisible();
+    await expect(
+        page.getByText('Super-Administrator', { exact: true }),
+    ).toBeVisible();
+    expect(failures).toEqual([]);
+});
+
 test('captures approved synthetic demo views when requested', async ({
     page,
 }) => {
     const directory = process.env.RIN_SCREENSHOT_DIR;
+    test.skip(
+        !directory,
+        'Set RIN_SCREENSHOT_DIR to capture synthetic screenshots',
+    );
     if (!directory) return;
 
     // Keep screenshot output limited to the isolated, identified demo.
