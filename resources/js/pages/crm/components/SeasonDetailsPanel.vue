@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatGermanDate } from '@/modules/calendar/dateDisplay';
 import type { SeasonSummary } from '@/modules/seasons/types';
 import type { useSeasonsPage } from '@/pages/crm/composables/useSeasonsPage';
 
@@ -121,7 +122,7 @@ defineProps<{
                                     :key="`${row.booking_id}-${date}`"
                                     class="chip"
                                 >
-                                    {{ date }}
+                                    {{ formatGermanDate(date) }}
                                 </span>
                             </div>
                         </td>

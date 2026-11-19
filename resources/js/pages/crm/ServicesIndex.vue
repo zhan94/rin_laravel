@@ -7,6 +7,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { formatGermanDate } from '@/modules/calendar/dateDisplay';
 import BonusServicesPanel from '@/pages/crm/components/BonusServicesPanel.vue';
 import ServiceSchedulePanel from '@/pages/crm/components/ServiceSchedulePanel.vue';
 import { useServicesPage } from '@/pages/crm/composables/useServicesPage';
@@ -360,7 +361,7 @@ const {
                                                 removeSlotSelectedDate(date)
                                             "
                                         >
-                                            {{ date }} x
+                                            {{ formatGermanDate(date) }} x
                                         </button>
                                     </div>
                                     <p

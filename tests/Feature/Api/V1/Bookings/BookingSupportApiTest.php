@@ -41,6 +41,7 @@ class BookingSupportApiTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.0.customer_id', $customer->id)
             ->assertJsonPath('data.0.value', 'Samuil Petrov Arnaudov')
+            ->assertJsonPath('data.0.label', 'Samuil Petrov Arnaudov (15.01.2012)')
             ->assertJsonPath('errors', []);
 
         $lookup = $this->getJson("/api/v1/booking-support/customers/{$customer->id}");
@@ -49,6 +50,7 @@ class BookingSupportApiTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.id', $customer->id)
             ->assertJsonPath('data.full_name', 'Samuil Petrov Arnaudov')
+            ->assertJsonPath('data.date_birth', '2012-01-15')
             ->assertJsonPath('data.email', 'samuil@example.com')
             ->assertJsonPath('errors', []);
     }

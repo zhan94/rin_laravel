@@ -37,6 +37,9 @@ export const UI_MESSAGES = {
         'common.status': 'Status',
         'common.location': 'Location',
         'common.dates': 'Dates',
+        'common.open_date_picker': 'Open calendar',
+        'common.invalid_date_format':
+            'Enter a valid date in DD.MM.YYYY format.',
         'common.service': 'Service',
         'common.services': 'Services',
         'common.reports': 'Reports',
@@ -924,6 +927,9 @@ export const UI_MESSAGES = {
         'common.status': 'Status',
         'common.location': 'Ort',
         'common.dates': 'Daten',
+        'common.open_date_picker': 'Kalender öffnen',
+        'common.invalid_date_format':
+            'Geben Sie ein gültiges Datum im Format TT.MM.JJJJ ein.',
         'common.service': 'Leistung',
         'common.services': 'Leistungen',
         'common.reports': 'Berichte',
@@ -1438,6 +1444,9 @@ export const UI_MESSAGES = {
         'common.status': 'Estado',
         'common.location': 'Ubicación',
         'common.dates': 'Fechas',
+        'common.open_date_picker': 'Abrir calendario',
+        'common.invalid_date_format':
+            'Introduce una fecha válida en formato DD.MM.AAAA.',
         'common.service': 'Servicio',
         'common.services': 'Servicios',
         'common.reports': 'Informes',

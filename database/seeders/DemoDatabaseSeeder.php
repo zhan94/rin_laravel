@@ -148,7 +148,7 @@ final class DemoDatabaseSeeder extends Seeder
         );
         foreach ([[-28, -15], [-7, 13], [22, 42]] as [$start, $end]) {
             $slots->create($service, ServiceSlotData::fromArray([
-                'name' => 'Activity block '.$today->addDays($start)->toDateString(),
+                'name' => 'Activity block '.$today->addDays($start)->format('d.m.Y'),
                 'max' => $capacity,
                 'dates' => $dates(range($start, $end)),
             ], $service->id));

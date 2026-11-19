@@ -1,4 +1,5 @@
 import { useUiI18n } from '@/composables/useUiI18n';
+import { formatGermanDate as formatDateLabel } from '@/modules/calendar/dateDisplay';
 import {
     buildDateSelectionCalendarCells,
     type DateSelectionCalendarCell,
@@ -11,10 +12,7 @@ import {
     uniqueSortedDateTokens,
 } from '@/modules/calendar/dateUtils';
 import { readPositiveIntDeepLinkParam } from '@/modules/notifications/deepLinkQuery';
-import {
-    formatServiceDateLabel as formatDateLabel,
-    serviceLabelById as serviceLabelFromList,
-} from '@/modules/services/serviceSchedulePresenter';
+import { serviceLabelById as serviceLabelFromList } from '@/modules/services/serviceSchedulePresenter';
 import {
     createServiceSlot,
     listServices,

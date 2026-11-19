@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import GermanDateInput from '@/components/GermanDateInput.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { formatGermanDate } from '@/modules/calendar/dateDisplay';
 import { useCustomersPage } from '@/pages/crm/composables/useCustomersPage';
 import { Head } from '@inertiajs/vue3';
 
@@ -142,9 +144,9 @@ const {
                             class="form-control"
                             required
                         />
-                        <input
+                        <GermanDateInput
                             v-model="state.form.date_birth"
-                            type="date"
+                            :aria-label="t('customers.birth_date')"
                             class="form-control"
                         />
                         <input
@@ -280,7 +282,12 @@ const {
                                         {{ customer.full_name }}
                                     </td>
                                     <td :data-label="t('customers.birth_age')">
-                                        {{ customer.date_birth ?? '-' }}
+                                        {{
+                                            formatGermanDate(
+                                                customer.date_birth,
+                                                '-',
+                                            )
+                                        }}
                                         <template v-if="customer.age !== null">
                                             <br />
                                             {{
@@ -450,7 +457,12 @@ const {
                                                 t('customers.unpaid_birth')
                                             "
                                         >
-                                            {{ row.date_birth ?? '-' }}
+                                            {{
+                                                formatGermanDate(
+                                                    row.date_birth,
+                                                    '-',
+                                                )
+                                            }}
                                         </td>
                                         <td
                                             :data-label="
@@ -628,7 +640,10 @@ const {
                                     t('customers.birth_date')
                                 }}</span>
                                 <span class="stat-value">{{
-                                    state.selectedCustomer.date_birth ?? '-'
+                                    formatGermanDate(
+                                        state.selectedCustomer.date_birth,
+                                        '-',
+                                    )
                                 }}</span>
                             </div>
                             <div class="stat-card">
@@ -721,6 +736,11 @@ const {
                                                                 (row) =>
                                                                     row !==
                                                                     null,
+                                                            )
+                                                            .map((date) =>
+                                                                formatGermanDate(
+                                                                    date,
+                                                                ),
                                                             )
                                                             .join(', ')
                                                     }}

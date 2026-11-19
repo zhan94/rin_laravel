@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatGermanDateTime } from '@/modules/calendar/dateDisplay';
 import { useIssuePageContext } from '@/pages/crm/composables/issuePageContext';
 
 const {
@@ -89,7 +90,7 @@ const {
                     t('issues.col_created_at')
                 }}</span>
                 <span class="issues-detail-value">{{
-                    state.selectedIssue.created_at ?? '-'
+                    formatGermanDateTime(state.selectedIssue.created_at, '-')
                 }}</span>
             </div>
             <div class="issues-detail-item">
@@ -244,7 +245,9 @@ const {
                     </a>
                     <div class="issues-attachment-meta">
                         <strong>{{ attachment.original_name }}</strong>
-                        <span>{{ attachment.created_at ?? '-' }}</span>
+                        <span>{{
+                            formatGermanDateTime(attachment.created_at, '-')
+                        }}</span>
                     </div>
                     <a
                         :href="issueAttachmentUrl(attachment.id, true)"
@@ -271,7 +274,9 @@ const {
                     <strong>{{
                         displayUser(comment.user, comment.user_id)
                     }}</strong>
-                    <span>{{ comment.created_at ?? '-' }}</span>
+                    <span>{{
+                        formatGermanDateTime(comment.created_at, '-')
+                    }}</span>
                 </header>
                 <div class="issues-comment-text">
                     {{ comment.comment_text }}

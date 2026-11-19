@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import GermanDateInput from '@/components/GermanDateInput.vue';
 import { useSeasonPageContext } from '@/pages/crm/composables/seasonPageContext';
 
 const {
@@ -82,10 +83,9 @@ const {
                     <label for="season-start-create">{{
                         t('seasons.start_date')
                     }}</label>
-                    <input
+                    <GermanDateInput
                         id="season-start-create"
                         v-model="state.createForm.season_start"
-                        type="date"
                         class="form-control"
                         required
                     />
@@ -94,10 +94,9 @@ const {
                     <label for="season-end-create">{{
                         t('seasons.end_date')
                     }}</label>
-                    <input
+                    <GermanDateInput
                         id="season-end-create"
                         v-model="state.createForm.season_end"
-                        type="date"
                         class="form-control"
                         required
                     />
@@ -142,10 +141,9 @@ const {
                     <label for="season-start-edit">{{
                         t('seasons.start_date')
                     }}</label>
-                    <input
+                    <GermanDateInput
                         id="season-start-edit"
                         v-model="state.editForm.season_start"
-                        type="date"
                         class="form-control"
                         required
                     />
@@ -154,10 +152,9 @@ const {
                     <label for="season-end-edit">{{
                         t('seasons.end_date')
                     }}</label>
-                    <input
+                    <GermanDateInput
                         id="season-end-edit"
                         v-model="state.editForm.season_end"
-                        type="date"
                         class="form-control"
                         required
                     />

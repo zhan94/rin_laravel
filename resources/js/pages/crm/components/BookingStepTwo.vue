@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatGermanDate } from '@/modules/calendar/dateDisplay';
 import BookingCustomerFields from '@/pages/crm/components/BookingCustomerFields.vue';
 import BookingLocationPicker from '@/pages/crm/components/BookingLocationPicker.vue';
 import BookingPaymentFields from '@/pages/crm/components/BookingPaymentFields.vue';
@@ -120,8 +121,8 @@ const {
                     <span class="booking-context-key"
                         >{{ t('bookings.bonus_period') }}:</span
                     >
-                    {{ state.bonusContext.date_from ?? '-' }} -
-                    {{ state.bonusContext.date_to ?? '-' }}
+                    {{ formatGermanDate(state.bonusContext.date_from, '-') }} -
+                    {{ formatGermanDate(state.bonusContext.date_to, '-') }}
                 </p>
             </div>
 

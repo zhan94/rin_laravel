@@ -1,4 +1,5 @@
 import { useUiI18n } from '@/composables/useUiI18n';
+import { formatGermanDate as formatDateLabel } from '@/modules/calendar/dateDisplay';
 import { formatEurBgnPairFromBgn } from '@/modules/money/currency';
 import { renderPrintReport, reportCsv } from '@/modules/reports/reportOutput';
 import { listReports } from '@/modules/reports/reportService';
@@ -153,7 +154,7 @@ export function useReportsPage() {
                 return {
                     bookingId: row.booking_id,
                     name: row.customer_name || '—',
-                    birth: row.birth ?? '—',
+                    birth: formatDateLabel(row.birth),
                     level: row.skill?.title ?? '—',
                     equip: row.equip?.title ?? '—',
                     location: row.location || '—',
@@ -182,7 +183,8 @@ export function useReportsPage() {
 
                 return (
                     matches('name', row.name) &&
-                    matches('birth', row.birth) &&
+                    (matches('birth', row.birth) ||
+                        matches('birth', row.raw.birth ?? '')) &&
                     matches('level', row.level) &&
                     matches('equip', row.equip) &&
                     matches(
@@ -322,15 +324,6 @@ export function useReportsPage() {
         }
     }
 
-    function formatDateLabel(isoDate: string): string {
-        const parts = isoDate.split('-');
-        if (parts.length !== 3) {
-            return isoDate;
-        }
-
-        return `${parts[2]}-${parts[1]}-${parts[0]}`;
-    }
-
     function formatCurrencyPair(bgnValue: number): string {
         return formatEurBgnPairFromBgn(bgnValue);
     }
@@ -465,7 +458,7 @@ export function useReportsPage() {
             return {
                 bookingId: row.booking_id,
                 name: row.customer_name || '—',
-                birth: row.birth ?? '—',
+                birth: formatDateLabel(row.birth),
                 level: row.skill?.title ?? '—',
                 equip: row.equip?.title ?? '—',
                 location: row.location || '—',

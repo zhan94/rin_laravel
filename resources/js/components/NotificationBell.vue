@@ -44,16 +44,7 @@ const unreadLabel = computed(() => {
 });
 
 function timestampLabel(value: string | null): string {
-    if (!value) {
-        return '';
-    }
-
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) {
-        return '';
-    }
-
-    return formatDateTime(value);
+    return value ? formatDateTime(value) : '';
 }
 
 function actorLabel(notification: NotificationItem): string {

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatGermanDateTime } from '@/modules/calendar/dateDisplay';
 import { useIssuePageContext } from '@/pages/crm/composables/issuePageContext';
 
 const {
@@ -187,7 +188,7 @@ const {
                             {{ displayUser(row.reporter, row.created_by) }}
                         </td>
                         <td data-label="Created at">
-                            {{ row.created_at ?? '-' }}
+                            {{ formatGermanDateTime(row.created_at, '-') }}
                         </td>
                         <td data-label="Actions">
                             <button

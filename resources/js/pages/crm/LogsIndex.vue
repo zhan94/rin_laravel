@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
+import { formatGermanDateTime } from '@/modules/calendar/dateDisplay';
 import { Head } from '@inertiajs/vue3';
 import { useLogsPage } from './composables/useLogsPage';
 
@@ -165,7 +166,9 @@ const {
                                         {{ row.location ?? '-' }}
                                     </td>
                                     <td :data-label="t('logs.col_date')">
-                                        {{ row.date ?? '-' }}
+                                        {{
+                                            formatGermanDateTime(row.date, '-')
+                                        }}
                                     </td>
                                     <td
                                         class="text-center"

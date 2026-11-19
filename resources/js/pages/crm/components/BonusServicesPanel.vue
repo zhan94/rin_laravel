@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatGermanDate } from '@/modules/calendar/dateDisplay';
 import type { BonusGroup } from '@/pages/crm/composables/useServicesPage';
 
 type Translate = (key: string, params?: Record<string, unknown>) => string;
@@ -47,8 +48,8 @@ defineProps<{
                             <tr v-for="row in group.rows" :key="row.id">
                                 <td>{{ row.title || '-' }}</td>
                                 <td>
-                                    {{ row.date_from ?? '-' }} -
-                                    {{ row.date_to ?? '-' }}
+                                    {{ formatGermanDate(row.date_from, '-') }} -
+                                    {{ formatGermanDate(row.date_to, '-') }}
                                 </td>
                                 <td>
                                     {{ row.location_from }} ->

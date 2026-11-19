@@ -8,6 +8,7 @@ use App\DTOs\Bookings\BookingData;
 use App\Exceptions\ApiException;
 use App\Models\Booking;
 use App\Repositories\Contracts\Bookings\BookingRepositoryInterface;
+use App\Support\Localization\DisplayDate;
 
 final readonly class ServiceBookingDateSynchronizer
 {
@@ -34,7 +35,7 @@ final readonly class ServiceBookingDateSynchronizer
             if ($hasConflict) {
                 throw new ApiException(
                     errorCode: 'booking_date_conflict',
-                    message: "Customer already has a booking for {$date}.",
+                    message: sprintf('Customer already has a booking for %s.', DisplayDate::german($date)),
                     statusCode: 422,
                     details: ['date' => $date],
                 );
@@ -43,7 +44,7 @@ final readonly class ServiceBookingDateSynchronizer
             if (! $this->repository->hasCapacity($serviceDateId, (int) $booking->id)) {
                 throw new ApiException(
                     errorCode: 'booking_capacity_exceeded',
-                    message: "No capacity for {$date}.",
+                    message: sprintf('No capacity for %s.', DisplayDate::german($date)),
                     statusCode: 422,
                     details: ['date' => $date],
                 );

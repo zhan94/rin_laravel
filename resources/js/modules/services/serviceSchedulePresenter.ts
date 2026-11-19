@@ -1,4 +1,5 @@
 import type { BonusRecord } from '@/modules/bonus/types';
+import { formatGermanDate } from '@/modules/calendar/dateDisplay';
 import type { ServiceDefinition, ServiceSlot } from '@/modules/services/types';
 import { withQuery } from '@/services/queryString';
 
@@ -81,16 +82,6 @@ export function serviceLabelById(
     return service.title || `#${serviceId}`;
 }
 
-export function formatServiceDateLabel(isoDate: string): string {
-    const [year, month, day] = isoDate.split('-');
-
-    if (!year || !month || !day) {
-        return isoDate;
-    }
-
-    return `${day}-${month}-${year}`;
-}
-
 export function buildSlotViewModel(
     slot: ServiceSlot,
     todayIso: string,
@@ -156,7 +147,7 @@ export function buildSlotViewModel(
         seasonTypeRaw,
         seasonGroup,
         datesIso,
-        dateLabels: datesIso.map((date) => formatServiceDateLabel(date)),
+        dateLabels: datesIso.map((date) => formatGermanDate(date)),
         dateSet,
         bookedDateSet,
         datesCount: datesIso.length,

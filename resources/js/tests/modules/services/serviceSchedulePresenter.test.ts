@@ -80,7 +80,7 @@ describe('serviceSchedulePresenter', () => {
         const view = buildSlotViewModel(slot, '2026-01-01', statusLabels);
 
         expect(view.datesIso).toEqual(['2026-02-01', '2026-02-02']);
-        expect(view.dateLabels).toEqual(['01-02-2026', '02-02-2026']);
+        expect(view.dateLabels).toEqual(['01.02.2026', '02.02.2026']);
         expect(view.bookedDateSet.has('2026-02-01')).toBe(true);
         expect(view.status).toBe('active');
         expect(view.statusLabel).toBe('Active');

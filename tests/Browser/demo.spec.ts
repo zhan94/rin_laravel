@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import { mkdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
@@ -37,6 +37,9 @@ test('protects staff pages and serves the synthetic dashboard and catalogs', asy
     await page.goto('/dashboard?lang=en');
     await expect(page.locator('.dashboard .subline')).toContainText(
         /60\s*\/\s*60/,
+    );
+    await expect(page.locator('.dashboard .subline')).toContainText(
+        germanDate(dateOffset(0)),
     );
     await expect(page.locator('.dashboard h1')).toContainText(
         /Season \d{4}\/\d{4}/,
@@ -83,6 +86,7 @@ test('exports a real CSV and opens an independent print window', async ({
     expect(download.suggestedFilename()).toBe('report-all.csv');
     const contents = await readFile(await download.path(), 'utf8');
     expect(contents).toContain('Sample Customer 001');
+    expect(contents).toMatch(/\b\d{2}\.\d{2}\.\d{4}\b/);
     expect(contents).toContain('\r\n');
 
     const [popup] = await Promise.all([
@@ -96,6 +100,9 @@ test('exports a real CSV and opens an independent print window', async ({
     await expect(
         popup.getByText('Sample Customer 001', { exact: false }).first(),
     ).toBeVisible();
+    await expect(popup.locator('body')).toContainText(
+        germanDate(dateOffset(0)),
+    );
     expect(await popup.evaluate(() => window.opener === null)).toBe(true);
     await popup.close();
 });
@@ -309,6 +316,34 @@ function isoDate(date: Date): string {
     ].join('-');
 }
 
+function germanDate(date: Date): string {
+    return isoDate(date).split('-').reverse().join('.');
+}
+
+async function expectServiceActionsToFit(row: Locator): Promise<void> {
+    await expect(
+        row.getByRole('button', { name: 'Availability' }),
+    ).toBeVisible();
+    for (const action of await row.locator('.btn-xs').all()) {
+        expect(
+            await action.evaluate((element) => {
+                const range = document.createRange();
+                range.selectNodeContents(element);
+                const label = range.getBoundingClientRect();
+                const button = element.getBoundingClientRect();
+
+                return (
+                    button.height >= 32 &&
+                    label.top > button.top &&
+                    label.bottom < button.bottom &&
+                    label.left > button.left &&
+                    label.right < button.right
+                );
+            }),
+        ).toBe(true);
+    }
+}
+
 async function toggleDate(page: Page, date: Date): Promise<void> {
     const month = page.locator('.ui-datepicker-month');
     const target = new Intl.DateTimeFormat('en-US', {
@@ -344,7 +379,7 @@ async function openAvailability(page: Page, service: string, date: Date) {
         .selectOption({ label: service });
     await page
         .getByLabel('Date within season', { exact: true })
-        .fill(isoDate(date));
+        .fill(germanDate(date));
     const seasons = page.getByRole('table', {
         name: 'Service seasons',
         exact: true,
@@ -361,6 +396,7 @@ async function openAvailability(page: Page, service: string, date: Date) {
     });
     const day = days.locator('tbody tr');
     await expect(day).toHaveCount(1);
+    await expect(day.getByRole('cell').first()).toHaveText(germanDate(date));
 
     return {
         detail,
@@ -381,6 +417,10 @@ test('shows distinct service seasons with prices, status filters, sorting, and m
     });
     const rows = seasons.locator('tbody tr');
     await expect(rows).toHaveCount(6);
+    await expect(rows.first()).toContainText(
+        /\d{2}\.\d{2}\.\d{4} – \d{2}\.\d{2}\.\d{4}/,
+    );
+    await expectServiceActionsToFit(rows.first());
     await page
         .getByRole('searchbox', { name: 'Search', exact: true })
         .fill('Ski school');
@@ -414,6 +454,7 @@ test('shows distinct service seasons with prices, status filters, sorting, and m
     await expect(
         rows.getByRole('button', { name: 'Availability', exact: true }),
     ).toBeFocused();
+    await expectServiceActionsToFit(rows.first());
 });
 
 test('completes the customer and booking workflow with the synthetic ski service', async ({
@@ -455,9 +496,29 @@ test('completes the customer and booking workflow with the synthetic ski service
     const customerForm = page.locator('form.customer-form-grid');
     await customerForm.getByPlaceholder('First name').fill('Synthetic');
     await customerForm.getByPlaceholder('Last name').fill(surname);
+    const birthDate = customerForm.getByLabel('Date of birth', { exact: true });
+    await birthDate.fill('31.02.2012');
+    expect(
+        await birthDate.evaluate((input: HTMLInputElement) =>
+            input.checkValidity(),
+        ),
+    ).toBe(false);
+    await birthDate.fill('29.02.2012');
+    expect(
+        await birthDate.evaluate((input: HTMLInputElement) =>
+            input.checkValidity(),
+        ),
+    ).toBe(true);
     const customerResponse = apiResponse(page, 'customers', 'POST');
     await customerForm.locator('button[type="submit"]').click();
-    expect((await customerResponse).status()).toBe(201);
+    const savedCustomer = await customerResponse;
+    expect(savedCustomer.status()).toBe(201);
+    expect(savedCustomer.request().postDataJSON().date_birth).toBe(
+        '2012-02-29',
+    );
+    await expect(
+        page.getByRole('row').filter({ hasText: fullName }),
+    ).toContainText('29.02.2012');
     await expect(page.getByText(fullName, { exact: true })).toBeVisible();
 
     await page.goto('/crm/bookings?lang=en');
@@ -472,6 +533,9 @@ test('completes the customer and booking workflow with the synthetic ski service
         .getByRole('button', { name: 'Continue to form', exact: true })
         .click();
     const form = page.locator('.booking-details-card form');
+    await expect(form.getByLabel('Birth date', { exact: true })).toHaveValue(
+        '29.02.2012',
+    );
     await form.locator('select').first().selectOption({ label: 'Ski school' });
     await page.locator('.booking-location-trigger').click();
     await page

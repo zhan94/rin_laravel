@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import GermanDateInput from '@/components/GermanDateInput.vue';
 import {
     Dialog,
     DialogDescription,
@@ -7,6 +8,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { formatGermanDate } from '@/modules/calendar/dateDisplay';
 import { useBonusPage } from '@/pages/crm/composables/useBonusPage';
 import { Head } from '@inertiajs/vue3';
 
@@ -142,8 +144,16 @@ const {
                                         </p>
                                     </td>
                                     <td :data-label="t('bonus.col_period')">
-                                        {{ bonus.date_from ?? '-' }} ->
-                                        {{ bonus.date_to ?? '-' }}
+                                        {{
+                                            formatGermanDate(
+                                                bonus.date_from,
+                                                '-',
+                                            )
+                                        }}
+                                        ->
+                                        {{
+                                            formatGermanDate(bonus.date_to, '-')
+                                        }}
                                     </td>
                                     <td :data-label="t('bonus.col_pickup')">
                                         {{ bonus.location_from }}
@@ -313,14 +323,14 @@ const {
                         </div>
 
                         <div class="grid gap-3 md:grid-cols-3">
-                            <input
+                            <GermanDateInput
                                 v-model="state.form.date_from"
-                                type="date"
+                                :aria-label="t('common.from')"
                                 class="rounded-md border border-input bg-background px-3 py-2 text-sm"
                             />
-                            <input
+                            <GermanDateInput
                                 v-model="state.form.date_to"
-                                type="date"
+                                :aria-label="t('common.to')"
                                 class="rounded-md border border-input bg-background px-3 py-2 text-sm"
                             />
                             <input

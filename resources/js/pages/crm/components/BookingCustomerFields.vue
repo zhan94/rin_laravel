@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import GermanDateInput from '@/components/GermanDateInput.vue';
 import { useBookingPageContext } from '@/pages/crm/composables/bookingPageContext';
 
 const { state, t } = useBookingPageContext();
@@ -54,13 +55,13 @@ const { state, t } = useBookingPageContext();
     </div>
 
     <div class="form-group">
-        <label class="col-sm-2 control-label">{{
+        <label for="booking-date-birth" class="col-sm-2 control-label">{{
             t('bookings.birth_date')
         }}</label>
         <div class="col-sm-10">
-            <input
+            <GermanDateInput
+                id="booking-date-birth"
                 v-model="state.form.date_birth"
-                type="date"
                 class="form-control"
             />
         </div>

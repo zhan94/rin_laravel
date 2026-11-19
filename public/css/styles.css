@@ -965,8 +965,13 @@ code {
 }
 
 .customer-ui .btn-xs {
-    padding: 7px 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 32px;
+    padding: 4px 12px;
     font-size: 12px;
+    line-height: 1.25;
 }
 
 .customer-ui .customer-grid {

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import GermanDateInput from '@/components/GermanDateInput.vue';
 import {
     Dialog,
     DialogDescription,
@@ -7,7 +8,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { useUiI18n } from '@/composables/useUiI18n';
-import { parseIsoDate } from '@/modules/calendar/dateUtils';
+import { formatGermanDate } from '@/modules/calendar/dateDisplay';
 import { reportsUrlForDate } from '@/modules/services/serviceSchedulePresenter';
 import {
     listServiceSeasonBookings,
@@ -24,7 +25,7 @@ import { onMounted, ref, watch } from 'vue';
 
 const props = defineProps<{ season: ServiceSeason; initialDate: string }>();
 const emit = defineEmits<{ close: [] }>();
-const { t, localeTag } = useUiI18n();
+const { t } = useUiI18n();
 
 const filterDate = ref(props.initialDate);
 const days = ref<ServiceSeasonDate[]>([]);
@@ -39,11 +40,6 @@ const bookingError = ref('');
 const capacity = ref(props.season.capacity);
 let datesRequest = 0;
 let bookingsRequest = 0;
-
-function formatDate(date: string | null): string {
-    const parsed = date ? parseIsoDate(date) : null;
-    return parsed?.toLocaleDateString(localeTag.value) ?? '—';
-}
 
 async function loadBookings(day: ServiceSeasonDate, page = 1): Promise<void> {
     const request = ++bookingsRequest;
@@ -115,22 +111,24 @@ onMounted(() => void loadDates());
                     {{ season.season_name }}</DialogTitle
                 >
                 <DialogDescription>
-                    {{ formatDate(season.date_start) }} –
-                    {{ formatDate(season.date_end) }} ·
+                    {{ formatGermanDate(season.date_start) }} –
+                    {{ formatGermanDate(season.date_end) }} ·
                     {{ t('services.daily_capacity') }} {{ capacity }}
                 </DialogDescription>
             </DialogHeader>
 
             <section class="grid gap-3" :aria-busy="loadingDates">
                 <div class="flex flex-wrap items-end gap-3">
-                    <label class="grid gap-1 text-sm font-medium">
-                        {{ t('services.slot_date') }}
-                        <input
+                    <div class="grid gap-1 text-sm font-medium">
+                        <label for="season-availability-date">{{
+                            t('services.slot_date')
+                        }}</label>
+                        <GermanDateInput
+                            id="season-availability-date"
                             v-model="filterDate"
-                            type="date"
                             class="rounded-md border border-input bg-background px-3 py-2"
                         />
-                    </label>
+                    </div>
                     <button
                         v-if="filterDate"
                         type="button"
@@ -188,7 +186,7 @@ onMounted(() => void loadDates());
                                 }"
                             >
                                 <td class="p-2 whitespace-nowrap">
-                                    {{ formatDate(day.date) }}
+                                    {{ formatGermanDate(day.date) }}
                                     <span
                                         v-if="!day.active"
                                         class="block text-xs text-muted-foreground"
@@ -208,7 +206,7 @@ onMounted(() => void loadDates());
                                         :aria-pressed="
                                             selectedDay?.id === day.id
                                         "
-                                        :aria-label="`${t('services.view_bookings')} · ${formatDate(day.date)}`"
+                                        :aria-label="`${t('services.view_bookings')} · ${formatGermanDate(day.date)}`"
                                         @click="loadBookings(day)"
                                     >
                                         {{ t('services.view_bookings') }}
@@ -259,7 +257,7 @@ onMounted(() => void loadDates());
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <h3 class="font-semibold">
                         {{ t('services.view_bookings') }} ·
-                        {{ formatDate(selectedDay.date) }}
+                        {{ formatGermanDate(selectedDay.date) }}
                     </h3>
                     <a
                         v-if="selectedDay.date"

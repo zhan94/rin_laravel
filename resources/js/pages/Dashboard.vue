@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useUiI18n } from '@/composables/useUiI18n';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { formatGermanDate } from '@/modules/calendar/dateDisplay';
 import { formatEurBgnPairFromBgn } from '@/modules/money/currency';
 import { Head, Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -35,13 +36,6 @@ const props = defineProps<{
     }[];
 }>();
 const { t, localeTag } = useUiI18n();
-
-function date(value: string): string {
-    return new Intl.DateTimeFormat(localeTag.value, {
-        dateStyle: 'short',
-        timeZone: 'UTC',
-    }).format(new Date(value));
-}
 
 function number(value: number): string {
     return new Intl.NumberFormat(localeTag.value).format(value);
@@ -93,10 +87,13 @@ const seasonCards = computed(() => [
                         </h1>
                         <p class="subline">
                             {{ t('dashboard.period') }}:
-                            <strong>{{ date(season.start) }}</strong> -
-                            <strong>{{ date(season.end) }}</strong> ·
-                            {{ t('dashboard.today') }}:
-                            <strong>{{ date(today) }}</strong> ·
+                            <strong>{{
+                                formatGermanDate(season.start)
+                            }}</strong>
+                            -
+                            <strong>{{ formatGermanDate(season.end) }}</strong>
+                            · {{ t('dashboard.today') }}:
+                            <strong>{{ formatGermanDate(today) }}</strong> ·
                             {{ t('dashboard.clients') }}:
                             <strong>{{ number(customers.active) }}</strong> /
                             {{ number(customers.total) }}
@@ -136,7 +133,9 @@ const seasonCards = computed(() => [
                             <span class="badge badge--info">{{
                                 t('dashboard.today_badge')
                             }}</span>
-                            <span class="filters-note">{{ date(today) }}</span>
+                            <span class="filters-note">{{
+                                formatGermanDate(today)
+                            }}</span>
                         </div>
                         <div class="table-wrap">
                             <table

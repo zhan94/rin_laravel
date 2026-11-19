@@ -6,8 +6,10 @@ namespace App\Support\Bookings;
 
 use App\Models\Booking;
 use App\Models\Customer;
+use App\Support\Localization\DisplayDate;
 use App\Support\Locations\LocationLabel;
 use App\Support\Names\PersonName;
+use DateTimeInterface;
 
 final class BookingSupportPresenter
 {
@@ -23,7 +25,7 @@ final class BookingSupportPresenter
             $row['lastname'] ?? null,
         ]);
 
-        $birth = trim((string) ($row['date_birth'] ?? ''));
+        $birth = DisplayDate::german((string) ($row['date_birth'] ?? ''), '');
 
         return [
             'value' => $name,
@@ -37,13 +39,15 @@ final class BookingSupportPresenter
      */
     public function customer(Customer $customer): array
     {
+        $birth = $customer->getAttribute('date_birth');
+
         return [
             'id' => (int) $customer->id,
             'firstname' => (string) $customer->firstname,
             'surname' => $customer->surname,
             'lastname' => (string) $customer->lastname,
             'full_name' => $customer->fullName(),
-            'date_birth' => $customer->date_birth,
+            'date_birth' => $birth instanceof DateTimeInterface ? $birth->format('Y-m-d') : $birth,
             'age' => $customer->age,
             'parent_name' => $customer->parent_name,
             'parent_phone' => $customer->parent_phone,

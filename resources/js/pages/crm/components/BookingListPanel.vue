@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatGermanDate } from '@/modules/calendar/dateDisplay';
 import { useBookingPageContext } from '@/pages/crm/composables/bookingPageContext';
 
 const {
@@ -80,7 +81,9 @@ defineProps<{
                             <td :data-label="t('bookings.table_dates')">
                                 {{
                                     booking.booking_dates
-                                        .map((d) => d.slot_date)
+                                        .map((d) =>
+                                            formatGermanDate(d.slot_date),
+                                        )
                                         .join(', ')
                                 }}
                             </td>

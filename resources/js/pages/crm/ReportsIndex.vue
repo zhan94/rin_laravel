@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import GermanDateInput from '@/components/GermanDateInput.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { useReportsPage } from '@/pages/crm/composables/useReportsPage';
 import { Head } from '@inertiajs/vue3';
@@ -151,20 +152,24 @@ const {
                         </div>
 
                         <div class="field">
-                            <label>{{ t('common.from') }}</label>
-                            <input
+                            <label for="report-date-from">{{
+                                t('common.from')
+                            }}</label>
+                            <GermanDateInput
+                                id="report-date-from"
                                 v-model="state.filters.from"
-                                type="date"
                                 class="form-control"
                                 required
                             />
                         </div>
 
                         <div class="field">
-                            <label>{{ t('common.to') }}</label>
-                            <input
+                            <label for="report-date-to">{{
+                                t('common.to')
+                            }}</label>
+                            <GermanDateInput
+                                id="report-date-to"
                                 v-model="state.filters.to"
-                                type="date"
                                 class="form-control"
                                 required
                             />

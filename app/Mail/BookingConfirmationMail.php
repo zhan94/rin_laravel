@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Mail;
 
 use App\Models\Booking;
+use App\Support\Localization\DisplayDate;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -38,13 +39,7 @@ final class BookingConfirmationMail extends Mailable
             : 'Service';
 
         $dates = $this->booking->bookingDates
-            ->map(static function ($row): ?string {
-                $slotDate = $row->serviceDate?->slot_date;
-
-                return is_string($slotDate) && $slotDate !== ''
-                    ? $slotDate
-                    : null;
-            })
+            ->map(static fn ($row): string => DisplayDate::german($row->serviceDate?->slot_date, ''))
             ->filter()
             ->implode(', ');
 

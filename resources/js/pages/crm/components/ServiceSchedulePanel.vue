@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import GermanDateInput from '@/components/GermanDateInput.vue';
 import { useUiI18n } from '@/composables/useUiI18n';
-import { parseIsoDate } from '@/modules/calendar/dateUtils';
+import { formatGermanDate } from '@/modules/calendar/dateDisplay';
 import { formatEurBgnPairFromBgn } from '@/modules/money/currency';
 import type {
     PaginationMeta,
@@ -47,11 +48,6 @@ const statusClasses: Record<ServiceSeasonStatus, string> = {
     expired: 'pill--no',
     unscheduled: '',
 };
-
-function formatDate(date: string | null): string {
-    const parsed = date ? parseIsoDate(date) : null;
-    return parsed?.toLocaleDateString(localeTag.value) ?? '—';
-}
 
 function openAvailability(season: ServiceSeason, event: MouseEvent): void {
     availabilityTrigger.value = event.currentTarget as HTMLButtonElement;
@@ -121,10 +117,9 @@ function changePage(offset: number): void {
                     <label for="season-filter-date">{{
                         t('services.filter_date')
                     }}</label>
-                    <input
+                    <GermanDateInput
                         id="season-filter-date"
                         v-model="filters.date"
-                        type="date"
                         class="min-w-0 rounded-md border border-input bg-background px-3 py-2"
                     />
                 </div>
@@ -253,8 +248,8 @@ function changePage(offset: number): void {
                                 :data-label="t('services.col_period')"
                             >
                                 <div class="whitespace-nowrap">
-                                    {{ formatDate(season.date_start) }} –
-                                    {{ formatDate(season.date_end) }}
+                                    {{ formatGermanDate(season.date_start) }} –
+                                    {{ formatGermanDate(season.date_end) }}
                                 </div>
                             </td>
                             <td

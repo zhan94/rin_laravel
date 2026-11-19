@@ -8,6 +8,7 @@ use App\Models\Bonus;
 use App\Models\SeasonDefault;
 use App\Models\Service;
 use App\Models\ServiceSlot;
+use App\Support\Localization\DisplayDate;
 use App\Support\Locations\LocationLabel;
 use App\Support\Names\PersonName;
 use Carbon\CarbonImmutable;
@@ -259,11 +260,7 @@ final class SeasonPresenter
 
     private function formatDateLabel(?string $date): string
     {
-        if ($date === null || $date === '') {
-            return '—';
-        }
-
-        return CarbonImmutable::parse($date)->format('d-m-Y');
+        return DisplayDate::german($date);
     }
 
     private function buildDateRangeLabel(?string $startDate, ?string $endDate, string $emptyLabel): string

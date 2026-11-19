@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
+import { formatGermanDateTime } from '@/modules/calendar/dateDisplay';
 import { Head, Link } from '@inertiajs/vue3';
 import { useProfilePage } from './useProfilePage';
 
@@ -301,8 +302,19 @@ const {
                                                 row.device_name
                                             }}</strong>
                                             <div class="passkey-item-meta">
-                                                {{ row.created_at ?? '-' }} ·
-                                                {{ row.last_used_at ?? '-' }}
+                                                {{
+                                                    formatGermanDateTime(
+                                                        row.created_at,
+                                                        '-',
+                                                    )
+                                                }}
+                                                ·
+                                                {{
+                                                    formatGermanDateTime(
+                                                        row.last_used_at,
+                                                        '-',
+                                                    )
+                                                }}
                                             </div>
                                         </div>
                                         <button
