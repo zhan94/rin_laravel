@@ -77,6 +77,7 @@ Route::prefix('v1')
             Route::post('notifications/{notification}/read', [NotificationController::class, 'read'])->name('notifications.read');
             Route::post('notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
 
+            Route::get('reports/services', [ReportController::class, 'services'])->name('reports.services');
             Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
 
             Route::put('seasons/defaults', [SeasonController::class, 'updateDefaults'])->middleware('role:manager')->name('seasons.defaults.update');

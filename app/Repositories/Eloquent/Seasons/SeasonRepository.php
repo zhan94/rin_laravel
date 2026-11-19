@@ -272,7 +272,7 @@ final class SeasonRepository implements SeasonRepositoryInterface
             ->whereNotNull('date_end')
             ->when($excludeSlotId !== null && $excludeSlotId > 0, fn ($query) => $query->where('id', '<>', $excludeSlotId))
             ->where('date_end', '>=', $startDate)
-            ->where('date_start', '<=', $endDate)
+            ->where('date_start', '<', \Carbon\CarbonImmutable::parse($endDate)->addDay()->toDateString())
             ->orderBy('id')
             ->first();
     }

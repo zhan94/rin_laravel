@@ -21,6 +21,7 @@ final class SetRequestedLocale
         $locale = $this->resolveLocale($request);
 
         app()->setLocale($locale);
+        $request->setLocale($locale);
 
         $response = $next($request);
 

@@ -1,5 +1,6 @@
 import { useToast } from '@/composables/useToast';
 import { useUiI18n } from '@/composables/useUiI18n';
+import { parseInlinePaymentAmount } from '@/modules/bookings/bookingPayment';
 import {
     applyBookingPayment,
     listBookings,
@@ -20,15 +21,19 @@ import type {
     CustomerUnpaidTab,
     PaginationMeta,
 } from '@/modules/customers/types';
+import { formatEurBgnPairFromBgn } from '@/modules/money/currency';
 import { readFirstDeepLinkParam } from '@/modules/notifications/deepLinkQuery';
 import { firstApiErrorMessage, normalizeApiErrors } from '@/services/apiErrors';
 import type { ApiError } from '@/services/http';
 import { paginationFromMeta } from '@/services/pagination';
+import { useAuthStore } from '@/stores/authStore';
 import { computed, onMounted, reactive } from 'vue';
 
 export function useCustomersPage() {
     const toast = useToast();
-    const { t } = useUiI18n();
+    const { t, localeTag } = useUiI18n();
+    const auth = useAuthStore();
+    const canManage = computed(() => auth.can('manageBookings'));
 
     const state = reactive({
         rows: [] as Customer[],
@@ -58,7 +63,7 @@ export function useCustomersPage() {
         selectedCustomer: null as Customer | null,
         selectedCustomerBookings: [] as BookingRecord[],
         applyingPaymentBookingId: 0,
-        paymentDrafts: {} as Record<number, string>,
+        paymentDrafts: {} as Record<number, string | number>,
         form: {
             firstname: '',
             surname: '',
@@ -201,11 +206,7 @@ export function useCustomersPage() {
     }
 
     function formatAmount(value: number): string {
-        if (!Number.isFinite(value)) {
-            return '0.00';
-        }
-
-        return value.toFixed(2);
+        return formatEurBgnPairFromBgn(value, localeTag.value);
     }
 
     async function loadCustomers(): Promise<void> {
@@ -401,16 +402,20 @@ export function useCustomersPage() {
                     normalizeCustomerPayload(),
                 );
                 toast.success(
-                    'Customer Updated',
-                    `Customer #${updated.data.id} updated successfully.`,
+                    t('customers.customer_updated'),
+                    t('customers.customer_updated_message', {
+                        id: updated.data.id,
+                    }),
                 );
             } else {
                 const created = await createCustomer(
                     normalizeCustomerPayload(),
                 );
                 toast.success(
-                    'Customer Created',
-                    `Customer #${created.data.id} created successfully.`,
+                    t('customers.customer_created'),
+                    t('customers.customer_created_message', {
+                        id: created.data.id,
+                    }),
                 );
             }
 
@@ -466,10 +471,11 @@ export function useCustomersPage() {
     async function applyUnpaidPayment(row: CustomerUnpaidRow): Promise<void> {
         if (state.applyingPaymentBookingId !== 0) return;
 
-        const raw = (state.paymentDrafts[row.booking_id] ?? '').trim();
-        const amount = Number.parseFloat(raw);
+        const { valid, amount } = parseInlinePaymentAmount(
+            state.paymentDrafts[row.booking_id],
+        );
 
-        if (!Number.isFinite(amount) || amount <= 0) {
+        if (!valid) {
             toast.error(
                 t('bookings.payment'),
                 t('bookings.error_payment_positive'),
@@ -594,6 +600,7 @@ export function useCustomersPage() {
 
     return {
         t,
+        canManage,
         state,
         activeUnpaidTab,
         visibleUnpaidRows,

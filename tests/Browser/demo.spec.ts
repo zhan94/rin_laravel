@@ -19,7 +19,7 @@ async function signIn(page: Page, account = username): Promise<void> {
     await page.locator('input[name="email"]').fill(account);
     await page.locator('input[name="password"]').fill(password);
     await page.locator('button[type="submit"]').click();
-    await expect(page).toHaveURL(/\/(dashboard|crm\/customers)$/);
+    await expect(page).toHaveURL(/\/(dashboard|crm\/customers|crm\/reports)$/);
 }
 
 test('protects staff pages and serves the synthetic dashboard and catalogs', async ({
@@ -68,6 +68,11 @@ test('protects staff pages and serves the synthetic dashboard and catalogs', asy
         page.getByRole('heading', { name: 'Kunden', exact: true }),
     ).toBeVisible();
     expect(browserErrors).toEqual([]);
+    const loadedFonts = await page.evaluate(async () => [
+        (await document.fonts.load('600 24px Fraunces')).length,
+        (await document.fonts.load('400 16px "Space Grotesk"')).length,
+    ]);
+    expect(loadedFonts.every((count) => count > 0)).toBe(true);
 });
 
 test('exports a real CSV and opens an independent print window', async ({
@@ -455,6 +460,116 @@ test('shows distinct service seasons with prices, status filters, sorting, and m
         rows.getByRole('button', { name: 'Availability', exact: true }),
     ).toBeFocused();
     await expectServiceActionsToFit(rows.first());
+});
+
+test('Driver can open a linked report and exports the generated range after editing draft filters', async ({
+    page,
+}) => {
+    const unexpected: string[] = [];
+    page.on('response', (response) => {
+        if (response.url().includes('/api/v1/') && response.status() >= 400) {
+            unexpected.push(
+                `${response.status()} ${new URL(response.url()).pathname}`,
+            );
+        }
+    });
+    await signIn(page, 'demo.driver');
+    const service = page.getByLabel('Select service', { exact: true });
+    const ski = service.getByRole('option', {
+        name: 'Ski school',
+        exact: true,
+    });
+    await expect(ski).toBeAttached();
+    const id = await ski.getAttribute('value');
+    const day = dateOffset(0);
+    const url = `/crm/reports?lang=en&service_id=${id}&from=${isoDate(day)}&to=${isoDate(day)}`;
+    await page.goto(url);
+    await expect(service).toHaveValue(id!);
+    await expect(page.getByLabel('From', { exact: true })).toHaveValue(
+        germanDate(day),
+    );
+    await expect(
+        page.getByText('Sample Customer 001', { exact: true }),
+    ).toBeVisible();
+    await expect(
+        page.getByRole('columnheader', { name: 'Birth date', exact: true }),
+    ).toHaveCount(0);
+
+    await page
+        .getByLabel('From', { exact: true })
+        .fill(germanDate(dateOffset(10)));
+    await page
+        .getByLabel('To', { exact: true })
+        .fill(germanDate(dateOffset(10)));
+    await expect(page.locator('.report-title')).toContainText(germanDate(day));
+
+    const [download] = await Promise.all([
+        page.waitForEvent('download'),
+        page.getByRole('button', { name: 'CSV (All)', exact: true }).click(),
+    ]);
+    const csv = await readFile(await download.path(), 'utf8');
+    expect(csv).toContain('Sample Customer 001');
+    expect(csv).toContain(germanDate(day));
+    expect(csv).not.toContain(isoDate(day));
+    expect(csv).not.toContain('@example.test');
+    expect(unexpected).toEqual([]);
+});
+
+test('Group Leader sees customer and season records with read-only controls', async ({
+    page,
+}) => {
+    await signIn(page, 'demo.group_leader');
+    await page.goto('/crm/customers?lang=en');
+    await expect(
+        page.getByText('Sample Customer 060', { exact: true }),
+    ).toBeVisible();
+    await expect(
+        page.getByRole('button', { name: 'Add customer', exact: true }),
+    ).toHaveCount(0);
+    await expect(
+        page.getByRole('button', { name: 'Delete', exact: true }),
+    ).toHaveCount(0);
+    await page
+        .getByRole('button', { name: 'Unpaid fees', exact: true })
+        .click();
+    await expect(
+        page
+            .getByRole('button', { name: 'Open customer', exact: true })
+            .first(),
+    ).toBeVisible();
+    await expect(page.locator('.pay-stack')).toHaveCount(0);
+
+    await page.goto('/crm/seasons?lang=en');
+    await expect(page.locator('.season-range').first()).toBeVisible();
+    await expect(page.locator('form')).toHaveCount(0);
+});
+
+test('records a payment from the Customer unpaid view and refreshes its balance', async ({
+    page,
+}) => {
+    await signIn(page, 'demo.admin');
+    await page.goto('/crm/customers?lang=en');
+    await page
+        .getByRole('button', { name: 'Unpaid fees', exact: true })
+        .click();
+    const row = page
+        .getByRole('row')
+        .filter({ hasText: 'Sample Customer 002' });
+    await expect(row).toHaveCount(1);
+    const before = await row.innerText();
+
+    const response = page.waitForResponse(
+        (result) =>
+            result.url().includes('/payments/apply') &&
+            result.request().method() === 'POST',
+    );
+    await row.getByRole('spinbutton').fill('5');
+    await row.getByRole('button', { name: 'Pay', exact: true }).click();
+    const applied = await response;
+    expect(applied.status()).toBe(200);
+    expect(applied.request().postDataJSON().amount).toBe(5);
+    await expect(row).not.toHaveText(before);
+    await expect(row.getByRole('spinbutton')).toHaveValue('');
 });
 
 test('completes the customer and booking workflow with the synthetic ski service', async ({

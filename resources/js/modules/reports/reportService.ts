@@ -1,8 +1,18 @@
 import { httpRequest, type ApiEnvelope } from '@/services/http';
 import { withQuery } from '@/services/queryString';
-import type { ReportListParams, ReportOverview } from './types';
+import type {
+    ReportListParams,
+    ReportOverview,
+    ReportServiceOption,
+} from './types';
 
 const basePath = '/api/v1/reports';
+
+export function listReportServices(): Promise<
+    ApiEnvelope<ReportServiceOption[]>
+> {
+    return httpRequest<ReportServiceOption[]>(`${basePath}/services`);
+}
 
 export function listReports(
     params: ReportListParams = {},

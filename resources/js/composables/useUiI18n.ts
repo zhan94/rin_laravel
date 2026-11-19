@@ -48,6 +48,10 @@ export function useUiI18n() {
         );
     }
 
+    function formatNumber(value: number): string {
+        return new Intl.NumberFormat(localeTag.value).format(value);
+    }
+
     function formatMonthYear(value: Date): string {
         return new Intl.DateTimeFormat(localeTag.value, {
             month: 'long',
@@ -66,6 +70,7 @@ export function useUiI18n() {
         weekdayShortLabels,
         t,
         formatMonthYear,
+        formatNumber,
         formatDateTime,
     };
 }

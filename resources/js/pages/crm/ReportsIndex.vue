@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import GermanDateInput from '@/components/GermanDateInput.vue';
+import { useUiI18n } from '@/composables/useUiI18n';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { useReportsPage } from '@/pages/crm/composables/useReportsPage';
 import { Head } from '@inertiajs/vue3';
@@ -27,6 +28,8 @@ const {
     printPage,
     printAll,
 } = useReportsPage();
+
+const { formatNumber } = useUiI18n();
 </script>
 
 <template>
@@ -50,7 +53,11 @@ const {
                         <button
                             type="button"
                             class="btn btn-outline"
-                            :disabled="state.exportingAllCsv"
+                            :disabled="
+                                state.exportingAllCsv ||
+                                state.loading ||
+                                !state.report
+                            "
                             @click="exportAllCsv"
                         >
                             <span
@@ -66,7 +73,11 @@ const {
                         <button
                             type="button"
                             class="btn btn-outline"
-                            :disabled="state.exportingPageCsv"
+                            :disabled="
+                                state.exportingPageCsv ||
+                                state.loading ||
+                                !state.report
+                            "
                             @click="exportPageCsv"
                         >
                             <span
@@ -82,6 +93,7 @@ const {
                         <button
                             type="button"
                             class="btn btn-outline"
+                            :disabled="state.loading || !state.report"
                             @click="printPage"
                         >
                             <span
@@ -93,7 +105,11 @@ const {
                         <button
                             type="button"
                             class="btn btn-outline"
-                            :disabled="state.printingAll"
+                            :disabled="
+                                state.printingAll ||
+                                state.loading ||
+                                !state.report
+                            "
                             @click="printAll"
                         >
                             <span
@@ -133,8 +149,11 @@ const {
                     </div>
                     <div class="filter-grid">
                         <div class="field">
-                            <label>{{ t('reports.select_service') }}</label>
+                            <label for="report-service">{{
+                                t('reports.select_service')
+                            }}</label>
                             <select
+                                id="report-service"
                                 v-model="state.filters.service_id"
                                 class="form-control"
                             >
@@ -149,6 +168,9 @@ const {
                                     {{ service.title }}
                                 </option>
                             </select>
+                            <p v-if="state.serviceOptionsError" role="alert">
+                                {{ t('reports.services_load_failed') }}
+                            </p>
                         </div>
 
                         <div class="field">
@@ -223,7 +245,7 @@ const {
                         <button
                             type="submit"
                             class="btn btn-solid"
-                            :disabled="state.loading || state.loadingServices"
+                            :disabled="state.loading"
                         >
                             {{
                                 state.loading
@@ -239,7 +261,9 @@ const {
                         <span class="stat-label">{{
                             t('reports.records')
                         }}</span>
-                        <span class="stat-value">{{ stats.records }}</span>
+                        <span class="stat-value">{{
+                            formatNumber(stats.records)
+                        }}</span>
                     </div>
                     <div v-if="!isDriverView" class="stat-card admin-only">
                         <span class="stat-label">{{

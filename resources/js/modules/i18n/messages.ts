@@ -14,6 +14,23 @@ export const WEEKDAY_SHORT_LABELS: Record<SupportedLocale, string[]> = {
 
 export const UI_MESSAGES = {
     en: {
+        'reports.services_load_failed':
+            'Could not load the report service list.',
+        'customers.active_on_page': 'Active on this page',
+        'customers.customer_created': 'Customer created',
+        'customers.customer_created_message': 'Customer #:id was created.',
+        'customers.customer_updated': 'Customer updated',
+        'customers.customer_updated_message': 'Customer #:id was updated.',
+        'customers.season_total_due': 'Season total due: :due',
+        'services.new_period': 'New service period',
+        'services.back_to_services': 'Back to services',
+        'services.period_details': 'Period details',
+        'services.select_dates': 'Select dates',
+        'services.enter_season_name': 'Enter a season name.',
+        'services.select_period_date':
+            'Select at least one date for the service period.',
+        'services.create_period_failed': 'Could not create the service period.',
+        'services.remove_date': 'Remove :date',
         'common.home': 'Home',
         'common.menu': 'Menu',
         'common.manual': 'Manual',
@@ -904,6 +921,40 @@ export const UI_MESSAGES = {
         'roles.user': 'User',
     },
     de: {
+        'reports.services_load_failed':
+            'Die Leistungen für den Bericht konnten nicht geladen werden.',
+        'customers.active_on_page': 'Aktiv auf dieser Seite',
+        'customers.customer_created': 'Kunde angelegt',
+        'customers.customer_created_message': 'Kunde Nr. :id wurde angelegt.',
+        'customers.customer_updated': 'Kundendaten aktualisiert',
+        'customers.customer_updated_message':
+            'Die Daten von Kunde Nr. :id wurden aktualisiert.',
+        'customers.season_total_due': 'Offener Saisonbetrag: :due',
+        'services.new_period': 'Neuer Leistungszeitraum',
+        'services.back_to_services': 'Zurück zu den Leistungen',
+        'services.period_details': 'Zeitraumdetails',
+        'services.select_dates': 'Termine auswählen',
+        'services.enter_season_name': 'Geben Sie einen Saisonnamen ein.',
+        'services.select_period_date':
+            'Wählen Sie mindestens einen Termin für den Leistungszeitraum aus.',
+        'services.create_period_failed':
+            'Der Leistungszeitraum konnte nicht angelegt werden.',
+        'services.remove_date': 'Termin :date entfernen',
+        'services.modal_desc_period':
+            'Legen Sie die Saison, Kapazität und Termine für die Leistung fest.',
+        'services.field_service': 'Leistung',
+        'services.field_select_service': 'Leistung auswählen',
+        'services.field_season': 'Saison',
+        'services.field_season_placeholder': 'Saison 2026/2027',
+        'services.field_dates': 'Termine',
+        'services.clear_all': 'Alle entfernen',
+        'services.calendar_select_dates':
+            'Wählen Sie einen oder mehrere Termine im Kalender aus.',
+        'services.calendar_disabled_note':
+            'Termine, die bereits zu einem Zeitraum dieser Leistung gehören, sind gesperrt.',
+        'services.saving': 'Wird gespeichert …',
+        'services.adding': 'Wird hinzugefügt …',
+        'services.add_period': 'Zeitraum hinzufügen',
         'common.home': 'Startseite',
         'common.menu': 'Menü',
         'common.manual': 'Handbuch',
@@ -1421,6 +1472,40 @@ export const UI_MESSAGES = {
         'roles.user': 'Benutzer',
     },
     es: {
+        'reports.services_load_failed':
+            'No se pudo cargar la lista de servicios del informe.',
+        'customers.active_on_page': 'Activos en esta página',
+        'customers.customer_created': 'Cliente creado',
+        'customers.customer_created_message': 'Se creó el cliente n.º :id.',
+        'customers.customer_updated': 'Cliente actualizado',
+        'customers.customer_updated_message':
+            'Se actualizó el cliente n.º :id.',
+        'customers.season_total_due': 'Total pendiente de la temporada: :due',
+        'services.new_period': 'Nuevo período de servicio',
+        'services.back_to_services': 'Volver a los servicios',
+        'services.period_details': 'Detalles del período',
+        'services.select_dates': 'Seleccionar fechas',
+        'services.enter_season_name': 'Introduce un nombre para la temporada.',
+        'services.select_period_date':
+            'Selecciona al menos una fecha para el período del servicio.',
+        'services.create_period_failed':
+            'No se pudo crear el período del servicio.',
+        'services.remove_date': 'Quitar :date',
+        'services.modal_desc_period':
+            'Configura la temporada, la capacidad y las fechas del servicio.',
+        'services.field_service': 'Servicio',
+        'services.field_select_service': 'Seleccionar servicio',
+        'services.field_season': 'Temporada',
+        'services.field_season_placeholder': 'Temporada 2026/2027',
+        'services.field_dates': 'Fechas',
+        'services.clear_all': 'Quitar todas',
+        'services.calendar_select_dates':
+            'Selecciona una o más fechas en el calendario.',
+        'services.calendar_disabled_note':
+            'Las fechas que ya pertenecen a un período de este servicio están deshabilitadas.',
+        'services.saving': 'Guardando…',
+        'services.adding': 'Añadiendo…',
+        'services.add_period': 'Añadir período',
         'common.home': 'Inicio',
         'common.menu': 'Menú',
         'common.manual': 'Manual',

@@ -23,10 +23,12 @@ Compose installs the locked dependencies, compiles the frontend, migrates an iso
 
 - Staff authentication and account administration, with Super Admin, Admin, Manager, Group Leader, and Driver roles.
 - Customer search and pagination, multi-date bookings with capacity checks, and payment applications and corrections.
-- Service calendars and seasons, pickup locations, cards, equipment, and bonus services.
+- Separate service-season entries with daily capacity and availability, pickup locations, cards, equipment, and bonus services.
 - Seasonal dashboard, role-scoped reports, CSV and print output, staff notifications, and issues with private attachments.
 
 The application uses PHP 8.5, Laravel 12, MySQL 8.4, Fortify, Sanctum, Inertia 2, Vue 3, TypeScript, Tailwind CSS 4, and Vite 7. English, German, and Spanish are available in the staff interface. Form Requests validate input, middleware and policies enforce access, and Eloquent handles persistence. Booking and payment services coordinate database locks and retry handling. Vue pages use typed API clients. [Architecture and trade-offs](docs/architecture.md)
+
+The signed-in [staff manual](http://localhost:8081/manual/en) covers role access, booking, payments, service availability, and report workflows. Dates display as DD.MM.YYYY across interface languages.
 
 ## Verify the application
 

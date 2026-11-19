@@ -62,6 +62,11 @@ export interface ReportOverview {
     rows: ReportRow[];
 }
 
+export interface ReportServiceOption {
+    id: number;
+    title: string;
+}
+
 export interface ReportListParams {
     service_id?: number;
     from?: string;

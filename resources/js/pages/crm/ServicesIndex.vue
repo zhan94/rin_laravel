@@ -6,6 +6,7 @@ import {
     DialogScrollContent,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { useUiI18n } from '@/composables/useUiI18n';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { formatGermanDate } from '@/modules/calendar/dateDisplay';
 import BonusServicesPanel from '@/pages/crm/components/BonusServicesPanel.vue';
@@ -39,6 +40,8 @@ const {
     submitSlotForm,
     removeSlot,
 } = useServicesPage();
+
+const { formatNumber } = useUiI18n();
 </script>
 
 <template>
@@ -91,7 +94,7 @@ const {
                             t('services.stat_services')
                         }}</span>
                         <span class="stat-value">{{
-                            state.counts.services
+                            formatNumber(state.counts.services)
                         }}</span>
                     </article>
                     <article class="stat-card">
@@ -99,14 +102,16 @@ const {
                             t('services.stat_periods')
                         }}</span>
                         <span class="stat-value">{{
-                            state.counts.seasons
+                            formatNumber(state.counts.seasons)
                         }}</span>
                     </article>
                     <article class="stat-card">
                         <span class="stat-label">{{
                             t('services.stat_dates')
                         }}</span>
-                        <span class="stat-value">{{ state.counts.dates }}</span>
+                        <span class="stat-value">{{
+                            formatNumber(state.counts.dates)
+                        }}</span>
                     </article>
                 </section>
 

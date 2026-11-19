@@ -6,9 +6,11 @@ import SeasonDetailsPanel from '@/pages/crm/components/SeasonDetailsPanel.vue';
 import SeasonSelectorBar from '@/pages/crm/components/SeasonSelectorBar.vue';
 import { provideSeasonPageContext } from '@/pages/crm/composables/seasonPageContext';
 import { useSeasonsPage } from '@/pages/crm/composables/useSeasonsPage';
+import { useAuthStore } from '@/stores/authStore';
 import { Head } from '@inertiajs/vue3';
 
 const seasonPage = useSeasonsPage();
+const auth = useAuthStore();
 provideSeasonPageContext(seasonPage);
 
 const {
@@ -60,7 +62,12 @@ const {
                     :t="t"
                 />
 
-                <SeasonAdminForms v-if="state.selectedType === 'service'" />
+                <SeasonAdminForms
+                    v-if="
+                        state.selectedType === 'service' &&
+                        auth.can('manageBookings')
+                    "
+                />
 
                 <SeasonCardsGrid
                     :format-currency="formatCurrency"

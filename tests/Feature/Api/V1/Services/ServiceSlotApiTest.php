@@ -7,6 +7,7 @@ namespace Tests\Feature\Api\V1\Services;
 use App\Models\BookingDate;
 use App\Models\Service;
 use App\Models\ServiceDate;
+use App\Models\ServiceSlot;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -97,6 +98,31 @@ class ServiceSlotApiTest extends TestCase
         $this->putJson($url, $payload + ['dates' => ['2100-01-01']])->assertUnprocessable();
         $this->deleteJson($url)->assertUnprocessable();
         $this->assertDatabaseHas('booking_dates', ['service_date_id' => $date->id]);
+    }
+
+    public function test_service_period_writes_reject_overlaps_on_unscheduled_dates_and_boundaries(): void
+    {
+        $this->actingAs(User::factory()->create());
+        $service = Service::factory()->create();
+        $payload = ['name' => 'Original period', 'max' => 10, 'dates' => ['2027-02-11', '2027-02-13']];
+        $endpoint = "/api/v1/services/{$service->id}/slots";
+
+        $originalId = $this->postJson($endpoint, $payload)->assertCreated()->json('data.id');
+
+        $this->postJson($endpoint, array_replace($payload, ['dates' => ['2027-02-12']]))
+            ->assertUnprocessable()->assertJsonPath('errors.0.code', 'season_overlap');
+        $this->postJson($endpoint, array_replace($payload, ['dates' => ['2027-02-10', '2027-02-11']]))
+            ->assertUnprocessable()->assertJsonPath('errors.0.code', 'season_overlap');
+
+        $adjacentId = $this->postJson($endpoint, array_replace($payload, ['dates' => ['2027-02-14']]))
+            ->assertCreated()->json('data.id');
+
+        $this->putJson("/api/v1/slots/{$adjacentId}", array_replace($payload, ['dates' => ['2027-02-13', '2027-02-14']]))
+            ->assertUnprocessable()->assertJsonPath('errors.0.code', 'season_overlap');
+        $this->putJson("/api/v1/slots/{$originalId}", array_replace($payload, ['max' => 15]))->assertOk();
+
+        $this->assertSame(2, ServiceSlot::query()->where('service_id', $service->id)->count());
+        $this->assertDatabaseHas('service_slots', ['id' => $adjacentId, 'max' => 10]);
     }
 
     public function test_slot_requires_dates(): void

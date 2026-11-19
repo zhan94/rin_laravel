@@ -16,7 +16,7 @@
         <link rel="stylesheet" href="/css/styles/css/bootstrap.css?v=legacy-20260301">
         <link rel="stylesheet" href="/css/styles/css/bootstrap-theme.css?v=legacy-20260301">
         <link rel="stylesheet" href="/css/styles/css/boot.css?v=legacy-20260301">
-        <link rel="stylesheet" href="/css/styles.css?v=compact-buttons-20261119">
+        <link rel="stylesheet" href="/css/styles.css?v=product-quality-20261119">
 
         @inertiaHead
     </head>

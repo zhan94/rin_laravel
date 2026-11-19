@@ -4,6 +4,7 @@ import { Head, Link } from '@inertiajs/vue3';
 import { useServicePeriodCreatePage } from './composables/useServicePeriodCreatePage';
 
 const {
+    t,
     SLOT_WEEKDAY_LABELS,
     clearSlotSelectedDates,
     formatDateLabel,
@@ -23,7 +24,7 @@ const {
 </script>
 
 <template>
-    <Head title="New service period" />
+    <Head :title="t('services.new_period')" />
 
     <AppLayout>
         <div
@@ -33,13 +34,13 @@ const {
                 <div class="form-hero">
                     <div>
                         <Link href="/crm/services" class="btn btn-ghost">
-                            <span class="glyphicon glyphicon-chevron-left" />
-                            Back to services
-                        </Link>
-                        <div class="eyebrow">ADD</div>
-                        <h1>New service period</h1>
+                            <span class="glyphicon glyphicon-chevron-left" />{{
+                                t('services.back_to_services')
+                            }}</Link
+                        >
+                        <h1>{{ t('services.new_period') }}</h1>
                         <div class="subline">
-                            Add season, capacity and dates for the service.
+                            {{ t('services.modal_desc_period') }}
                         </div>
                     </div>
                 </div>
@@ -47,6 +48,7 @@ const {
                 <div
                     v-if="state.errors.length > 0"
                     class="service-period-errors"
+                    role="alert"
                 >
                     <p
                         v-for="error in state.errors"
@@ -63,12 +65,14 @@ const {
                     <div class="form-layout">
                         <div class="form-card">
                             <div class="card-head">
-                                <h3>Main information</h3>
+                                <h3>{{ t('services.period_details') }}</h3>
                             </div>
 
                             <div class="form-grid service-period-main-grid">
                                 <div class="field">
-                                    <label for="type">Service</label>
+                                    <label for="type">{{
+                                        t('services.field_service')
+                                    }}</label>
                                     <select
                                         id="type"
                                         v-model.number="
@@ -83,7 +87,11 @@ const {
                                         required
                                     >
                                         <option :value="0">
-                                            Please choose
+                                            {{
+                                                t(
+                                                    'services.field_select_service',
+                                                )
+                                            }}
                                         </option>
                                         <option
                                             v-for="service in state.services"
@@ -96,36 +104,44 @@ const {
                                 </div>
 
                                 <div class="field">
-                                    <label for="max_input"
-                                        >Maximum children</label
-                                    >
+                                    <label for="max_input">{{
+                                        t('services.daily_capacity')
+                                    }}</label>
                                     <input
                                         id="max_input"
                                         v-model.number="state.slotForm.max"
                                         type="number"
                                         min="0"
                                         class="form-control"
-                                        placeholder="Maximum children"
+                                        :placeholder="
+                                            t('services.daily_capacity')
+                                        "
                                         required
                                     />
                                 </div>
 
                                 <div class="field">
-                                    <label for="slot_name_input">Season</label>
+                                    <label for="slot_name_input">{{
+                                        t('services.field_season')
+                                    }}</label>
                                     <input
                                         id="slot_name_input"
                                         v-model="state.slotForm.name"
                                         type="text"
                                         class="form-control"
-                                        placeholder="e.g. Winter season 25/26"
+                                        :placeholder="
+                                            t(
+                                                'services.field_season_placeholder',
+                                            )
+                                        "
                                         required
                                     />
                                 </div>
 
                                 <div class="field field--period-type">
-                                    <label for="season_type_input"
-                                        >Period type</label
-                                    >
+                                    <label for="season_type_input">{{
+                                        t('services.field_season_group')
+                                    }}</label>
                                     <select
                                         id="season_type_input"
                                         v-model="state.slotForm.season_type"
@@ -133,9 +149,11 @@ const {
                                         required
                                     >
                                         <option value="other">
-                                            Spring / Summer / Autumn
+                                            {{ t('services.group_other') }}
                                         </option>
-                                        <option value="winter">Winter</option>
+                                        <option value="winter">
+                                            {{ t('services.group_winter') }}
+                                        </option>
                                     </select>
                                 </div>
                             </div>
@@ -143,7 +161,7 @@ const {
 
                         <div class="form-card">
                             <div class="card-head">
-                                <h3>Period dates</h3>
+                                <h3>{{ t('services.field_dates') }}</h3>
                             </div>
 
                             <div
@@ -151,7 +169,9 @@ const {
                                 class="service-period-dates-shell"
                             >
                                 <div id="dates_div" class="field">
-                                    <label for="ca">Select dates</label>
+                                    <label for="ca">{{
+                                        t('services.select_dates')
+                                    }}</label>
                                     <button
                                         id="ca"
                                         type="button"
@@ -160,23 +180,28 @@ const {
                                             state.slotForm.service_id <= 0 ||
                                             state.submitting
                                         "
+                                        :aria-expanded="state.datePickerOpen"
+                                        aria-controls="new-period-calendar"
                                         @click="toggleDatePicker"
                                     >
                                         <span
                                             class="glyphicon glyphicon-calendar"
-                                        />
-                                        Select dates
+                                        />{{ t('services.select_dates') }}
                                     </button>
                                 </div>
 
                                 <div
-                                    v-if="state.datePickerOpen"
+                                    v-show="state.datePickerOpen"
+                                    id="new-period-calendar"
                                     class="service-period-calendar-panel"
                                 >
                                     <div class="booking-calendar">
                                         <div class="booking-calendar__header">
                                             <button
                                                 type="button"
+                                                :aria-label="
+                                                    t('common.previous')
+                                                "
                                                 class="booking-calendar__nav"
                                                 :disabled="state.submitting"
                                                 @click="
@@ -190,6 +215,7 @@ const {
                                             </p>
                                             <button
                                                 type="button"
+                                                :aria-label="t('common.next')"
                                                 class="booking-calendar__nav"
                                                 :disabled="state.submitting"
                                                 @click="
@@ -223,6 +249,14 @@ const {
                                                     v-else
                                                     type="button"
                                                     class="booking-calendar__cell"
+                                                    :aria-label="
+                                                        formatDateLabel(
+                                                            cell.iso,
+                                                        )
+                                                    "
+                                                    :aria-pressed="
+                                                        cell.selected
+                                                    "
                                                     :class="{
                                                         'booking-calendar__cell--selected':
                                                             cell.selected,
@@ -257,7 +291,7 @@ const {
                                             :disabled="state.submitting"
                                             @click="clearSlotSelectedDates"
                                         >
-                                            Clear all
+                                            {{ t('services.clear_all') }}
                                         </button>
                                     </div>
                                 </div>
@@ -272,16 +306,22 @@ const {
                                         type="button"
                                         class="service-period-selected-date"
                                         :disabled="state.submitting"
+                                        :aria-label="
+                                            t('services.remove_date', {
+                                                date: formatDateLabel(date),
+                                            })
+                                        "
                                         @click="removeSlotSelectedDate(date)"
                                     >
-                                        {{ formatDateLabel(date) }} x
+                                        {{ formatDateLabel(date) }}
+                                        <span aria-hidden="true">×</span>
                                     </button>
                                 </div>
                                 <p
                                     v-else-if="state.datePickerOpen"
                                     class="service-period-note"
                                 >
-                                    Choose one or more dates from the calendar.
+                                    {{ t('services.calendar_select_dates') }}
                                 </p>
                                 <p
                                     v-if="
@@ -290,7 +330,7 @@ const {
                                     "
                                     class="service-period-note"
                                 >
-                                    Loading unavailable dates...
+                                    {{ t('common.loading') }}
                                 </p>
                                 <p
                                     v-if="
@@ -299,8 +339,7 @@ const {
                                     "
                                     class="service-period-note"
                                 >
-                                    Dates already assigned in this service are
-                                    disabled.
+                                    {{ t('services.calendar_disabled_note') }}
                                 </p>
                                 <input
                                     id="altField"
@@ -313,9 +352,9 @@ const {
                     </div>
 
                     <div class="form-actions" id="buttons">
-                        <Link href="/crm/services" class="btn btn-ghost"
-                            >Cancel</Link
-                        >
+                        <Link href="/crm/services" class="btn btn-ghost">{{
+                            t('common.cancel')
+                        }}</Link>
                         <button
                             type="submit"
                             name="go"
@@ -327,7 +366,11 @@ const {
                                 !hasServices
                             "
                         >
-                            {{ state.submitting ? 'Adding...' : 'Add' }}
+                            {{
+                                state.submitting
+                                    ? t('services.adding')
+                                    : t('services.add_period')
+                            }}
                         </button>
                     </div>
                 </form>

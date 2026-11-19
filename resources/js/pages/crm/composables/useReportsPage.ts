@@ -1,20 +1,28 @@
 import { useUiI18n } from '@/composables/useUiI18n';
-import { formatGermanDate as formatDateLabel } from '@/modules/calendar/dateDisplay';
+import {
+    dateInputToIso,
+    formatGermanDate as formatDateLabel,
+} from '@/modules/calendar/dateDisplay';
+import { formatIsoDate } from '@/modules/calendar/dateUtils';
 import { formatEurBgnPairFromBgn } from '@/modules/money/currency';
 import { renderPrintReport, reportCsv } from '@/modules/reports/reportOutput';
-import { listReports } from '@/modules/reports/reportService';
+import {
+    listReports,
+    listReportServices,
+} from '@/modules/reports/reportService';
 import type {
     PaginationMeta,
+    ReportListParams,
     ReportOverview,
     ReportRow,
+    ReportServiceOption,
     ReportSortDirection,
     ReportSortKey,
 } from '@/modules/reports/types';
-import { listServices } from '@/modules/services/serviceService';
-import type { ServiceDefinition } from '@/modules/services/types';
 import { normalizeApiErrors } from '@/services/apiErrors';
 import type { ApiError } from '@/services/http';
 import { paginationFromMeta } from '@/services/pagination';
+import { useAuthStore } from '@/stores/authStore';
 import { computed, onMounted, reactive } from 'vue';
 
 const LAST_FILTERS_KEY = 'crm-reports-last-filters';
@@ -48,17 +56,19 @@ type DisplayRow = {
 };
 
 export function useReportsPage() {
-    const { t } = useUiI18n();
+    const { t, localeTag } = useUiI18n();
+    const auth = useAuthStore();
+    let reportRequest = 0;
 
     const state = reactive({
         loading: false,
-        loadingServices: false,
         exportingAllCsv: false,
         exportingPageCsv: false,
         printingAll: false,
         compact: false,
         errors: [] as ApiError[],
-        services: [] as ServiceDefinition[],
+        services: [] as ReportServiceOption[],
+        serviceOptionsError: false,
         report: null as ReportOverview | null,
         rows: [] as ReportRow[],
         page: 1,
@@ -99,7 +109,9 @@ export function useReportsPage() {
         } as Record<ColumnKey, boolean>,
     });
 
-    const isDriverView = computed(() => state.report?.is_driver === true);
+    const isDriverView = computed(
+        () => state.report?.is_driver ?? auth.user?.role_key === 'driver',
+    );
 
     const effectiveColumns = computed<Record<ColumnKey, boolean>>(() => ({
         name: true,
@@ -124,81 +136,80 @@ export function useReportsPage() {
     });
 
     const reportPeriodLabel = computed(() => {
-        const from = state.filters.from;
-        const to = state.filters.to;
+        const result = state.report?.filters;
 
-        if (from === '' || to === '') {
+        if (!result?.from || !result?.to) {
             return t('reports.select_period');
         }
 
-        return `${formatDateLabel(from)} - ${formatDateLabel(to)}`;
+        return `${formatDateLabel(result.from)} - ${formatDateLabel(result.to)}`;
     });
 
     const selectedServiceLabel = computed(() => {
-        const selectedId = Number.parseInt(state.filters.service_id, 10);
-        if (Number.isNaN(selectedId)) {
+        const selectedId = state.report?.filters.service_id;
+        if (!selectedId) {
             return t('reports.all_services');
         }
 
         const service = state.services.find((item) => item.id === selectedId);
 
-        return service?.title ?? t('reports.all_services');
+        return service?.title ?? `#${selectedId}`;
     });
 
+    function formatRow(row: ReportRow): DisplayRow {
+        const dueRaw = Number(row.due ?? 0);
+        const paymentLabel = `${formatCurrencyPair(Number(row.paid ?? 0))} / ${formatCurrencyPair(Number(row.sum_paid ?? 0))}`;
+
+        return {
+            bookingId: row.booking_id,
+            name: row.customer_name || '—',
+            birth: formatDateLabel(row.birth),
+            level: row.skill?.title ?? '—',
+            equip: row.equip?.title ?? '—',
+            location: row.location || '—',
+            due:
+                dueRaw <= 0.01
+                    ? t('reports.paid')
+                    : `${t('reports.remaining')}: ${formatCurrencyPair(dueRaw)}`,
+            dueRaw,
+            payment: paymentLabel,
+            parent: row.parent_name ?? '—',
+            parentPhone: row.parent_phone ?? '',
+            parentEmail: row.email ?? '',
+            dates: row.dates,
+            raw: row,
+        };
+    }
+
     const displayRows = computed<DisplayRow[]>(() => {
-        return state.rows
-            .map((row): DisplayRow => {
-                const dueRaw = Number(row.due ?? 0);
-                const paymentLabel = `${formatCurrencyPair(Number(row.paid ?? 0))} / ${formatCurrencyPair(Number(row.sum_paid ?? 0))}`;
+        return state.rows.map(formatRow).filter((row) => {
+            const matches = (key: ColumnKey, value: string): boolean => {
+                const needle = state.tableFilters[key].trim().toLowerCase();
+                if (needle === '') {
+                    return true;
+                }
 
-                return {
-                    bookingId: row.booking_id,
-                    name: row.customer_name || '—',
-                    birth: formatDateLabel(row.birth),
-                    level: row.skill?.title ?? '—',
-                    equip: row.equip?.title ?? '—',
-                    location: row.location || '—',
-                    due:
-                        dueRaw <= 0.01
-                            ? t('reports.paid')
-                            : `${t('reports.remaining')}: ${formatCurrencyPair(dueRaw)}`,
-                    dueRaw,
-                    payment: paymentLabel,
-                    parent: row.parent_name ?? '—',
-                    parentPhone: row.parent_phone ?? '',
-                    parentEmail: row.email ?? '',
-                    dates: row.dates,
-                    raw: row,
-                };
-            })
-            .filter((row) => {
-                const matches = (key: ColumnKey, value: string): boolean => {
-                    const needle = state.tableFilters[key].trim().toLowerCase();
-                    if (needle === '') {
-                        return true;
-                    }
+                return value.toLowerCase().includes(needle);
+            };
 
-                    return value.toLowerCase().includes(needle);
-                };
-
-                return (
-                    matches('name', row.name) &&
-                    (matches('birth', row.birth) ||
-                        matches('birth', row.raw.birth ?? '')) &&
-                    matches('level', row.level) &&
-                    matches('equip', row.equip) &&
-                    matches(
-                        'location',
-                        `${row.location} ${row.dates.join(' ')}`,
-                    ) &&
-                    matches('due', row.due) &&
-                    matches('payment', row.payment) &&
-                    matches(
-                        'parent',
-                        `${row.parent} ${row.parentPhone} ${row.parentEmail}`,
-                    )
-                );
-            });
+            return (
+                matches('name', row.name) &&
+                (matches('birth', row.birth) ||
+                    matches('birth', row.raw.birth ?? '')) &&
+                matches('level', row.level) &&
+                matches('equip', row.equip) &&
+                matches(
+                    'location',
+                    `${row.location} ${row.dates.map((date) => formatDateLabel(date)).join(' ')}`,
+                ) &&
+                matches('due', row.due) &&
+                matches('payment', row.payment) &&
+                matches(
+                    'parent',
+                    `${row.parent} ${row.parentPhone} ${row.parentEmail}`,
+                )
+            );
+        });
     });
 
     const tfootSummaryLabel = computed(() => {
@@ -215,16 +226,8 @@ export function useReportsPage() {
         () => state.pagination.current_page < state.pagination.last_page,
     );
 
-    function toIsoDate(date: Date): string {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-
-        return `${year}-${month}-${day}`;
-    }
-
     function setTodayRange(): void {
-        const today = toIsoDate(new Date());
+        const today = formatIsoDate(new Date());
 
         state.filters.from = today;
         state.filters.to = today;
@@ -241,8 +244,8 @@ export function useReportsPage() {
         const end = new Date(start);
         end.setDate(start.getDate() + 6);
 
-        state.filters.from = toIsoDate(start);
-        state.filters.to = toIsoDate(end);
+        state.filters.from = formatIsoDate(start);
+        state.filters.to = formatIsoDate(end);
         state.activePreset = 'week';
     }
 
@@ -251,31 +254,37 @@ export function useReportsPage() {
         const start = new Date(today.getFullYear(), today.getMonth(), 1);
         const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
 
-        state.filters.from = toIsoDate(start);
-        state.filters.to = toIsoDate(end);
+        state.filters.from = formatIsoDate(start);
+        state.filters.to = formatIsoDate(end);
         state.activePreset = 'month';
     }
 
-    function saveLastFilters(): void {
-        localStorage.setItem(
-            LAST_FILTERS_KEY,
-            JSON.stringify({
-                service_id: state.filters.service_id,
-                from: state.filters.from,
-                to: state.filters.to,
-                per_page: state.perPage,
-            }),
-        );
+    function saveLastFilters(
+        filters: ReportOverview['filters'],
+        perPage: number,
+    ): void {
+        try {
+            localStorage.setItem(
+                LAST_FILTERS_KEY,
+                JSON.stringify({
+                    service_id:
+                        filters.service_id === null
+                            ? ''
+                            : String(filters.service_id),
+                    from: filters.from,
+                    to: filters.to,
+                    per_page: perPage,
+                }),
+            );
+        } catch {
+            // An unavailable storage provider does not invalidate the generated report.
+        }
     }
 
     function loadLastFilters(): void {
-        const raw = localStorage.getItem(LAST_FILTERS_KEY);
-
-        if (!raw) {
-            return;
-        }
-
         try {
+            const raw = localStorage.getItem(LAST_FILTERS_KEY);
+            if (!raw) return;
             const parsed = JSON.parse(raw) as {
                 service_id?: string;
                 from?: string;
@@ -325,62 +334,89 @@ export function useReportsPage() {
     }
 
     function formatCurrencyPair(bgnValue: number): string {
-        return formatEurBgnPairFromBgn(bgnValue);
+        return formatEurBgnPairFromBgn(bgnValue, localeTag.value);
     }
 
-    function normalizeServiceId(): number | undefined {
-        const parsed = Number.parseInt(state.filters.service_id, 10);
+    function applyLinkedFilters(): void {
+        const query = new URLSearchParams(window.location.search);
+        const service = query.get('service_id');
+        if (service && /^[1-9]\d*$/.test(service))
+            state.filters.service_id = service;
 
-        return Number.isNaN(parsed) ? undefined : parsed;
-    }
-
-    async function loadServices(): Promise<void> {
-        state.loadingServices = true;
-
-        try {
-            const response = await listServices({
-                active: true,
-                per_page: 100,
-                page: 1,
-            });
-
-            state.services = response.data;
-        } catch {
-            state.services = [];
-        } finally {
-            state.loadingServices = false;
+        const from = dateInputToIso(query.get('from') ?? '');
+        const to = dateInputToIso(query.get('to') ?? '');
+        if (from && to && from <= to) {
+            state.filters.from = from;
+            state.filters.to = to;
+            state.activePreset = null;
         }
     }
 
-    async function loadReport(): Promise<void> {
+    function draftFilters(): ReportListParams {
+        const id = Number.parseInt(state.filters.service_id, 10);
+        return {
+            from: state.filters.from,
+            to: state.filters.to,
+            service_id: Number.isNaN(id) ? undefined : id,
+            sort: state.filters.sort,
+            dir: state.filters.dir,
+        };
+    }
+
+    function appliedFilters(): ReportListParams {
+        const result = state.report?.filters;
+        if (!result) return draftFilters();
+
+        return {
+            ...result,
+            from: result.from ?? undefined,
+            to: result.to ?? undefined,
+            service_id: result.service_id ?? undefined,
+        };
+    }
+
+    async function loadServices(): Promise<void> {
+        state.serviceOptionsError = false;
+        try {
+            const response = await listReportServices();
+            state.services = response.data;
+        } catch {
+            state.serviceOptionsError = true;
+        }
+    }
+
+    async function loadReport(filters = draftFilters()): Promise<void> {
+        const request = ++reportRequest;
+        const { page, perPage } = state;
         state.loading = true;
         state.errors = [];
 
         try {
             const response = await listReports({
-                service_id: normalizeServiceId(),
-                from: state.filters.from,
-                to: state.filters.to,
-                page: state.page,
-                per_page: state.perPage,
-                sort: state.filters.sort,
-                dir: state.filters.dir,
+                ...filters,
+                page,
+                per_page: perPage,
             });
+            if (request !== reportRequest) return;
 
             state.report = response.data;
             state.rows = response.data.rows;
-
             state.pagination = paginationFromMeta(response.meta.pagination, {
                 total: state.rows.length,
-                perPage: state.perPage,
-                currentPage: state.page,
+                perPage,
+                currentPage: page,
             });
 
-            saveLastFilters();
+            saveLastFilters(response.data.filters, perPage);
         } catch (error) {
-            state.errors = normalizeApiErrors(error, 'Failed to load report.');
+            if (request === reportRequest) {
+                state.errors = normalizeApiErrors(
+                    error,
+                    t('reports.load_failed'),
+                );
+            }
         } finally {
-            state.loading = false;
+            if (request === reportRequest) state.loading = false;
         }
     }
 
@@ -391,16 +427,15 @@ export function useReportsPage() {
 
     function goToPage(page: number): void {
         state.page = page;
-        void loadReport();
+        void loadReport(appliedFilters());
     }
 
     function onPerPageChange(perPageValue: string): void {
         const parsed = Number.parseInt(perPageValue, 10);
-
-        if (!Number.isNaN(parsed) && [10, 25, 50, 100].includes(parsed)) {
+        if ([10, 25, 50, 100].includes(parsed)) {
             state.perPage = parsed;
             state.page = 1;
-            void loadReport();
+            void loadReport(appliedFilters());
         }
     }
 
@@ -426,10 +461,7 @@ export function useReportsPage() {
     }
 
     async function fetchAllRows(): Promise<DisplayRow[]> {
-        const filters = {
-            ...state.filters,
-            service_id: normalizeServiceId(),
-        };
+        const filters = appliedFilters();
         const rows: ReportRow[] = [];
         let page = 1;
         let lastPage = 1;
@@ -452,29 +484,7 @@ export function useReportsPage() {
             page += 1;
         } while (page <= lastPage);
 
-        return rows.map((row): DisplayRow => {
-            const dueRaw = Number(row.due ?? 0);
-
-            return {
-                bookingId: row.booking_id,
-                name: row.customer_name || '—',
-                birth: formatDateLabel(row.birth),
-                level: row.skill?.title ?? '—',
-                equip: row.equip?.title ?? '—',
-                location: row.location || '—',
-                due:
-                    dueRaw <= 0.01
-                        ? t('reports.paid')
-                        : `${t('reports.remaining')}: ${formatCurrencyPair(dueRaw)}`,
-                dueRaw,
-                payment: `${formatCurrencyPair(Number(row.paid ?? 0))} / ${formatCurrencyPair(Number(row.sum_paid ?? 0))}`,
-                parent: row.parent_name ?? '—',
-                parentPhone: row.parent_phone ?? '',
-                parentEmail: row.email ?? '',
-                dates: row.dates,
-                raw: row,
-            };
-        });
+        return rows.map(formatRow);
     }
 
     function columnHeadings(columns: ColumnKey[]): string[] {
@@ -591,8 +601,8 @@ export function useReportsPage() {
     onMounted(async () => {
         setTodayRange();
         loadLastFilters();
-        await loadServices();
-        await loadReport();
+        applyLinkedFilters();
+        await Promise.all([loadServices(), loadReport()]);
     });
 
     return {

@@ -10,6 +10,7 @@ use App\Exceptions\ApiException;
 use App\Models\Service;
 use App\Models\ServiceSlot;
 use App\Models\User;
+use App\Repositories\Contracts\Seasons\SeasonRepositoryInterface;
 use App\Repositories\Contracts\Services\ServiceSlotRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +19,7 @@ final readonly class ServiceSlotService
 {
     public function __construct(
         private ServiceSlotRepositoryInterface $repository,
+        private SeasonRepositoryInterface $seasons,
         private ManagerActionNotificationService $managerActionNotifier,
     ) {}
 
@@ -41,6 +43,7 @@ final readonly class ServiceSlotService
 
         return DB::transaction(function () use ($service, $data, $actor): ServiceSlot {
             $current = Service::query()->lockForUpdate()->findOrFail($service->id);
+            $this->ensureNonOverlappingRange($data);
             $created = $this->repository->create($current, $data);
 
             if ($actor instanceof User) {
@@ -93,6 +96,7 @@ final readonly class ServiceSlotService
         return DB::transaction(function () use ($slot, $data, $actor): ServiceSlot {
             Service::query()->lockForUpdate()->findOrFail($slot->service_id);
             $current = ServiceSlot::query()->findOrFail($slot->id);
+            $this->ensureNonOverlappingRange($data, $current);
             $updated = $this->repository->update($current, $data);
 
             if ($actor instanceof User) {
@@ -114,6 +118,31 @@ final readonly class ServiceSlotService
 
             return $updated;
         }, 3);
+    }
+
+    private function ensureNonOverlappingRange(ServiceSlotData $data, ?ServiceSlot $current = null): void
+    {
+        $start = $data->dateStart();
+        $end = $data->dateEnd();
+
+        if ($start === null || $end === null) {
+            return;
+        }
+
+        // A capacity or label change can retain a range imported from the legacy schedule.
+        if ($current !== null
+            && substr((string) $current->getRawOriginal('date_start'), 0, 10) === $start
+            && substr((string) $current->getRawOriginal('date_end'), 0, 10) === $end) {
+            return;
+        }
+
+        if ($this->seasons->findOverlappingSlot($data->serviceId, $start, $end, $current?->id) !== null) {
+            throw new ApiException(
+                errorCode: 'season_overlap',
+                message: 'The selected dates overlap another period for this service.',
+                statusCode: 422,
+            );
+        }
     }
 
     public function delete(ServiceSlot $slot, ?User $actor = null): void

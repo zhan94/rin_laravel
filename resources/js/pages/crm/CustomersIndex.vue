@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import GermanDateInput from '@/components/GermanDateInput.vue';
+import { useUiI18n } from '@/composables/useUiI18n';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { formatGermanDate } from '@/modules/calendar/dateDisplay';
 import { useCustomersPage } from '@/pages/crm/composables/useCustomersPage';
@@ -18,6 +19,7 @@ const {
     openCreateForm,
     closeForm,
     formatAmount,
+    canManage,
     loadCustomerDetails,
     activateCustomersMode,
     activateUnpaidMode,
@@ -30,6 +32,8 @@ const {
     runSearch,
     goToPage,
 } = useCustomersPage();
+
+const { formatNumber } = useUiI18n();
 </script>
 
 <template>
@@ -51,6 +55,7 @@ const {
                         <button
                             type="button"
                             class="btn btn-solid"
+                            v-if="canManage"
                             @click="openCreateForm"
                         >
                             <span class="glyphicon glyphicon-plus" />
@@ -80,31 +85,31 @@ const {
                 </div>
 
                 <div class="stat-grid">
-                    <div class="stat-card">
+                    <div v-if="!state.unpaidMode" class="stat-card">
                         <span class="stat-label">{{
                             t('customers.total')
                         }}</span>
                         <span class="stat-value">{{
-                            customersStats.total
+                            formatNumber(customersStats.total)
                         }}</span>
                     </div>
-                    <div class="stat-card">
+                    <div v-if="!state.unpaidMode" class="stat-card">
                         <span class="stat-label">{{
-                            t('customers.active')
+                            t('customers.active_on_page')
                         }}</span>
                         <span class="stat-value">{{
-                            customersStats.active
+                            formatNumber(customersStats.active)
                         }}</span>
                     </div>
-                    <div class="stat-card">
+                    <div v-if="state.unpaidMode" class="stat-card">
                         <span class="stat-label">{{
                             t('customers.unpaid_bookings')
                         }}</span>
                         <span class="stat-value">{{
-                            customersStats.unpaid
+                            formatNumber(customersStats.unpaid)
                         }}</span>
                     </div>
-                    <div class="stat-card">
+                    <div v-if="state.unpaidMode" class="stat-card">
                         <span class="stat-label">{{
                             t('customers.total_due')
                         }}</span>
@@ -344,6 +349,7 @@ const {
                                             </button>
                                             <button
                                                 type="button"
+                                                v-if="canManage"
                                                 class="icon-btn icon-btn--primary"
                                                 :title="t('common.edit')"
                                                 @click="startEdit(customer)"
@@ -354,6 +360,7 @@ const {
                                             </button>
                                             <button
                                                 type="button"
+                                                v-if="canManage"
                                                 class="icon-btn icon-btn--danger disabled:opacity-60"
                                                 :disabled="
                                                     state.deletingId ===
@@ -409,8 +416,13 @@ const {
                             "
                             class="filters-note"
                         >
-                            Season total:
-                            {{ formatAmount(activeUnpaidTab.due_total) }}
+                            {{
+                                t('customers.season_total_due', {
+                                    due: formatAmount(
+                                        activeUnpaidTab.due_total,
+                                    ),
+                                })
+                            }}
                         </p>
 
                         <div class="table-wrap">
@@ -429,7 +441,7 @@ const {
                                             {{ t('customers.unpaid_service') }}
                                         </th>
                                         <th>{{ t('customers.unpaid_due') }}</th>
-                                        <th>
+                                        <th v-if="canManage">
                                             {{ t('customers.unpaid_pay_eur') }}
                                         </th>
                                         <th>{{ t('common.actions') }}</th>
@@ -437,7 +449,10 @@ const {
                                 </thead>
                                 <tbody>
                                     <tr v-if="state.loading">
-                                        <td colspan="6" class="empty-row">
+                                        <td
+                                            :colspan="canManage ? 6 : 5"
+                                            class="empty-row"
+                                        >
                                             {{ t('customers.loading_unpaid') }}
                                         </td>
                                     </tr>
@@ -479,6 +494,7 @@ const {
                                             {{ formatAmount(row.due) }}
                                         </td>
                                         <td
+                                            v-if="canManage"
                                             :data-label="
                                                 t('customers.unpaid_pay_eur')
                                             "
@@ -539,7 +555,10 @@ const {
                                             visibleUnpaidRows.length === 0
                                         "
                                     >
-                                        <td colspan="6" class="empty-row">
+                                        <td
+                                            :colspan="canManage ? 6 : 5"
+                                            class="empty-row"
+                                        >
                                             {{ t('customers.no_unpaid_found') }}
                                         </td>
                                     </tr>
@@ -747,14 +766,26 @@ const {
                                                 </span>
                                             </td>
                                             <td :data-label="t('common.paid')">
-                                                {{ booking.paid ?? '-' }}
+                                                {{
+                                                    booking.paid === null
+                                                        ? '—'
+                                                        : formatAmount(
+                                                              booking.paid,
+                                                          )
+                                                }}
                                             </td>
                                             <td
                                                 :data-label="
                                                     t('common.remaining')
                                                 "
                                             >
-                                                {{ booking.due ?? '-' }}
+                                                {{
+                                                    booking.due === null
+                                                        ? '—'
+                                                        : formatAmount(
+                                                              booking.due,
+                                                          )
+                                                }}
                                             </td>
                                             <td
                                                 :data-label="t('common.active')"

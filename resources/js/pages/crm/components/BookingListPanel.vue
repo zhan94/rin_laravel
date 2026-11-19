@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { useUiI18n } from '@/composables/useUiI18n';
 import { formatGermanDate } from '@/modules/calendar/dateDisplay';
+import { formatEurBgnPairFromBgn } from '@/modules/money/currency';
 import { useBookingPageContext } from '@/pages/crm/composables/bookingPageContext';
 
 const {
@@ -11,6 +13,14 @@ const {
     state,
     t,
 } = useBookingPageContext();
+
+const { localeTag } = useUiI18n();
+
+function formatAmount(value: number | null): string {
+    return value === null
+        ? '—'
+        : formatEurBgnPairFromBgn(value, localeTag.value);
+}
 
 defineProps<{
     summaryLabel: string;
@@ -88,13 +98,13 @@ defineProps<{
                                 }}
                             </td>
                             <td :data-label="t('bookings.table_sum')">
-                                {{ booking.sum_paid ?? '-' }}
+                                {{ formatAmount(booking.sum_paid) }}
                             </td>
                             <td :data-label="t('bookings.table_paid')">
-                                {{ booking.paid ?? '-' }}
+                                {{ formatAmount(booking.paid) }}
                             </td>
                             <td :data-label="t('bookings.table_due')">
-                                {{ booking.due ?? '-' }}
+                                {{ formatAmount(booking.due) }}
                             </td>
                             <td :data-label="t('bookings.status')">
                                 {{

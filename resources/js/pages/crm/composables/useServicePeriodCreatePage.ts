@@ -33,7 +33,7 @@ export type SlotCalendarCell = DateSelectionCalendarCell;
 const todayIso = formatIsoDate(new Date());
 
 export function useServicePeriodCreatePage() {
-    const { formatMonthYear, weekdayShortLabels } = useUiI18n();
+    const { t, formatMonthYear, weekdayShortLabels } = useUiI18n();
     const SLOT_WEEKDAY_LABELS = weekdayShortLabels;
 
     const state = reactive({
@@ -222,7 +222,7 @@ export function useServicePeriodCreatePage() {
         } catch (error) {
             state.errors = normalizeApiErrors(
                 error,
-                'Failed to load services.',
+                t('services.seasons_load_error'),
             );
         } finally {
             state.loading = false;
@@ -243,14 +243,20 @@ export function useServicePeriodCreatePage() {
     async function submitSlotForm(): Promise<void> {
         if (state.slotForm.service_id <= 0) {
             state.errors = [
-                { code: 'validation', message: 'Select a service.' },
+                {
+                    code: 'validation',
+                    message: t('services.field_select_service'),
+                },
             ];
             return;
         }
 
         if (state.slotForm.name.trim() === '') {
             state.errors = [
-                { code: 'validation', message: 'Enter season name.' },
+                {
+                    code: 'validation',
+                    message: t('services.enter_season_name'),
+                },
             ];
             return;
         }
@@ -259,7 +265,7 @@ export function useServicePeriodCreatePage() {
             state.errors = [
                 {
                     code: 'validation',
-                    message: 'Select at least one date for the service period.',
+                    message: t('services.select_period_date'),
                 },
             ];
             return;
@@ -281,7 +287,7 @@ export function useServicePeriodCreatePage() {
         } catch (error) {
             state.errors = normalizeApiErrors(
                 error,
-                'Failed to create service period.',
+                t('services.create_period_failed'),
             );
         } finally {
             state.submitting = false;
@@ -310,6 +316,7 @@ export function useServicePeriodCreatePage() {
     });
 
     return {
+        t,
         SLOT_WEEKDAY_LABELS,
         clearSlotSelectedDates,
         formatDateLabel,

@@ -121,6 +121,24 @@ class ReportApiTest extends TestCase
             ->assertJsonPath('errors', []);
     }
 
+    public function test_driver_can_list_report_service_names_without_access_to_the_catalog(): void
+    {
+        $role = Role::query()->firstOrCreate(
+            ['role_key' => RoleKey::DRIVER->value],
+            RoleCatalog::payload(RoleKey::DRIVER, 50),
+        );
+        $this->actingAs(User::factory()->create(['role_id' => $role->id]));
+        $archived = Service::factory()->create([
+            'title' => 'Archived service',
+            'title_translations' => ['en' => 'Archived service', 'de' => 'Archivierte Leistung'],
+            'active' => false,
+        ]);
+
+        $this->getJson('/api/v1/services')->assertForbidden();
+        $this->getJson('/api/v1/reports/services?lang=de')->assertOk()
+            ->assertJsonPath('data.0', ['id' => $archived->id, 'title' => 'Archivierte Leistung']);
+    }
+
     public function test_driver_role_hides_admin_only_columns(): void
     {
         $driverRole = Role::query()->firstOrCreate(
