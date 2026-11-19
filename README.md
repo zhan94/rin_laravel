@@ -17,7 +17,7 @@ docker compose exec -T app cat /run/rin/demo-password
 
 Open [localhost:8081](http://localhost:8081) and sign in as `demo.super_admin` using the generated password. The same local password works for `demo.admin`, `demo.manager`, `demo.group_leader`, and `demo.driver`. Each role has a different access level.
 
-Compose installs the locked dependencies, compiles the frontend, migrates an isolated MySQL database, and seeds 60 synthetic customers with sample bookings. The database and demo credentials persist across `docker compose down`. [Native setup, restart, and isolation instructions](docs/operations.md)
+Compose installs the locked dependencies, compiles the frontend, migrates an isolated MySQL database, and seeds 60 synthetic customers and 16 past, current, and future bookings. Ski school and Mountain hiking have bookable dates on a fresh install. The database and demo credentials persist across `docker compose down`. [Native setup, restart, and isolation instructions](docs/operations.md)
 
 ## Features and architecture
 

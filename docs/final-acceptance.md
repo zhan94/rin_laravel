@@ -7,6 +7,18 @@
 | Local technical evaluation | **GO** for the synthetic ARM64 demo and documented verification scope. |
 | Repository publication | **NO-GO** until the owner confirms rights to share the application and bundled assets, approves the exact repositories and visibility, and explicitly authorizes publication. The supplied GitLab project is public. Hosted CI is pending. |
 
+## Booking acceptance follow-up
+
+The isolated baseline reproduced the reported HTTP 422 in Chrome. Selecting a service between configured periods could disable pickup selection because the support GET attempted to create a period for today. Clicking Add for another gap day also returned `booking_slot_overlap`. The gap calculation ignored Eloquent's date objects, so the proposed period extended into its neighbors.
+
+Support requests now read the configured periods. Booking writes use the existing transaction and service lock to choose a containing period first and bound new periods against both adjacent ranges. Explicitly selected periods cannot expand across a neighbor. Cancellation frees places and customer date availability while retaining booking history. The booking list uses the existing update and cancellation endpoints to edit dates, consent and ski options and preserve payments already registered. The form no longer brings a prior booking's payment into a new one. Chrome also exposed an inline payment failure because Vue supplies numeric input while the parser expected text. The parser now accepts both. Each booking retains the existing single-service model.
+
+The clean synthetic MySQL demo seeded 60 customers, two services, two locations, two cards, one equipment set, six schedule periods, 112 dated slots and 16 bookings with 28 date links. The verified split was six past, six current and four future bookings with six fully paid, six partial and four unpaid. Both services had bookable places on each of the next 14 days, with at least nine for Ski school and thirteen for Mountain hiking on the busiest day. Checks found zero orphans across 27 foreign-key references and zero overlaps, overbookings, duplicate active booking dates, date or catalog mismatches, or payment mirror discrepancies.
+
+The revised demo installed from a clean ARM64 Git clone with fresh MySQL volumes. The fixture and availability checks matched after app restart. Installed Chrome passed five tests, including the end-to-end booking scenario as `demo.manager`. That scenario created a customer, booked Ski school across a configured date and a gap date, registered a payment, added a pass and rental, removed a date, updated consent, checked the dashboard and generated a report, then cancelled the ski booking and created a Mountain hiking booking. The opt-in screenshot test was skipped. The follow-up suite covers 194 PHP tests and 81 frontend tests. The previous timings and test totals below document the prior recruitment review.
+
+The test databases were isolated Compose projects. The original prepared database remains outside this rollout. The missing `crm_mutation_receipts` table previously reported in `rin_lara` requires its separately authorized migration before that installation can accept booking writes.
+
 ## Security and functional coverage
 
 The table revisits the [original Laravel audit](initial-audit.md). The [engineering record](ai-development.md) distinguishes owner decisions, agent-authored work, and automated evidence.

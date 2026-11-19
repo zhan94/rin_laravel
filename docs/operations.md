@@ -4,6 +4,12 @@ Use the [README](../README.md) to start either Compose app. Docker Desktop provi
 
 Compose allocates resources under the project names `rin-laravel-demo` and `rin-oop-demo`. Start another evaluation with a distinct project name and a different `RIN_LARAVEL_PORT` or `RIN_OOP_PORT`.
 
+## Review the synthetic booking workflow
+
+On a clean Laravel demo, use `demo.manager` with the generated password. Create a customer from Customers, then open Add customer, select that customer by full name, and choose Ski school or Mountain hiking. Select a date and the matching pickup point. Ski bookings also require a skill level. After saving, the Records table exposes payments, editing and cancellation. Editing can change dates, consent and ski options while preserving payments already registered. Cancellation releases the places and keeps the historical record.
+
+The fresh demo seeds 60 customers and 16 bookings across three schedule blocks per service. Dates are relative to the first installation. The first 14 calendar days contain bookable places for both services. The initializer preserves records across restarts. Use a new Compose project for a fresh date-relative fixture with its own volumes.
+
 ## Synthetic benchmark
 
 ```sh
