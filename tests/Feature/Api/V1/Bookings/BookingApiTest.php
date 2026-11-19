@@ -113,7 +113,7 @@ class BookingApiTest extends TestCase
             'dates' => ['2026-12-06'], 'skill_id' => 1,
         ])->assertCreated()->assertJsonPath('data.booking_dates.0.slot_date', '2026-12-06');
 
-        $slot = ServiceSlot::query()->findOrFail($booking->json('data.booking_dates.0.slot_id'));
+        $slot = ServiceSlot::query()->whereKey($booking->json('data.booking_dates.0.slot_id'))->sole();
         self::assertSame('2026-12-04', substr((string) $slot->getRawOriginal('date_start'), 0, 10));
         self::assertSame('2026-12-09', substr((string) $slot->getRawOriginal('date_end'), 0, 10));
         $this->assertDatabaseCount('service_slots', 3);
@@ -158,7 +158,7 @@ class BookingApiTest extends TestCase
             'service_id' => $service->id, 'location_id' => $location->id,
             'dates' => ['2027-07-12'], 'skill_id' => 1,
         ])->assertCreated();
-        $slot = ServiceSlot::query()->findOrFail($response->json('data.booking_dates.0.slot_id'));
+        $slot = ServiceSlot::query()->whereKey($response->json('data.booking_dates.0.slot_id'))->sole();
         self::assertSame('2027-07-12', substr((string) $slot->getRawOriginal('date_start'), 0, 10));
         self::assertSame('2027-07-12', substr((string) $slot->getRawOriginal('date_end'), 0, 10));
     }

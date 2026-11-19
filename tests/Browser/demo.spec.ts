@@ -6,6 +6,7 @@ const username = process.env.RIN_BROWSER_USERNAME ?? 'demo.super_admin';
 
 // The last scenario writes to the shared synthetic demo after the read-only checks.
 test.describe.configure({ mode: 'default' });
+test.use({ actionTimeout: 10_000 });
 
 async function signIn(page: Page, account = username): Promise<void> {
     const password = process.env.RIN_BROWSER_PASSWORD;
@@ -274,6 +275,7 @@ function apiResponse(page: Page, path: string, method: string) {
         (response) =>
             new URL(response.url()).pathname === `/api/v1/${path}` &&
             response.request().method() === method,
+        { timeout: 10_000 },
     );
 }
 
@@ -290,7 +292,7 @@ test('completes the customer and booking workflow with the synthetic ski service
     const before = Number(await todayRecords.innerText());
     expect(before).toBeGreaterThan(0);
 
-    const surname = `Acceptance ${Date.now()}`;
+    const surname = `Acceptance${Date.now()}`;
     const fullName = `Synthetic ${surname}`;
     await page.goto('/crm/customers?lang=en');
     await expect(
@@ -311,7 +313,7 @@ test('completes the customer and booking workflow with the synthetic ski service
     await page.goto('/crm/bookings?lang=en');
     await page
         .getByPlaceholder('First and last name', { exact: true })
-        .fill(surname);
+        .fill(fullName);
     await page
         .locator('.booking-suggest-item')
         .filter({ hasText: fullName })
@@ -373,6 +375,9 @@ test('completes the customer and booking workflow with the synthetic ski service
     await form
         .getByPlaceholder('Note', { exact: true })
         .fill('Synthetic acceptance update');
+    await form
+        .getByPlaceholder('Total amount (€)', { exact: true })
+        .fill('144');
     const updateResponse = apiResponse(page, `bookings/${booking.id}`, 'PUT');
     await form.getByRole('button', { name: 'Save', exact: true }).click();
     const updated = await updateResponse;
@@ -380,6 +385,7 @@ test('completes the customer and booking workflow with the synthetic ski service
     const beforeCancellation = (await updated.json()).data;
     expect(beforeCancellation.approved).toBe(true);
     expect(beforeCancellation.paid).toBe(47);
+    expect(beforeCancellation.sum_paid).toBe(282);
     expect(beforeCancellation.winter_detail.card_id).toBeGreaterThan(0);
     expect(beforeCancellation.winter_detail.equip_id).toBeGreaterThan(0);
     expect(
@@ -423,7 +429,7 @@ test('completes the customer and booking workflow with the synthetic ski service
 
     await page
         .getByPlaceholder('First and last name', { exact: true })
-        .fill(surname);
+        .fill(fullName);
     await page
         .locator('.booking-suggest-item')
         .filter({ hasText: fullName })

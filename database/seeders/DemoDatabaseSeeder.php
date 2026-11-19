@@ -42,7 +42,7 @@ final class DemoDatabaseSeeder extends Seeder
                 return;
             }
 
-            foreach (['users', 'customers', 'services', 'locations', 'cards', 'bookings'] as $table) {
+            foreach (['users', 'customers', 'services', 'locations', 'cards', 'equips', 'service_slots', 'bookings'] as $table) {
                 if (DB::table($table)->exists()) {
                     throw new RuntimeException('Synthetic demonstration seeding requires an empty business database.');
                 }
