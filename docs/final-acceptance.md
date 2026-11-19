@@ -1,5 +1,7 @@
 # Final acceptance
 
+The [final product quality review](product-quality-review.md) records the most recent local release decision and verification.
+
 **Evaluation date** 19 November 2026. This review builds on the owner's prior acceptance of the local remediation and approval of the repository baseline. The recruitment review added the localhost session fix, distinct administrator labels, Driver report privacy checks, and cross-database report search.
 
 | Decision | Status |

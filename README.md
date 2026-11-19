@@ -38,9 +38,9 @@ sh scripts/ci-verify.sh quality
 
 This runs the same container-based gates used by GitLab CI and GitHub Actions, including the locked dependency audits, PHP and frontend checks, and Chromium against an isolated demo. The checks use generated data. [Native test, MySQL concurrency, and benchmark commands](docs/operations.md)
 
-The 100,000-customer benchmark measured median repository calls of 0.12 ms for the first page, 0.48 ms for a deep page, and 25.54 ms for a substring match. It ran on an Apple Silicon Mac using PHP 8.5.3 and in-memory SQLite. [Results and measurement boundaries](docs/final-acceptance.md#100000-customer-benchmark)
+The latest 100,000-customer MySQL benchmark measured median repository calls of 3.65 ms for the first page, 20.59 ms for a deep page, and 82.79 ms for a substring match on ARM64. [Performance results, SQLite comparison and measurement boundaries](docs/product-quality-review.md#performance)
 
-The Driver report API restricts confidential fields, and regression tests exercise staff role boundaries, account revocation, and CSRF. Reports that export every matching row still assemble paginated results in the browser. The local demo was verified on ARM64. Hosted CI, x86-64 execution, physical passkeys, and full accessibility conformance remain unverified. Application and asset redistribution require rights-holder confirmation. [Final acceptance and publication gates](docs/final-acceptance.md)
+The Driver report API restricts confidential fields, and regression tests exercise staff role boundaries, account revocation, and CSRF. Reports that export every matching row still assemble paginated results in the browser. The local demo was verified on ARM64. Hosted CI, x86-64 execution, physical passkeys, and full accessibility conformance remain unverified. Application and asset redistribution require rights-holder confirmation. [Final product acceptance and publication gates](docs/product-quality-review.md)
 
 ## Engineering records
 
