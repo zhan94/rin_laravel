@@ -49,4 +49,10 @@ class ServiceDate extends Model
     {
         return $this->hasMany(BookingDate::class, 'service_date_id');
     }
+
+    /** @return HasMany<BookingDate, $this> */
+    public function activeBookingDates(): HasMany
+    {
+        return $this->bookingDates()->whereHas('booking', static fn ($query) => $query->where('active', true));
+    }
 }

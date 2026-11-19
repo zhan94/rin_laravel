@@ -10,6 +10,10 @@ On a clean Laravel demo, use `demo.manager` with the generated password. Create 
 
 The fresh demo seeds 60 customers and 16 bookings across three schedule blocks per service. Dates are relative to the first installation. The first 14 calendar days contain bookable places for both services. The initializer preserves records across restarts. Use a new Compose project for a fresh date-relative fixture with its own volumes.
 
+Open **Services** to compare the separate season entries for each service. Use the date filter to find periods covering a date, or search by service or season name. **Availability** shows the scheduled days, places used and places remaining, plus the booking list for the selected day. Cancelled bookings remain visible and release their places. The Booking calendar blocks full dates and still allows new eligible days, which the booking transaction schedules on save.
+
+Each season uses its configured daily capacity and shows the duration prices set on the service. Services without a configured tariff display **Price not configured**. The clean demo seeds a day rate for each of its services.
+
 ## Synthetic benchmark
 
 ```sh

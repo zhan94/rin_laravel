@@ -17,27 +17,16 @@ const {
     SLOT_WEEKDAY_LABELS,
     translationFields,
     state,
-    servicesCount,
-    periodsCount,
-    datesCount,
+    canManage,
+    loadSeasons,
     serviceModalTitle,
     slotModalTitle,
     slotSelectedDates,
     slotModalBlockedDateSet,
     slotCalendarMonthLabel,
     slotCalendarCells,
-    filteredServicePanels,
     bonusGroups,
     serviceLabelById,
-    groupSlotsBySeason,
-    slotStatusClass,
-    reportsUrl,
-    rowCalendarMonthLabel,
-    rowCalendarWeeks,
-    moveRowCalendarMonth,
-    openReportForSlotDate,
-    isCalendarOpen,
-    toggleCalendar,
     openServiceNamesModal,
     openEditServiceModal,
     submitServiceForm,
@@ -65,7 +54,7 @@ const {
                         <h1>{{ t('services.title') }}</h1>
                         <p class="subline">{{ t('services.subtitle') }}</p>
                     </div>
-                    <div class="hero-actions">
+                    <div v-if="canManage" class="hero-actions">
                         <Link
                             href="/crm/services/periods/create"
                             class="btn btn-solid"
@@ -82,7 +71,11 @@ const {
                     </div>
                 </section>
 
-                <div v-if="state.errors.length > 0" class="services-errors">
+                <div
+                    v-if="state.errors.length > 0 && !state.slotModalOpen"
+                    class="services-errors"
+                    role="alert"
+                >
                     <p
                         v-for="error in state.errors"
                         :key="`${error.code}-${error.message}`"
@@ -96,40 +89,34 @@ const {
                         <span class="stat-label">{{
                             t('services.stat_services')
                         }}</span>
-                        <span class="stat-value">{{ servicesCount }}</span>
+                        <span class="stat-value">{{
+                            state.counts.services
+                        }}</span>
                     </article>
                     <article class="stat-card">
                         <span class="stat-label">{{
                             t('services.stat_periods')
                         }}</span>
-                        <span class="stat-value">{{ periodsCount }}</span>
+                        <span class="stat-value">{{
+                            state.counts.seasons
+                        }}</span>
                     </article>
                     <article class="stat-card">
                         <span class="stat-label">{{
                             t('services.stat_dates')
                         }}</span>
-                        <span class="stat-value">{{ datesCount }}</span>
+                        <span class="stat-value">{{ state.counts.dates }}</span>
                     </article>
                 </section>
 
-                <section class="tab-bar services-tab-bar">
+                <section v-if="canManage" class="tab-bar services-tab-bar">
                     <button
                         type="button"
                         class="tab-btn"
                         :class="state.activeTab === 'main' ? 'is-active' : ''"
                         @click="state.activeTab = 'main'"
                     >
-                        {{ t('services.tab_main') }}
-                    </button>
-                    <button
-                        type="button"
-                        class="tab-btn"
-                        :class="
-                            state.activeTab === 'previous' ? 'is-active' : ''
-                        "
-                        @click="state.activeTab = 'previous'"
-                    >
-                        {{ t('services.tab_previous') }}
+                        {{ t('services.service_seasons') }}
                     </button>
                     <button
                         type="button"
@@ -142,23 +129,18 @@ const {
                 </section>
 
                 <ServiceSchedulePanel
-                    v-if="state.activeTab !== 'bonus'"
-                    :deleting-slot-id="state.deletingSlotId"
-                    :group-slots-by-season="groupSlotsBySeason"
-                    :is-calendar-open="isCalendarOpen"
+                    v-if="state.activeTab === 'main'"
+                    v-model="state.seasonFilters"
+                    :seasons="state.seasons"
+                    :services="state.services"
+                    :pagination="state.seasonPagination"
                     :loading="state.loadingOverview"
-                    :move-row-calendar-month="moveRowCalendarMonth"
-                    :open-edit-slot-modal="openEditSlotModal"
-                    :open-report-for-slot-date="openReportForSlotDate"
-                    :panels="filteredServicePanels"
-                    :remove-slot="removeSlot"
-                    :reports-url="reportsUrl"
-                    :row-calendar-month-label="rowCalendarMonthLabel"
-                    :row-calendar-weeks="rowCalendarWeeks"
-                    :slot-status-class="slotStatusClass"
-                    :t="t"
-                    :toggle-calendar="toggleCalendar"
-                    :weekday-labels="SLOT_WEEKDAY_LABELS"
+                    :can-manage="canManage"
+                    :loading-edit="state.loadingSlotEdit"
+                    :deleting-slot-id="state.deletingSlotId"
+                    @page="loadSeasons"
+                    @edit="openEditSlotModal"
+                    @remove="removeSlot"
                 />
 
                 <BonusServicesPanel
@@ -181,6 +163,19 @@ const {
                         </DialogDescription>
                     </DialogHeader>
 
+                    <div
+                        v-if="state.errors.length > 0"
+                        class="services-errors"
+                        role="alert"
+                    >
+                        <p
+                            v-for="error in state.errors"
+                            :key="`${error.code}-${error.message}`"
+                        >
+                            {{ error.message }}
+                        </p>
+                    </div>
+
                     <form
                         class="mt-2 grid gap-3 md:grid-cols-2"
                         @submit.prevent="submitSlotForm"
@@ -194,6 +189,7 @@ const {
                             <select
                                 id="slot-service"
                                 v-model.number="state.slotForm.service_id"
+                                disabled
                                 class="rounded-md border border-input bg-background px-3 py-2 text-sm"
                                 required
                             >
@@ -230,7 +226,7 @@ const {
 
                         <div class="field">
                             <label for="slot-max" class="text-sm font-medium">{{
-                                t('services.field_max_children')
+                                t('services.daily_capacity')
                             }}</label>
                             <input
                                 id="slot-max"
@@ -411,12 +407,8 @@ const {
                             >
                                 {{
                                     state.submittingSlot
-                                        ? state.slotFormMode === 'edit'
-                                            ? t('services.saving')
-                                            : t('services.adding')
-                                        : state.slotFormMode === 'edit'
-                                          ? t('services.save_period')
-                                          : t('services.add_period')
+                                        ? t('services.saving')
+                                        : t('services.save_period')
                                 }}
                             </button>
                         </div>

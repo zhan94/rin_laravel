@@ -4,6 +4,11 @@ import type {
     ServiceCreatePayload,
     ServiceDefinition,
     ServiceListParams,
+    ServiceSeason,
+    ServiceSeasonBooking,
+    ServiceSeasonDate,
+    ServiceSeasonSort,
+    ServiceSeasonStatus,
     ServiceSlot,
     ServiceSlotCreatePayload,
 } from './types';
@@ -80,4 +85,45 @@ export function deleteServiceSlot(
     return httpRequest<{ deleted: boolean }>(`/api/v1/slots/${slotId}`, {
         method: 'DELETE',
     });
+}
+
+const seasonsBasePath = '/api/v1/service-seasons';
+
+export function listServiceSeasons(params: {
+    q: string;
+    service_id?: number;
+    date: string;
+    status: ServiceSeasonStatus | '';
+    sort: ServiceSeasonSort;
+    direction: 'asc' | 'desc';
+    page: number;
+}): Promise<ApiEnvelope<ServiceSeason[]>> {
+    return httpRequest<ServiceSeason[]>(withQuery(seasonsBasePath, params));
+}
+
+export function getServiceSlot(
+    slotId: number,
+): Promise<ApiEnvelope<ServiceSlot>> {
+    return httpRequest<ServiceSlot>(`/api/v1/slots/${slotId}`);
+}
+
+export function listServiceSeasonDates(
+    slotId: number,
+    params: { page: number; date: string },
+): Promise<ApiEnvelope<ServiceSeasonDate[]>> {
+    return httpRequest<ServiceSeasonDate[]>(
+        withQuery(`${seasonsBasePath}/${slotId}/dates`, params),
+    );
+}
+
+export function listServiceSeasonBookings(
+    slotId: number,
+    dateId: number,
+    page: number,
+): Promise<ApiEnvelope<ServiceSeasonBooking[]>> {
+    return httpRequest<ServiceSeasonBooking[]>(
+        withQuery(`${seasonsBasePath}/${slotId}/dates/${dateId}/bookings`, {
+            page,
+        }),
+    );
 }

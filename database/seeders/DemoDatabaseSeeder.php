@@ -111,6 +111,13 @@ final class DemoDatabaseSeeder extends Seeder
             'max' => $capacity,
             'active' => true,
         ]);
+        $servicePrice = $ski ? 42 : 32;
+        $service->prices()->create([
+            'days' => 1,
+            'price' => BgnCurrency::fromEur($servicePrice),
+            'per_day' => BgnCurrency::fromEur($servicePrice),
+        ]);
+
         $location = Location::query()->create([
             'location_from' => 'Example Central Station',
             'location_to' => $title.' Centre',
@@ -150,7 +157,7 @@ final class DemoDatabaseSeeder extends Seeder
         foreach ([[0, 1], [0], [0, 2], [-2, -1], [-24, -23], [-21], [6, 7], [25, 26]] as $index => $offsets) {
             $bookPass = $ski && $index % 2 === 0;
             $bookRental = $rental !== null && $index % 3 === 0;
-            $total = count($offsets) * (($ski ? 42 : 32) + ($bookPass ? $passPrice : 0) + ($bookRental ? 12 : 0));
+            $total = count($offsets) * ($servicePrice + ($bookPass ? $passPrice : 0) + ($bookRental ? 12 : 0));
             $paid = match ($index) {
                 0, 3, 4 => $total,
                 1, 5, 7 => $total / 2,

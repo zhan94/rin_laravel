@@ -217,30 +217,17 @@ final class BookingRepository implements BookingRepositoryInterface
 
     public function hasCapacity(int $serviceDateId, int $bookingId): bool
     {
-        $row = DB::table('service_dates as sd')
-            ->join('service_slots as ss', 'ss.id', '=', 'sd.slot_id')
-            ->leftJoin('booking_dates as bd', 'bd.service_date_id', '=', 'sd.id')
-            ->leftJoin('bookings as b', fn ($join) => $join->on('b.id', '=', 'bd.booking_id')->where('b.active', true))
-            ->where('sd.id', $serviceDateId)
-            ->groupBy('sd.id', 'ss.max')
-            ->selectRaw('ss.max AS slot_max')
-            ->selectRaw('COUNT(b.id) AS booked')
-            ->selectRaw('SUM(CASE WHEN b.id = ? THEN 1 ELSE 0 END) AS already_booked', [$bookingId])
-            ->first();
+        $date = ServiceDate::query()
+            ->select('service_dates.*', 'service_slots.max as capacity')
+            ->join('service_slots', 'service_slots.id', '=', 'service_dates.slot_id')
+            ->withCount('activeBookingDates')
+            ->withExists(['activeBookingDates as already_booked' => static fn ($query) => $query->where('booking_id', $bookingId)])
+            ->find($serviceDateId);
 
-        if ($row === null) {
-            return false;
-        }
-
-        $alreadyBooked = (int) ($row->already_booked ?? 0);
-        if ($alreadyBooked > 0) {
-            return true;
-        }
-
-        $booked = (int) ($row->booked ?? 0);
-        $slotMax = (int) ($row->slot_max ?? 0);
-
-        return $booked < $slotMax;
+        return $date !== null && (
+            (bool) $date->getAttribute('already_booked')
+            || (int) $date->active_booking_dates_count < (int) $date->getAttribute('capacity')
+        );
     }
 
     /**
@@ -262,7 +249,10 @@ final class BookingRepository implements BookingRepositoryInterface
 
         $existingByDate = [];
         foreach ($existingRows as $row) {
-            $date = (string) data_get($row, 'slot_date', '');
+            $date = $this->normalizeDateValue(data_get($row, 'slot_date'));
+            if ($date === null) {
+                continue;
+            }
             $existingByDate[$date] = [
                 'id' => (int) $row->id,
                 'service_date_id' => (int) $row->service_date_id,
@@ -699,7 +689,7 @@ final class BookingRepository implements BookingRepositoryInterface
         }
 
         if (is_string($value) && $value !== '') {
-            return $value;
+            return substr($value, 0, 10);
         }
 
         return null;

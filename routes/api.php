@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\SeasonController;
 use App\Http\Controllers\Api\V1\ServiceController;
+use App\Http\Controllers\Api\V1\ServiceScheduleController;
 use App\Http\Controllers\Api\V1\ServiceSlotController;
 use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
@@ -83,6 +84,12 @@ Route::prefix('v1')
             Route::post('seasons', [SeasonController::class, 'store'])->middleware('role:manager')->name('seasons.store');
             Route::put('seasons/{season}', [SeasonController::class, 'update'])->middleware('role:manager')->name('seasons.update');
             Route::delete('seasons/{season}', [SeasonController::class, 'destroy'])->middleware('role:manager')->name('seasons.destroy');
+
+            Route::middleware('role:group_leader')->group(function (): void {
+                Route::get('service-seasons', [ServiceScheduleController::class, 'index'])->name('service-seasons.index');
+                Route::get('service-seasons/{slot}/dates', [ServiceScheduleController::class, 'dates'])->name('service-seasons.dates');
+                Route::get('service-seasons/{slot}/dates/{date}/bookings', [ServiceScheduleController::class, 'bookings'])->whereNumber('date')->name('service-seasons.bookings');
+            });
 
             Route::apiResource('services', ServiceController::class)
                 ->middlewareFor(['index', 'show'], 'role:group_leader')

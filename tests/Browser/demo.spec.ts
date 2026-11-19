@@ -337,11 +337,95 @@ function apiResponse(page: Page, path: string, method: string) {
     );
 }
 
+async function openAvailability(page: Page, service: string, date: Date) {
+    await page.goto('/crm/services?lang=en');
+    await page
+        .getByLabel('Service', { exact: true })
+        .selectOption({ label: service });
+    await page
+        .getByLabel('Date within season', { exact: true })
+        .fill(isoDate(date));
+    const seasons = page.getByRole('table', {
+        name: 'Service seasons',
+        exact: true,
+    });
+    const rows = seasons.locator('tbody tr');
+    await expect(rows).toHaveCount(1);
+    await rows
+        .getByRole('button', { name: 'Availability', exact: true })
+        .click();
+    const detail = page.getByRole('dialog');
+    const days = detail.getByRole('table', {
+        name: 'Daily availability',
+        exact: true,
+    });
+    const day = days.locator('tbody tr');
+    await expect(day).toHaveCount(1);
+
+    return {
+        detail,
+        day,
+        booked: day.getByRole('cell').nth(1),
+        remaining: day.getByRole('cell').nth(2),
+    };
+}
+
+test('shows distinct service seasons with prices, status filters, sorting, and mobile availability', async ({
+    page,
+}) => {
+    await signIn(page, 'demo.manager');
+    await page.goto('/crm/services?lang=en');
+    const seasons = page.getByRole('table', {
+        name: 'Service seasons',
+        exact: true,
+    });
+    const rows = seasons.locator('tbody tr');
+    await expect(rows).toHaveCount(6);
+    await page
+        .getByRole('searchbox', { name: 'Search', exact: true })
+        .fill('Ski school');
+    await expect(rows).toHaveCount(3);
+    await expect(rows.filter({ hasText: 'Active' })).toContainText('42.00€');
+    await expect(rows.filter({ hasText: 'Upcoming' })).toContainText('12');
+    await expect(rows.filter({ hasText: 'Expired' })).toHaveCount(1);
+
+    await page.getByLabel('Sort by', { exact: true }).selectOption('date');
+    await page.getByLabel('Sort order', { exact: true }).selectOption('desc');
+    await expect(rows.first()).toContainText('Upcoming');
+    await page.getByLabel('Status', { exact: true }).selectOption('expired');
+    await expect(rows).toHaveCount(1);
+    await expect(rows).toContainText('Expired');
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    const { detail, day, booked, remaining } = await openAvailability(
+        page,
+        'Ski school',
+        dateOffset(0),
+    );
+    await expect(
+        detail.getByRole('heading', { name: /Ski school · Activity block/ }),
+    ).toBeVisible();
+    await expect(day).toBeVisible();
+    await expect(booked).toHaveText('3');
+    await expect(remaining).toHaveText('9');
+    await expect(detail.getByText('Sample Customer 001')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(detail).toHaveCount(0);
+    await expect(
+        rows.getByRole('button', { name: 'Availability', exact: true }),
+    ).toBeFocused();
+});
+
 test('completes the customer and booking workflow with the synthetic ski service', async ({
     page,
+    browser,
+    baseURL,
 }) => {
     test.setTimeout(90_000);
     await signIn(page, 'demo.manager');
+    await using observerContext = await browser.newContext({ baseURL });
+    const observer = await observerContext.newPage();
+    await signIn(observer, 'demo.group_leader');
     await page.goto('/dashboard?lang=en');
     const todayRecords = page
         .locator('.stat-card')
@@ -349,6 +433,14 @@ test('completes the customer and booking workflow with the synthetic ski service
         .locator('.stat-value');
     const before = Number(await todayRecords.innerText());
     expect(before).toBeGreaterThan(0);
+
+    const today = dateOffset(0);
+    const tomorrow = dateOffset(1);
+    const gapDay = dateOffset(17);
+    const currentDay = await openAvailability(observer, 'Ski school', today);
+    const remainingToday = Number(await currentDay.remaining.innerText());
+    const nextDay = await openAvailability(observer, 'Ski school', tomorrow);
+    const remainingTomorrow = Number(await nextDay.remaining.innerText());
 
     const surname = `Acceptance${Date.now()}`;
     const fullName = `Synthetic ${surname}`;
@@ -386,9 +478,6 @@ test('completes the customer and booking workflow with the synthetic ski service
         .locator('.booking-location-option')
         .filter({ hasText: 'Example Central Station' })
         .click();
-    const today = dateOffset(0);
-    const tomorrow = dateOffset(1);
-    const gapDay = dateOffset(17);
     await toggleDate(page, today);
     await toggleDate(page, gapDay);
     await form.locator('input[name="skill"][value="1"]').check();
@@ -404,6 +493,16 @@ test('completes the customer and booking workflow with the synthetic ski service
         ),
     ).toEqual([isoDate(today), isoDate(gapDay)]);
 
+    const createdToday = await openAvailability(observer, 'Ski school', today);
+    await expect(createdToday.remaining).toHaveText(String(remainingToday - 1));
+    await expect(
+        createdToday.detail.getByText(fullName, { exact: true }),
+    ).toBeVisible();
+    const gap = await openAvailability(observer, 'Ski school', gapDay);
+    await expect(gap.booked).toHaveText('1');
+    await expect(gap.detail.getByText(fullName, { exact: true })).toBeVisible();
+
+    await page.goto('/crm/bookings?lang=en');
     const row = page.getByRole('row').filter({ hasText: fullName });
     await row.getByPlaceholder('Amount', { exact: true }).fill('24');
     const paymentResponse = apiResponse(
@@ -453,6 +552,17 @@ test('completes the customer and booking workflow with the synthetic ski service
     ).toEqual([isoDate(today), isoDate(tomorrow)]);
     await expect(row).toContainText('Consent received');
 
+    const added = await openAvailability(observer, 'Ski school', tomorrow);
+    await expect(added.remaining).toHaveText(String(remainingTomorrow - 1));
+    await expect(
+        added.detail.getByText(fullName, { exact: true }),
+    ).toBeVisible();
+    const removed = await openAvailability(observer, 'Ski school', gapDay);
+    await expect(removed.booked).toHaveText('0');
+    await expect(
+        removed.detail.getByText('No bookings for this date.'),
+    ).toBeVisible();
+
     await page.goto('/dashboard?lang=en');
     await expect(todayRecords).toHaveText(String(before + 1));
     await expect(page.getByText(fullName, { exact: true })).toBeVisible();
@@ -484,6 +594,26 @@ test('completes the customer and booking workflow with the synthetic ski service
         paid: 47,
     });
     await expect(row).toContainText('Cancelled');
+
+    const cancelledToday = await openAvailability(
+        observer,
+        'Ski school',
+        today,
+    );
+    await expect(cancelledToday.remaining).toHaveText(String(remainingToday));
+    await expect(
+        cancelledToday.detail.locator('li').filter({ hasText: fullName }),
+    ).toContainText('Cancelled');
+    const cancelledTomorrow = await openAvailability(
+        page,
+        'Ski school',
+        tomorrow,
+    );
+    await expect(cancelledTomorrow.remaining).toHaveText(
+        String(remainingTomorrow),
+    );
+
+    await page.goto('/crm/bookings?lang=en');
 
     await page
         .getByPlaceholder('First and last name', { exact: true })

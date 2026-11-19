@@ -1,370 +1,389 @@
 <script setup lang="ts">
+import { useUiI18n } from '@/composables/useUiI18n';
+import { parseIsoDate } from '@/modules/calendar/dateUtils';
+import { formatEurBgnPairFromBgn } from '@/modules/money/currency';
 import type {
-    ServicePanel,
-    SlotGroup,
-    SlotMonthCalendarCell,
-    SlotViewModel,
-} from '@/pages/crm/composables/useServicesPage';
-import { Pencil, Search, Trash2 } from 'lucide-vue-next';
+    PaginationMeta,
+    ServiceDefinition,
+    ServiceSeason,
+    ServiceSeasonFilters,
+    ServiceSeasonSort,
+    ServiceSeasonStatus,
+} from '@/modules/services/types';
+import ServiceSeasonAvailability from '@/pages/crm/components/ServiceSeasonAvailability.vue';
+import { withQuery } from '@/services/queryString';
+import { nextTick, ref, shallowRef } from 'vue';
 
-type Translate = (key: string, params?: Record<string, unknown>) => string;
-
-defineProps<{
-    deletingSlotId: number | null;
-    groupSlotsBySeason: (slots: SlotViewModel[]) => SlotGroup[];
-    isCalendarOpen: (slotId: number) => boolean;
+const props = defineProps<{
+    seasons: ServiceSeason[];
+    services: ServiceDefinition[];
+    pagination: PaginationMeta | null;
     loading: boolean;
-    moveRowCalendarMonth: (slot: SlotViewModel, delta: number) => void;
-    openEditSlotModal: (serviceId: number, slot: SlotViewModel) => void;
-    openReportForSlotDate: (serviceId: number, date: string) => void;
-    panels: ServicePanel[];
-    removeSlot: (slotId: number) => void;
-    reportsUrl: (serviceId: number, slot: SlotViewModel) => string;
-    rowCalendarMonthLabel: (slot: SlotViewModel) => string;
-    rowCalendarWeeks: (slot: SlotViewModel) => SlotMonthCalendarCell[][];
-    slotStatusClass: (status: SlotViewModel['status']) => string;
-    t: Translate;
-    toggleCalendar: (slot: SlotViewModel) => void;
-    weekdayLabels: string[];
+    canManage: boolean;
+    loadingEdit: boolean;
+    deletingSlotId: number | null;
 }>();
+
+const emit = defineEmits<{
+    page: [number];
+    edit: [ServiceSeason];
+    remove: [number];
+}>();
+
+const filters = defineModel<ServiceSeasonFilters>({ required: true });
+const { t, localeTag } = useUiI18n();
+const selected = shallowRef<ServiceSeason | null>(null);
+const availabilityTrigger = ref<HTMLButtonElement | null>(null);
+const statuses: ServiceSeasonStatus[] = [
+    'active',
+    'upcoming',
+    'expired',
+    'unscheduled',
+];
+const sorts: ServiceSeasonSort[] = ['service', 'season', 'date', 'status'];
+const statusClasses: Record<ServiceSeasonStatus, string> = {
+    active: 'pill--yes',
+    upcoming: 'border-blue-200 bg-blue-100 text-blue-800',
+    expired: 'pill--no',
+    unscheduled: '',
+};
+
+function formatDate(date: string | null): string {
+    const parsed = date ? parseIsoDate(date) : null;
+    return parsed?.toLocaleDateString(localeTag.value) ?? '—';
+}
+
+function openAvailability(season: ServiceSeason, event: MouseEvent): void {
+    availabilityTrigger.value = event.currentTarget as HTMLButtonElement;
+    selected.value = season;
+}
+
+async function closeAvailability(): Promise<void> {
+    selected.value = null;
+    await nextTick();
+    availabilityTrigger.value?.focus();
+}
+
+function reportsForSeason(season: ServiceSeason): string {
+    return withQuery('/crm/reports', {
+        service_id: season.service_id,
+        from: season.date_start,
+        to: season.date_end,
+    });
+}
+
+function changePage(offset: number): void {
+    if (props.pagination) emit('page', props.pagination.current_page + offset);
+}
 </script>
 
 <template>
     <section class="tab-panel is-active">
-        <div v-if="loading" class="empty-state">
-            {{ t('services.loading') }}
-        </div>
-        <div v-else-if="panels.length === 0" class="empty-state">
-            {{ t('services.empty_tab') }}
-        </div>
-        <div v-else class="services-block">
-            <article
-                v-for="panel in panels"
-                :key="panel.service.id"
-                class="table-shell"
+        <div class="table-shell mb-4">
+            <div
+                class="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6"
             >
-                <div class="table-head">
-                    <span class="badge badge--info">{{ panel.title }}</span>
-                    <span class="filters-note">{{
-                        t('services.note_dates_for_service')
-                    }}</span>
+                <div class="grid gap-1 text-sm font-medium">
+                    <label for="season-filter-q">{{
+                        t('common.search')
+                    }}</label>
+                    <input
+                        id="season-filter-q"
+                        v-model.trim="filters.q"
+                        type="search"
+                        maxlength="120"
+                        :placeholder="t('services.search_seasons')"
+                        class="min-w-0 rounded-md border border-input bg-background px-3 py-2"
+                    />
                 </div>
-
-                <div class="table-wrap">
-                    <table
-                        class="table-hover table-bordered table-responsive customer-table table"
+                <div class="grid gap-1 text-sm font-medium">
+                    <label for="season-filter-service-id">{{
+                        t('common.service')
+                    }}</label>
+                    <select
+                        id="season-filter-service-id"
+                        v-model="filters.service_id"
+                        class="min-w-0 rounded-md border border-input bg-background px-3 py-2"
                     >
-                        <thead>
-                            <tr>
-                                <th>{{ t('services.col_season') }}</th>
-                                <th>{{ t('services.col_for_dates') }}</th>
-                                <th>
-                                    {{ t('services.col_registered_children') }}
-                                </th>
-                                <th>{{ t('services.col_status') }}</th>
-                                <th
-                                    class="action-col action-col--list text-center"
-                                >
-                                    {{ t('services.col_list') }}
-                                </th>
-                                <th
-                                    class="action-col action-col--edit text-center"
-                                >
-                                    {{ t('services.col_edit') }}
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <template
-                                v-for="group in groupSlotsBySeason(panel.slots)"
-                                :key="`${panel.service.id}-${group.key}`"
-                            >
-                                <tr
-                                    class="season-group-row"
-                                    :class="`season-group-row--${group.key}`"
-                                >
-                                    <td colspan="6">
-                                        <span class="season-group-label">{{
-                                            group.label
-                                        }}</span>
-                                    </td>
-                                </tr>
-                                <tr v-for="slot in group.rows" :key="slot.id">
-                                    <td>
-                                        <strong>{{ slot.name }}</strong>
-                                    </td>
-                                    <td>
-                                        <div class="text-muted">
-                                            {{
-                                                slot.datesCount > 0
-                                                    ? t(
-                                                          'services.dates_count',
-                                                          {
-                                                              count: slot.datesCount,
-                                                          },
-                                                      )
-                                                    : t('services.no_dates')
-                                            }}
-                                        </div>
-                                        <button
-                                            type="button"
-                                            class="btn btn-outline btn-xs toggle-calendar"
-                                            :class="{
-                                                'is-open': isCalendarOpen(
-                                                    slot.id,
-                                                ),
-                                            }"
-                                            @click="toggleCalendar(slot)"
-                                        >
-                                            {{ t('services.calendar') }}
-                                        </button>
-                                        <div
-                                            v-if="isCalendarOpen(slot.id)"
-                                            class="slot-calendar"
-                                        >
-                                            <div
-                                                v-if="
-                                                    slot.dateLabels.length === 0
-                                                "
-                                                class="slot-calendar-empty"
-                                            >
-                                                {{ t('services.no_dates') }}
-                                            </div>
-                                            <div
-                                                v-else
-                                                class="ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all"
-                                            >
-                                                <div
-                                                    class="ui-datepicker-header ui-widget-header ui-helper-clearfix ui-corner-all"
-                                                >
-                                                    <button
-                                                        type="button"
-                                                        class="ui-datepicker-prev ui-corner-all"
-                                                        @click="
-                                                            moveRowCalendarMonth(
-                                                                slot,
-                                                                -1,
-                                                            )
-                                                        "
-                                                    >
-                                                        <span
-                                                            class="ui-icon ui-icon-circle-triangle-w"
-                                                            aria-hidden="true"
-                                                            >{{
-                                                                t(
-                                                                    'common.previous',
-                                                                )
-                                                            }}</span
-                                                        >
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        class="ui-datepicker-next ui-corner-all"
-                                                        @click="
-                                                            moveRowCalendarMonth(
-                                                                slot,
-                                                                1,
-                                                            )
-                                                        "
-                                                    >
-                                                        <span
-                                                            class="ui-icon ui-icon-circle-triangle-e"
-                                                            aria-hidden="true"
-                                                            >{{
-                                                                t('common.next')
-                                                            }}</span
-                                                        >
-                                                    </button>
-                                                    <div
-                                                        class="ui-datepicker-title"
-                                                    >
-                                                        <span
-                                                            class="ui-datepicker-month"
-                                                        >
-                                                            {{
-                                                                rowCalendarMonthLabel(
-                                                                    slot,
-                                                                )
-                                                            }}
-                                                        </span>
-                                                    </div>
-                                                </div>
-
-                                                <table
-                                                    class="ui-datepicker-calendar"
-                                                    role="presentation"
-                                                >
-                                                    <thead>
-                                                        <tr>
-                                                            <th
-                                                                v-for="weekday in weekdayLabels"
-                                                                :key="`slot-row-weekday-${slot.id}-${weekday}`"
-                                                                scope="col"
-                                                            >
-                                                                <span>{{
-                                                                    weekday
-                                                                }}</span>
-                                                            </th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr
-                                                            v-for="(
-                                                                week, weekIndex
-                                                            ) in rowCalendarWeeks(
-                                                                slot,
-                                                            )"
-                                                            :key="`slot-week-${slot.id}-${weekIndex}`"
-                                                        >
-                                                            <td
-                                                                v-for="cell in week"
-                                                                :key="cell.key"
-                                                                :class="{
-                                                                    'ui-datepicker-other-month':
-                                                                        cell.iso ===
-                                                                        null,
-                                                                    'slot-date':
-                                                                        cell.isServiceDate &&
-                                                                        !cell.isBookedDate,
-                                                                    'slot-date-booked':
-                                                                        cell.isBookedDate,
-                                                                    'slot-day--today':
-                                                                        cell.isToday,
-                                                                }"
-                                                            >
-                                                                <span
-                                                                    v-if="
-                                                                        cell.iso ===
-                                                                        null
-                                                                    "
-                                                                    class="ui-state-default"
-                                                                >
-                                                                    &nbsp;
-                                                                </span>
-                                                                <span
-                                                                    v-else-if="
-                                                                        !cell.isServiceDate
-                                                                    "
-                                                                    class="ui-state-default"
-                                                                >
-                                                                    {{
-                                                                        cell.dayNumber
-                                                                    }}
-                                                                </span>
-                                                                <a
-                                                                    v-else
-                                                                    href="#"
-                                                                    class="ui-state-default"
-                                                                    :title="
-                                                                        cell.isBookedDate
-                                                                            ? t(
-                                                                                  'services.calendar_title_booked',
-                                                                              )
-                                                                            : t(
-                                                                                  'services.calendar_title_service',
-                                                                              )
-                                                                    "
-                                                                    @click.prevent="
-                                                                        openReportForSlotDate(
-                                                                            panel
-                                                                                .service
-                                                                                .id,
-                                                                            cell.iso,
-                                                                        )
-                                                                    "
-                                                                >
-                                                                    {{
-                                                                        cell.dayNumber
-                                                                    }}
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span
-                                            class="pill"
-                                            :class="
-                                                slot.registeredCount >=
-                                                    slot.max && slot.max > 0
-                                                    ? 'pill--no'
-                                                    : 'pill--yes'
-                                            "
-                                        >
-                                            {{ slot.registeredLabel }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span
-                                            class="slot-status"
-                                            :class="
-                                                slotStatusClass(slot.status)
-                                            "
-                                        >
-                                            {{ slot.statusLabel }}
-                                        </span>
-                                    </td>
-                                    <td
-                                        class="action-cell action-cell--list text-center"
-                                    >
-                                        <a
-                                            :href="
-                                                reportsUrl(
-                                                    panel.service.id,
-                                                    slot,
-                                                )
-                                            "
-                                            class="icon-btn icon-btn--success btn-action"
-                                            :title="
-                                                t(
-                                                    'services.open_reports_period',
-                                                )
-                                            "
-                                        >
-                                            <Search class="h-3.5 w-3.5" />
-                                        </a>
-                                    </td>
-                                    <td
-                                        class="action-cell action-cell--edit text-center"
-                                    >
-                                        <button
-                                            type="button"
-                                            class="icon-btn icon-btn--primary btn-action"
-                                            @click="
-                                                openEditSlotModal(
-                                                    panel.service.id,
-                                                    slot,
-                                                )
-                                            "
-                                        >
-                                            <Pencil class="h-3.5 w-3.5" />
-                                        </button>
-                                        <button
-                                            type="button"
-                                            class="icon-btn icon-btn--danger btn-action"
-                                            :disabled="
-                                                deletingSlotId === slot.id
-                                            "
-                                            @click="removeSlot(slot.id)"
-                                        >
-                                            <Trash2
-                                                v-if="
-                                                    deletingSlotId !== slot.id
-                                                "
-                                                class="h-3.5 w-3.5"
-                                            />
-                                            <span v-else>...</span>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </template>
-                        </tbody>
-                    </table>
+                        <option :value="0">
+                            {{ t('common.all_services') }}
+                        </option>
+                        <option
+                            v-for="service in services"
+                            :key="service.id"
+                            :value="service.id"
+                        >
+                            {{ service.title }}
+                        </option>
+                    </select>
                 </div>
-            </article>
+                <div class="grid gap-1 text-sm font-medium">
+                    <label for="season-filter-date">{{
+                        t('services.filter_date')
+                    }}</label>
+                    <input
+                        id="season-filter-date"
+                        v-model="filters.date"
+                        type="date"
+                        class="min-w-0 rounded-md border border-input bg-background px-3 py-2"
+                    />
+                </div>
+                <div class="grid gap-1 text-sm font-medium">
+                    <label for="season-filter-status">{{
+                        t('common.status')
+                    }}</label>
+                    <select
+                        id="season-filter-status"
+                        v-model="filters.status"
+                        class="rounded-md border border-input bg-background px-3 py-2"
+                    >
+                        <option value="">
+                            {{ t('services.all_statuses') }}
+                        </option>
+                        <option
+                            v-for="status in statuses"
+                            :key="status"
+                            :value="status"
+                        >
+                            {{ t(`services.status_${status}`) }}
+                        </option>
+                    </select>
+                </div>
+                <div class="grid gap-1 text-sm font-medium">
+                    <label for="season-filter-sort">{{
+                        t('services.sort_by')
+                    }}</label>
+                    <select
+                        id="season-filter-sort"
+                        v-model="filters.sort"
+                        class="rounded-md border border-input bg-background px-3 py-2"
+                    >
+                        <option v-for="sort in sorts" :key="sort" :value="sort">
+                            {{ t(`services.sort_${sort}`) }}
+                        </option>
+                    </select>
+                </div>
+                <div class="grid gap-1 text-sm font-medium">
+                    <label for="season-filter-direction">{{
+                        t('services.sort_order')
+                    }}</label>
+                    <select
+                        id="season-filter-direction"
+                        v-model="filters.direction"
+                        class="rounded-md border border-input bg-background px-3 py-2"
+                    >
+                        <option value="asc">
+                            {{ t('services.sort_asc') }}
+                        </option>
+                        <option value="desc">
+                            {{ t('services.sort_desc') }}
+                        </option>
+                    </select>
+                </div>
+            </div>
         </div>
+
+        <div class="table-shell" :aria-busy="loading">
+            <div v-if="loading" class="empty-state" role="status">
+                {{ t('services.loading') }}
+            </div>
+            <div
+                v-else-if="seasons.length === 0"
+                class="empty-state"
+                role="status"
+            >
+                {{ t('services.no_matching_seasons') }}
+            </div>
+            <div v-else class="table-wrap">
+                <table
+                    class="table-hover table-bordered table-stack-mobile customer-table table"
+                    role="table"
+                    :aria-label="t('services.service_seasons')"
+                >
+                    <thead role="rowgroup">
+                        <tr role="row">
+                            <th scope="col" role="columnheader">
+                                {{ t('common.service') }}
+                            </th>
+                            <th scope="col" role="columnheader">
+                                {{ t('services.col_season') }}
+                            </th>
+                            <th scope="col" role="columnheader">
+                                {{ t('services.col_period') }}
+                            </th>
+                            <th scope="col" role="columnheader">
+                                {{ t('services.service_price') }}
+                            </th>
+                            <th scope="col" role="columnheader">
+                                {{ t('services.daily_capacity') }}
+                            </th>
+                            <th scope="col" role="columnheader">
+                                {{ t('common.status') }}
+                            </th>
+                            <th scope="col" role="columnheader">
+                                {{ t('common.actions') }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody role="rowgroup">
+                        <tr
+                            v-for="season in seasons"
+                            :key="season.id"
+                            role="row"
+                        >
+                            <td role="cell" :data-label="t('common.service')">
+                                <div>
+                                    <strong>{{ season.service_name }}</strong>
+                                    <p
+                                        v-if="!season.service_active"
+                                        class="text-xs text-muted-foreground"
+                                    >
+                                        {{ t('services.inactive_service') }}
+                                    </p>
+                                </div>
+                            </td>
+                            <td
+                                role="cell"
+                                :data-label="t('services.col_season')"
+                            >
+                                {{ season.season_name }}
+                            </td>
+                            <td
+                                role="cell"
+                                :data-label="t('services.col_period')"
+                            >
+                                <div class="whitespace-nowrap">
+                                    {{ formatDate(season.date_start) }} –
+                                    {{ formatDate(season.date_end) }}
+                                </div>
+                            </td>
+                            <td
+                                role="cell"
+                                :data-label="t('services.service_price')"
+                            >
+                                <span
+                                    v-if="season.prices.length === 0"
+                                    class="text-muted-foreground"
+                                    >{{ t('services.price_missing') }}</span
+                                >
+                                <ul v-else class="space-y-1 text-sm">
+                                    <li
+                                        v-for="price in season.prices"
+                                        :key="price.id"
+                                    >
+                                        <span class="whitespace-nowrap">{{
+                                            formatEurBgnPairFromBgn(
+                                                Number(price.price),
+                                                localeTag,
+                                            )
+                                        }}</span>
+                                        <span
+                                            class="block text-xs text-muted-foreground"
+                                            >{{
+                                                t(
+                                                    price.days === 1
+                                                        ? 'services.price_one_day'
+                                                        : 'services.price_days',
+                                                    { count: price.days },
+                                                )
+                                            }}</span
+                                        >
+                                    </li>
+                                </ul>
+                            </td>
+                            <td
+                                role="cell"
+                                :data-label="t('services.daily_capacity')"
+                            >
+                                {{ season.capacity }}
+                            </td>
+                            <td role="cell" :data-label="t('common.status')">
+                                <span
+                                    class="pill"
+                                    :class="statusClasses[season.status]"
+                                    >{{
+                                        t(`services.status_${season.status}`)
+                                    }}</span
+                                >
+                            </td>
+                            <td role="cell" :data-label="t('common.actions')">
+                                <div class="flex flex-wrap gap-2">
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline btn-xs"
+                                        @click="
+                                            openAvailability(season, $event)
+                                        "
+                                    >
+                                        {{ t('services.availability') }}
+                                    </button>
+                                    <a
+                                        v-if="
+                                            season.date_start && season.date_end
+                                        "
+                                        :href="reportsForSeason(season)"
+                                        class="btn btn-outline btn-xs"
+                                    >
+                                        {{ t('common.reports') }}
+                                    </a>
+                                    <button
+                                        v-if="canManage"
+                                        type="button"
+                                        class="btn btn-outline btn-xs"
+                                        :disabled="loadingEdit"
+                                        @click="emit('edit', season)"
+                                    >
+                                        {{ t('common.edit') }}
+                                    </button>
+                                    <button
+                                        v-if="canManage"
+                                        type="button"
+                                        class="btn btn-ghost btn-xs"
+                                        :disabled="deletingSlotId === season.id"
+                                        @click="emit('remove', season.id)"
+                                    >
+                                        {{ t('common.delete') }}
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div v-if="pagination && pagination.last_page > 1" class="pager">
+                <button
+                    type="button"
+                    class="btn btn-ghost"
+                    :disabled="loading || pagination.current_page <= 1"
+                    @click="changePage(-1)"
+                >
+                    {{ t('common.previous') }}
+                </button>
+                <span>{{
+                    t('common.page_of', {
+                        current: pagination.current_page,
+                        last: pagination.last_page,
+                    })
+                }}</span>
+                <button
+                    type="button"
+                    class="btn btn-ghost"
+                    :disabled="
+                        loading ||
+                        pagination.current_page >= pagination.last_page
+                    "
+                    @click="changePage(1)"
+                >
+                    {{ t('common.next') }}
+                </button>
+            </div>
+        </div>
+
+        <ServiceSeasonAvailability
+            v-if="selected"
+            :season="selected"
+            :initial-date="filters.date"
+            @close="closeAvailability"
+        />
     </section>
 </template>

@@ -73,13 +73,13 @@ final class ServiceSlotRepository implements ServiceSlotRepositoryInterface
 
     private function syncDates(ServiceSlot $slot, ServiceSlotData $data): void
     {
-        $existing = $slot->dates()->withCount('bookingDates')->get();
+        $existing = $slot->dates()->withCount(['bookingDates', 'activeBookingDates'])->get();
         $requested = array_fill_keys($data->dates, true);
 
         foreach ($existing as $date) {
             $key = substr((string) $date->getRawOriginal('slot_date'), 0, 10);
             $kept = isset($requested[$key]);
-            if ($date->booking_dates_count > 0 && (! $kept || $date->booking_dates_count > $data->max)) {
+            if ((! $kept && $date->booking_dates_count > 0) || $date->active_booking_dates_count > $data->max) {
                 throw new ApiException('slot_has_bookings', 'Slot changes must accommodate the existing bookings.', 422, ['date' => $key]);
             }
 

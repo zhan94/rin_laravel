@@ -95,7 +95,10 @@ final readonly class BookingSupportService
         $locations = $this->repository->listLocationsByService($serviceId);
         $disabledDates = $this->repository->listCustomerBookedDates($serviceId, $customerId, $slotId);
 
-        return $this->presenter->availability($locations, $disabledDates);
+        return [
+            ...$this->presenter->availability($locations, $disabledDates),
+            'full_dates' => $this->repository->listFullServiceDates($serviceId, $slotId),
+        ];
     }
 
     /**

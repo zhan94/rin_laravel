@@ -58,3 +58,48 @@ export interface PaginationMeta {
     current_page: number;
     last_page: number;
 }
+
+export type ServiceSeasonStatus =
+    | 'active'
+    | 'upcoming'
+    | 'expired'
+    | 'unscheduled';
+export type ServiceSeasonSort = 'service' | 'season' | 'date' | 'status';
+
+export interface ServiceSeason {
+    id: number;
+    service_id: number;
+    service_name: string;
+    service_active: boolean;
+    season_name: string;
+    date_start: string | null;
+    date_end: string | null;
+    capacity: number;
+    status: ServiceSeasonStatus;
+    dates_count: number;
+    prices: { id: number; days: number; price: string }[];
+}
+
+export interface ServiceSeasonDate {
+    id: number;
+    date: string | null;
+    active: boolean;
+    booked: number;
+    remaining: number;
+    bookings_count: number;
+}
+
+export interface ServiceSeasonBooking {
+    id: number;
+    customer: string | null;
+    status: 'active' | 'cancelled';
+}
+
+export interface ServiceSeasonFilters {
+    q: string;
+    service_id: number;
+    date: string;
+    status: ServiceSeasonStatus | '';
+    sort: ServiceSeasonSort;
+    direction: 'asc' | 'desc';
+}

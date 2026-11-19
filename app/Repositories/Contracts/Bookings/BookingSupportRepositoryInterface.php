@@ -45,6 +45,9 @@ interface BookingSupportRepositoryInterface
      */
     public function listCustomerBookedDates(int $serviceId, int $customerId, int $slotId = 0): array;
 
+    /** @return list<string> */
+    public function listFullServiceDates(int $serviceId, int $slotId = 0): array;
+
     /**
      * @return array<string,mixed>|null
      */

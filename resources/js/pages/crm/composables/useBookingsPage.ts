@@ -313,10 +313,12 @@ export function useBookingsPage() {
                 editing?.service_id === serviceId
                     ? editing.booking_dates.map((date) => date.slot_date)
                     : [];
-            state.disabledDates =
-                availabilityResponse.data.disabled_dates.filter(
-                    (date) => !existingDates.includes(date),
-                );
+            state.disabledDates = [
+                ...new Set([
+                    ...availabilityResponse.data.disabled_dates,
+                    ...availabilityResponse.data.full_dates,
+                ]),
+            ].filter((date) => !existingDates.includes(date));
 
             const reconciliation = reconcileBookingSupportSelections(
                 {

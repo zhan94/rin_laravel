@@ -210,7 +210,6 @@ final class BookingSupportRepository implements BookingSupportRepositoryInterfac
             ->where('b.service', $serviceId)
             ->where('b.service_type', 1)
             ->where('b.active', true)
-            ->where('sd.is_active', 1)
             ->when($slotId > 0, fn ($builder) => $builder->where('sd.slot_id', $slotId))
             ->selectRaw('DISTINCT DATE(sd.slot_date) AS slot_date')
             ->orderBy('slot_date')
@@ -222,6 +221,39 @@ final class BookingSupportRepository implements BookingSupportRepositoryInterfac
 
         /** @var list<string> $dates */
         return $dates;
+    }
+
+    public function listFullServiceDates(int $serviceId, int $slotId = 0): array
+    {
+        $dates = ServiceDate::query()
+            ->select('service_dates.slot_date', 'service_slots.max as capacity')
+            ->join('service_slots', 'service_slots.id', '=', 'service_dates.slot_id')
+            ->where('service_slots.service_id', $serviceId)
+            ->when($slotId > 0, fn ($query) => $query->where('service_dates.slot_id', $slotId))
+            ->withCount('activeBookingDates');
+
+        if ($slotId === 0) {
+            // Match automatic period selection if imported periods overlap.
+            $dates->where('service_slots.id', ServiceSlot::query()
+                ->select('id')
+                ->where('service_id', $serviceId)
+                ->whereRaw('DATE(date_start) <= DATE(service_dates.slot_date)')
+                ->whereRaw('DATE(date_end) >= DATE(service_dates.slot_date)')
+                ->orderByDesc('date_start')
+                ->orderByDesc('id')
+                ->limit(1));
+        }
+
+        $full = DB::query()->fromSub($dates, 'availability')
+            ->whereColumn('active_booking_dates_count', '>=', 'capacity')
+            ->whereNotNull('slot_date')
+            ->distinct()
+            ->orderBy('slot_date')
+            ->pluck('slot_date')
+            ->map(static fn ($date): string => substr((string) $date, 0, 10))
+            ->all();
+
+        return array_values($full);
     }
 
     public function findBonusContext(int $bonusId): ?array

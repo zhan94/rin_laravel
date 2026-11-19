@@ -49,6 +49,12 @@ class Service extends Model
         return $this->hasMany(ServiceSlot::class, 'service_id');
     }
 
+    /** @return HasMany<ServicePrice, $this> */
+    public function prices(): HasMany
+    {
+        return $this->hasMany(ServicePrice::class, 'services')->orderBy('days')->orderBy('id');
+    }
+
     /**
      * @return HasMany<Location, $this>
      */

@@ -4,11 +4,9 @@ import { listBonus } from '@/modules/bonus/bonusService';
 import type { BonusRecord } from '@/modules/bonus/types';
 import { buildDateSelectionCalendarCells } from '@/modules/calendar/dateSelectionCalendar';
 import {
-    chunkIntoWeeks,
     firstDayOfMonth,
     formatIsoDate,
     formatMonthCursor,
-    lastDayOfMonth,
     parseIsoDate,
     parseMonthCursor,
     uniqueSortedDateTokens,
@@ -23,53 +21,45 @@ import {
 import { readFirstDeepLinkParam } from '@/modules/notifications/deepLinkQuery';
 import {
     buildBonusGroups,
-    buildServicePanels,
-    groupSlotsBySeason as groupSlotsBySeasonPresenter,
-    reportsUrl,
-    reportsUrlForDate,
     serviceLabelById as serviceLabelFromList,
-    slotStatusClass,
     type BonusGroup,
-    type ServicePanel,
-    type ServicesTab,
-    type ServiceStatusLabels,
     type SlotCalendarCell,
-    type SlotGroup,
-    type SlotMonthCalendarCell,
-    type SlotViewModel,
 } from '@/modules/services/serviceSchedulePresenter';
 import {
     createService,
-    createServiceSlot,
     deleteServiceSlot,
+    getServiceSlot,
     listServices,
+    listServiceSeasons,
     listServiceSlots,
     updateService,
     updateServiceSlot,
 } from '@/modules/services/serviceService';
 import type {
+    PaginationMeta,
     ServiceCreatePayload,
     ServiceDefinition,
+    ServiceSeason,
+    ServiceSeasonFilters,
     ServiceSlot,
     ServiceSlotCreatePayload,
 } from '@/modules/services/types';
 import { normalizeApiErrors } from '@/services/apiErrors';
 import type { ApiError } from '@/services/http';
-import { router } from '@inertiajs/vue3';
+import { useAuthStore } from '@/stores/authStore';
 import { computed, onMounted, reactive, watch } from 'vue';
 
 export type {
     BonusGroup,
-    ServicePanel,
     ServicesTab,
     SlotCalendarCell,
-    SlotGroup,
-    SlotMonthCalendarCell,
-    SlotViewModel,
 } from '@/modules/services/serviceSchedulePresenter';
 
 export function useServicesPage() {
     const { info } = useToast();
+    const auth = useAuthStore();
+    const canManage = computed(() => auth.can('manageBookings'));
+    let seasonRequest = 0;
     const { formatMonthYear, t, weekdayShortLabels } = useUiI18n();
     const todayIso = formatIsoDate(new Date());
     const SLOT_WEEKDAY_LABELS = weekdayShortLabels;
@@ -80,7 +70,19 @@ export function useServicesPage() {
 
     const state = reactive({
         services: [] as ServiceDefinition[],
-        slotsByService: {} as Record<number, ServiceSlot[]>,
+        seasons: [] as ServiceSeason[],
+        seasonFilters: {
+            q: '',
+            service_id: 0,
+            date: '',
+            status: '',
+            sort: 'service',
+            direction: 'asc',
+        } as ServiceSeasonFilters,
+        seasonPagination: null as PaginationMeta | null,
+        counts: { services: 0, seasons: 0, dates: 0 },
+        slotEditNeighbours: [] as ServiceSlot[],
+        loadingSlotEdit: false,
         bonusRows: [] as BonusRecord[],
         loadingOverview: false,
         loadingBonus: false,
@@ -88,10 +90,7 @@ export function useServicesPage() {
         submittingSlot: false,
         deletingSlotId: null as number | null,
         errors: [] as ApiError[],
-        search: '',
-        activeTab: 'main' as ServicesTab,
-        openCalendars: {} as Record<number, boolean>,
-        slotRowCalendarCursors: {} as Record<number, string>,
+        activeTab: 'main' as 'main' | 'bonus',
         serviceModalOpen: false,
         serviceFormMode: 'create' as 'create' | 'edit',
         editingServiceId: null as number | null,
@@ -101,7 +100,6 @@ export function useServicesPage() {
             active: true,
         },
         slotModalOpen: false,
-        slotFormMode: 'create' as 'create' | 'edit',
         editingSlotId: null as number | null,
         slotForm: {
             service_id: 0,
@@ -113,23 +111,6 @@ export function useServicesPage() {
         slotCalendarCursor: '',
     });
 
-    const servicesCount = computed(() => state.services.length);
-
-    const periodsCount = computed(() =>
-        Object.values(state.slotsByService).reduce(
-            (total, slots) => total + slots.length,
-            0,
-        ),
-    );
-
-    const datesCount = computed(() =>
-        Object.values(state.slotsByService).reduce(
-            (total, slots) =>
-                total + slots.reduce((sum, slot) => sum + slot.dates.length, 0),
-            0,
-        ),
-    );
-
     const serviceModalTitle = computed(() =>
         state.serviceFormMode === 'create'
             ? t('services.modal_title_create_name')
@@ -137,9 +118,7 @@ export function useServicesPage() {
     );
 
     const slotModalTitle = computed(() =>
-        state.slotFormMode === 'create'
-            ? t('services.modal_title_create_period')
-            : t('services.modal_title_edit_period'),
+        t('services.modal_title_edit_period'),
     );
 
     const slotSelectedDates = computed(() =>
@@ -147,14 +126,10 @@ export function useServicesPage() {
     );
     const slotModalBlockedDateSet = computed(() => {
         const blocked = new Set<string>();
-        const slots = state.slotsByService[state.slotForm.service_id] ?? [];
+        const slots = state.slotEditNeighbours;
 
         for (const slot of slots) {
-            if (
-                state.slotFormMode === 'edit' &&
-                state.editingSlotId !== null &&
-                slot.id === state.editingSlotId
-            ) {
+            if (slot.id === state.editingSlotId) {
                 continue;
             }
 
@@ -190,36 +165,12 @@ export function useServicesPage() {
         });
     });
 
-    const serviceStatusLabels = computed<ServiceStatusLabels>(() => ({
-        active: t('services.status_active'),
-        empty: t('services.status_empty'),
-        past: t('services.status_past'),
-        full: t('services.status_full'),
-    }));
-
-    const filteredServicePanels = computed<ServicePanel[]>(() =>
-        buildServicePanels(
-            state.services,
-            state.slotsByService,
-            state.activeTab,
-            todayIso,
-            serviceStatusLabels.value,
-        ),
-    );
-
     const bonusGroups = computed<BonusGroup[]>(() =>
         buildBonusGroups(state.bonusRows),
     );
 
     function serviceLabelById(serviceId: number): string {
         return serviceLabelFromList(state.services, serviceId);
-    }
-
-    function groupSlotsBySeason(slots: SlotViewModel[]): SlotGroup[] {
-        return groupSlotsBySeasonPresenter(slots, {
-            winter: t('services.group_winter_periods'),
-            other: t('services.group_other'),
-        });
     }
 
     function setSlotCalendarCursor(date: Date): void {
@@ -236,179 +187,64 @@ export function useServicesPage() {
         state.slotForm.datesCsv = dates.join(', ');
     }
 
-    function rowCalendarMonthDate(slot: SlotViewModel): Date {
-        const cursor = state.slotRowCalendarCursors[slot.id];
-        if (typeof cursor === 'string' && cursor.trim() !== '') {
-            const parsed = parseMonthCursor(cursor);
-            if (parsed !== null) {
-                return parsed;
-            }
-        }
-
-        if (slot.datesIso.length > 0) {
-            const parsed = parseIsoDate(slot.datesIso[0]);
-            if (parsed !== null) {
-                return firstDayOfMonth(parsed);
-            }
-        }
-
-        return firstDayOfMonth(new Date());
-    }
-
-    function rowCalendarMonthLabel(slot: SlotViewModel): string {
-        return formatMonthYear(rowCalendarMonthDate(slot));
-    }
-
-    function setRowCalendarCursor(slotId: number, date: Date): void {
-        state.slotRowCalendarCursors[slotId] = formatMonthCursor(date);
-    }
-
-    function ensureRowCalendarCursor(slot: SlotViewModel): void {
-        if (
-            typeof state.slotRowCalendarCursors[slot.id] === 'string' &&
-            state.slotRowCalendarCursors[slot.id].trim() !== ''
-        ) {
-            return;
-        }
-
-        const base =
-            slot.datesIso.length > 0
-                ? (parseIsoDate(slot.datesIso[0]) ?? new Date())
-                : new Date();
-        setRowCalendarCursor(slot.id, firstDayOfMonth(base));
-    }
-
-    function moveRowCalendarMonth(slot: SlotViewModel, delta: number): void {
-        const base = rowCalendarMonthDate(slot);
-        const next = new Date(base.getFullYear(), base.getMonth() + delta, 1);
-        setRowCalendarCursor(slot.id, next);
-    }
-
-    function rowCalendarCells(slot: SlotViewModel): SlotMonthCalendarCell[] {
-        const monthDate = rowCalendarMonthDate(slot);
-        const firstDay = firstDayOfMonth(monthDate);
-        const daysInMonth = lastDayOfMonth(monthDate).getDate();
-        const leadingBlankDays = firstDay.getDay();
-
-        const cells: SlotMonthCalendarCell[] = [];
-        for (let index = 0; index < leadingBlankDays; index += 1) {
-            cells.push({
-                key: `slot-${slot.id}-blank-leading-${index}`,
-                iso: null,
-                dayNumber: null,
-                isServiceDate: false,
-                isBookedDate: false,
-                isToday: false,
-            });
-        }
-
-        for (let day = 1; day <= daysInMonth; day += 1) {
-            const iso = formatIsoDate(
-                new Date(firstDay.getFullYear(), firstDay.getMonth(), day),
-            );
-            const isServiceDate = slot.dateSet.has(iso);
-            const isBookedDate = slot.bookedDateSet.has(iso);
-
-            cells.push({
-                key: `slot-${slot.id}-${iso}`,
-                iso,
-                dayNumber: day,
-                isServiceDate,
-                isBookedDate,
-                isToday: iso === todayIso,
-            });
-        }
-
-        while (cells.length % 7 !== 0) {
-            const index = cells.length;
-            cells.push({
-                key: `slot-${slot.id}-blank-trailing-${index}`,
-                iso: null,
-                dayNumber: null,
-                isServiceDate: false,
-                isBookedDate: false,
-                isToday: false,
-            });
-        }
-
-        return cells;
-    }
-
-    function rowCalendarWeeks(slot: SlotViewModel): SlotMonthCalendarCell[][] {
-        return chunkIntoWeeks(rowCalendarCells(slot));
-    }
-
-    function openReportForSlotDate(serviceId: number, isoDate: string): void {
-        router.visit(reportsUrlForDate(serviceId, isoDate));
-    }
-
-    function isCalendarOpen(slotId: number): boolean {
-        return state.openCalendars[slotId] === true;
-    }
-
-    function toggleCalendar(slot: SlotViewModel): void {
-        const currentlyOpen = isCalendarOpen(slot.id);
-        state.openCalendars[slot.id] = !currentlyOpen;
-
-        if (!currentlyOpen) {
-            ensureRowCalendarCursor(slot);
-        }
-    }
-
-    async function loadServicesAndSlots(): Promise<void> {
+    async function loadSeasons(page = 1): Promise<void> {
+        const request = ++seasonRequest;
         state.loadingOverview = true;
         state.errors = [];
 
         try {
-            const servicesResponse = await listServices({
-                q: state.search || undefined,
-                page: 1,
-                per_page: 100,
+            const { data, meta } = await listServiceSeasons({
+                ...state.seasonFilters,
+                service_id: state.seasonFilters.service_id || undefined,
+                page,
             });
 
-            state.services = servicesResponse.data;
+            if (request !== seasonRequest) return;
 
-            const slotEntries = await Promise.all(
-                state.services.map(async (service) => {
-                    try {
-                        const slotsResponse = await listServiceSlots(
-                            service.id,
-                            { per_page: 200 },
-                        );
+            state.seasons = data;
+            state.seasonPagination = meta.pagination as PaginationMeta;
+            state.counts = meta.counts as typeof state.counts;
+        } catch (error) {
+            if (request !== seasonRequest) return;
 
-                        return [service.id, slotsResponse.data] as const;
-                    } catch {
-                        return [service.id, [] as ServiceSlot[]] as const;
-                    }
-                }),
+            state.seasons = [];
+            state.seasonPagination = null;
+            state.errors = normalizeApiErrors(
+                error,
+                t('services.seasons_load_error'),
             );
+        } finally {
+            if (request === seasonRequest) state.loadingOverview = false;
+        }
+    }
 
-            const slotsByService: Record<number, ServiceSlot[]> = {};
-            for (const [serviceId, slots] of slotEntries) {
-                slotsByService[serviceId] = slots;
-            }
+    async function loadServiceNames(): Promise<void> {
+        try {
+            const services: ServiceDefinition[] = [];
+            let page = 1;
+            let lastPage = 1;
+            do {
+                const { data, meta } = await listServices({
+                    page,
+                    per_page: 100,
+                });
+                services.push(...data);
+                lastPage = (meta.pagination as PaginationMeta).last_page;
+                page++;
+            } while (page <= lastPage);
 
-            state.slotsByService = slotsByService;
-
-            if (
-                state.slotForm.service_id <= 0 ||
-                !state.services.some(
-                    (service) => service.id === state.slotForm.service_id,
-                )
-            ) {
-                state.slotForm.service_id = state.services[0]?.id ?? 0;
-            }
+            state.services = services;
         } catch (error) {
             state.errors = normalizeApiErrors(
                 error,
-                'Failed to load services.',
+                t('services.seasons_load_error'),
             );
-        } finally {
-            state.loadingOverview = false;
         }
     }
 
     async function loadBonusCatalog(): Promise<void> {
+        if (!canManage.value) return;
+
         state.loadingBonus = true;
 
         try {
@@ -477,7 +313,7 @@ export function useServicesPage() {
             resetServiceForm();
             state.editingServiceId = null;
 
-            await loadServicesAndSlots();
+            await Promise.all([loadServiceNames(), loadSeasons()]);
         } catch (error) {
             state.errors = normalizeApiErrors(
                 error,
@@ -488,15 +324,6 @@ export function useServicesPage() {
         } finally {
             state.submittingService = false;
         }
-    }
-
-    function resetSlotForm(): void {
-        state.slotForm.service_id = state.services[0]?.id ?? 0;
-        state.slotForm.name = '';
-        state.slotForm.max = 20;
-        state.slotForm.season_type = 'other';
-        state.slotForm.datesCsv = '';
-        state.slotCalendarCursor = '';
     }
 
     function initializeSlotCalendarCursor(): void {
@@ -511,15 +338,6 @@ export function useServicesPage() {
         }
 
         setSlotCalendarCursor(new Date());
-    }
-
-    function removeBlockedSlotDates(): void {
-        const filtered = slotSelectedDates.value.filter(
-            (date) => !slotModalBlockedDateSet.value.has(date),
-        );
-        if (filtered.length !== slotSelectedDates.value.length) {
-            setSlotSelectedDates(filtered);
-        }
     }
 
     function toggleSlotCalendarDate(cell: SlotCalendarCell): void {
@@ -551,28 +369,39 @@ export function useServicesPage() {
         setSlotSelectedDates([]);
     }
 
-    function openCreateSlotModal(): void {
-        state.slotFormMode = 'create';
-        state.editingSlotId = null;
+    async function openEditSlotModal(season: ServiceSeason): Promise<void> {
+        if (state.loadingSlotEdit) return;
+
+        state.loadingSlotEdit = true;
         state.errors = [];
-        resetSlotForm();
-        initializeSlotCalendarCursor();
-        state.slotModalOpen = true;
-    }
-
-    function openEditSlotModal(serviceId: number, slot: SlotViewModel): void {
-        state.slotFormMode = 'edit';
-        state.editingSlotId = slot.id;
-        state.errors = [];
-
-        state.slotForm.service_id = serviceId;
-        state.slotForm.name = slot.name;
-        state.slotForm.max = slot.max;
-        state.slotForm.season_type = slot.seasonTypeRaw;
-        state.slotForm.datesCsv = slot.datesIso.join(', ');
-        initializeSlotCalendarCursor();
-
-        state.slotModalOpen = true;
+        try {
+            const [selected, neighbours] = await Promise.all([
+                getServiceSlot(season.id),
+                listServiceSlots(season.service_id, { per_page: 200 }),
+            ]);
+            const slot = selected.data;
+            state.slotEditNeighbours = neighbours.data;
+            state.editingSlotId = slot.id;
+            state.slotForm.service_id = slot.service_id;
+            state.slotForm.name = slot.name;
+            state.slotForm.max = slot.max;
+            state.slotForm.season_type =
+                slot.season_type === 'winter' || slot.season_type === 'summer'
+                    ? slot.season_type
+                    : 'other';
+            state.slotForm.datesCsv = slot.dates
+                .flatMap((date) => (date.slot_date ? [date.slot_date] : []))
+                .join(', ');
+            initializeSlotCalendarCursor();
+            state.slotModalOpen = true;
+        } catch (error) {
+            state.errors = normalizeApiErrors(
+                error,
+                t('services.seasons_load_error'),
+            );
+        } finally {
+            state.loadingSlotEdit = false;
+        }
     }
 
     async function submitSlotForm(): Promise<void> {
@@ -602,24 +431,16 @@ export function useServicesPage() {
                 dates: uniqueSortedDateTokens(state.slotForm.datesCsv),
             };
 
-            if (state.slotFormMode === 'edit' && state.editingSlotId !== null) {
-                await updateServiceSlot(state.editingSlotId, payload);
-            } else {
-                await createServiceSlot(state.slotForm.service_id, payload);
-            }
+            if (state.editingSlotId === null) return;
+
+            await updateServiceSlot(state.editingSlotId, payload);
 
             state.slotModalOpen = false;
             state.editingSlotId = null;
-            resetSlotForm();
 
-            await loadServicesAndSlots();
+            await loadSeasons(state.seasonPagination?.current_page);
         } catch (error) {
-            state.errors = normalizeApiErrors(
-                error,
-                state.slotFormMode === 'edit'
-                    ? 'Failed to update slot.'
-                    : 'Failed to create slot.',
-            );
+            state.errors = normalizeApiErrors(error, 'Failed to update slot.');
         } finally {
             state.submittingSlot = false;
         }
@@ -635,7 +456,11 @@ export function useServicesPage() {
 
         try {
             await deleteServiceSlot(slotId);
-            await loadServicesAndSlots();
+            const pagination = state.seasonPagination;
+            const page = pagination?.current_page ?? 1;
+            await loadSeasons(
+                state.seasons.length === 1 ? Math.max(1, page - 1) : page,
+            );
         } catch (error) {
             state.errors = normalizeApiErrors(
                 error,
@@ -651,21 +476,6 @@ export function useServicesPage() {
     }
 
     watch(
-        () => state.slotForm.service_id,
-        () => {
-            if (!state.slotModalOpen) {
-                return;
-            }
-
-            removeBlockedSlotDates();
-
-            if (state.slotCalendarCursor.trim() === '') {
-                initializeSlotCalendarCursor();
-            }
-        },
-    );
-
-    watch(
         () => state.slotModalOpen,
         (open) => {
             if (!open) {
@@ -678,17 +488,34 @@ export function useServicesPage() {
         const deepLink = deepLinkedServiceQuery();
 
         if (deepLink !== null) {
-            state.search = deepLink;
-        }
+            if (/^\d+$/.test(deepLink))
+                state.seasonFilters.service_id = Number(deepLink);
+            else state.seasonFilters.q = deepLink;
 
-        await Promise.all([loadServicesAndSlots(), loadBonusCatalog()]);
-
-        if (deepLink !== null) {
             info(
                 'Service Filter Applied',
-                `Opened notification context for service #${deepLink}.`,
+                'Opened the service filter from the notification.',
             );
         }
+
+        watch(
+            () => ({ ...state.seasonFilters }),
+            (next, previous, onCleanup) => {
+                if (next.q === previous.q) {
+                    void loadSeasons();
+                    return;
+                }
+
+                const timer = setTimeout(() => void loadSeasons(), 250);
+                onCleanup(() => clearTimeout(timer));
+            },
+        );
+
+        await Promise.all([
+            loadSeasons(),
+            loadServiceNames(),
+            loadBonusCatalog(),
+        ]);
     });
 
     return {
@@ -696,28 +523,16 @@ export function useServicesPage() {
         SLOT_WEEKDAY_LABELS,
         translationFields,
         state,
-        servicesCount,
-        periodsCount,
-        datesCount,
+        canManage,
+        loadSeasons,
         serviceModalTitle,
         slotModalTitle,
         slotSelectedDates,
         slotModalBlockedDateSet,
         slotCalendarMonthLabel,
         slotCalendarCells,
-        filteredServicePanels,
         bonusGroups,
         serviceLabelById,
-        groupSlotsBySeason,
-        slotStatusClass,
-        reportsUrl,
-        rowCalendarMonthLabel,
-        rowCalendarWeeks,
-        moveRowCalendarMonth,
-        openReportForSlotDate,
-        isCalendarOpen,
-        toggleCalendar,
-        loadServicesAndSlots,
         openServiceNamesModal,
         openEditServiceModal,
         submitServiceForm,
@@ -725,7 +540,6 @@ export function useServicesPage() {
         toggleSlotCalendarDate,
         removeSlotSelectedDate,
         clearSlotSelectedDates,
-        openCreateSlotModal,
         openEditSlotModal,
         submitSlotForm,
         removeSlot,

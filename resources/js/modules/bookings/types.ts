@@ -150,6 +150,7 @@ export interface BookingSupportLocation {
 
 export interface BookingSupportAvailability {
     disabled_dates: string[];
+    full_dates: string[];
     locations: BookingSupportLocation[];
     location_groups: {
         main: BookingSupportLocation[];
