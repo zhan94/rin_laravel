@@ -31,7 +31,7 @@ final class ReportRangeQueryBuilder
 
         if ($filters->search !== '') {
             $term = '%'.$filters->search.'%';
-            $fullName = $query->getConnection()->getDriverName() === 'sqlite'
+            $fullName = DB::getDriverName() === 'sqlite'
                 ? "COALESCE(c.firstname, '') || ' ' || COALESCE(c.lastname, '')"
                 : "CONCAT(COALESCE(c.firstname, ''), ' ', COALESCE(c.lastname, ''))";
 
