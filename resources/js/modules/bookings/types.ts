@@ -131,12 +131,6 @@ export interface BookingSupportSlot {
     max: number;
 }
 
-export interface BookingSupportServiceDate {
-    id: number;
-    slot_id: number;
-    slot_date: string;
-}
-
 export interface BookingSupportLocation {
     id: number;
     location_from: string;
@@ -194,18 +188,6 @@ export interface BookingSupportCustomerPrefill {
     booking: BookingSupportPrefillBooking | null;
     season_start?: string;
     season_end?: string;
-}
-
-export interface BookingPaymentValidationResult {
-    booking_id: number;
-    valid: boolean;
-    amount_eur: number;
-    amount_bgn: number;
-    remaining_before_eur: number | null;
-    remaining_before_bgn: number | null;
-    remaining_after_eur: number | null;
-    remaining_after_bgn: number | null;
-    message: string;
 }
 
 export interface BookingPaymentApplyResult {

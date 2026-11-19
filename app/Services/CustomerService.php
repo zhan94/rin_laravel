@@ -31,25 +31,6 @@ final readonly class CustomerService
     }
 
     /**
-     * @return list<array{
-     *     customer_id:int,
-     *     customer_name:string,
-     *     date_birth:?string,
-     *     booking_id:int,
-     *     service_id:?int,
-     *     service_type:?int,
-     *     service_title:string,
-     *     sum_paid:int,
-     *     paid:int,
-     *     due:int
-     * }>
-     */
-    public function unpaidRows(?string $search = null): array
-    {
-        return $this->repository->unpaidRows($search);
-    }
-
-    /**
      * @return array{
      *     rows:list<array{
      *         customer_id:int,

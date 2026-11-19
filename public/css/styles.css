@@ -2932,50 +2932,6 @@ code {
     margin: 0 11px 11px;
 }
 
-.manual-lightbox {
-    position: fixed;
-    inset: 0;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-    background: rgba(11, 18, 31, 0.88);
-    z-index: 9999;
-}
-
-.manual-lightbox.is-open {
-    display: flex;
-}
-
-.manual-lightbox__image {
-    max-width: min(96vw, 1600px);
-    max-height: 90vh;
-    width: auto;
-    height: auto;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.28);
-    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
-    background: #fff;
-}
-
-.manual-lightbox__close {
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.36);
-    background: rgba(255, 255, 255, 0.12);
-    color: #fff;
-    border-radius: 999px;
-    padding: 8px 14px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-.manual-lightbox__close:hover {
-    background: rgba(255, 255, 255, 0.24);
-}
-
 .issues-ui .issues-recommend-block {
     margin: 0 16px 14px;
     padding: 10px 12px;

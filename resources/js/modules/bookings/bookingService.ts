@@ -4,7 +4,6 @@ import type {
     BookingCreatePayload,
     BookingListParams,
     BookingPaymentApplyResult,
-    BookingPaymentValidationResult,
     BookingRecord,
 } from './types';
 
@@ -83,19 +82,6 @@ export function deactivateBooking(
     return httpRequest<BookingRecord>(`${bookingsBasePath}/${bookingId}`, {
         method: 'DELETE',
     });
-}
-
-export function validateBookingPayment(
-    bookingId: number,
-    amount: number,
-): Promise<ApiEnvelope<BookingPaymentValidationResult>> {
-    return httpRequest<BookingPaymentValidationResult>(
-        `${bookingsBasePath}/${bookingId}/payments/validate`,
-        {
-            method: 'POST',
-            body: { amount },
-        },
-    );
 }
 
 export function applyBookingPayment(

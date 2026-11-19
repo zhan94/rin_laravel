@@ -6,7 +6,6 @@ import type {
     BookingSupportCustomer,
     BookingSupportCustomerPrefill,
     BookingSupportOption,
-    BookingSupportServiceDate,
     BookingSupportSlot,
     BookingSupportSuggestion,
 } from './types';
@@ -48,22 +47,6 @@ export function getServiceSlots(
 ): Promise<ApiEnvelope<BookingSupportSlot[]>> {
     return httpRequest<BookingSupportSlot[]>(
         `${basePath}/services/${serviceId}/slots`,
-    );
-}
-
-export function getServiceDates(
-    serviceId: number,
-    params: {
-        slotId?: number;
-    } = {},
-): Promise<ApiEnvelope<BookingSupportServiceDate[]>> {
-    return httpRequest<BookingSupportServiceDate[]>(
-        withQuery(`${basePath}/services/${serviceId}/dates`, {
-            slot_id:
-                params.slotId !== undefined && params.slotId > 0
-                    ? params.slotId
-                    : undefined,
-        }),
     );
 }
 
