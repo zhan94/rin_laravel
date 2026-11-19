@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Manual del personal de RIN</title>
+        <link rel="stylesheet" href="/css/manual.css" />
+    </head>
+    <body>
+        <header class="hero">
+            <div class="hero-inner">
+                <h1>Manual del personal de RIN</h1>
+                <p>Procedimientos y ayuda para el personal que utiliza RIN.</p>
+                <div class="hero-actions">
+                    <a class="app-link-btn" href="/">Volver a RIN</a>
+                </div>
+            </div>
+        </header>
+        <div class="layout">
+            <nav class="toc" aria-label="En esta página">
+                <h2>Contenido</h2>
+                <ol>
+                    <li>
+                        <a href="#quick-start">Inicio de sesión y acceso</a>
+                    </li>
+                    <li><a href="#customers">Clientes</a></li>
+                    <li><a href="#daily">Reservas y pagos</a></li>
+                    <li><a href="#modules">Servicios y temporadas</a></li>
+                    <li><a href="#reports">Panel e informes</a></li>
+                    <li>
+                        <a href="#admin"
+                            >Administración de personal y soporte</a
+                        >
+                    </li>
+                    <li><a href="#troubleshoot">Solución de problemas</a></li>
+                </ol>
+            </nav>
+            <main class="content">
+                <section id="quick-start">
+                    <h2>Inicio de sesión y acceso</h2>
+                    <p>
+                        Inicie sesión con el nombre de usuario o el correo
+                        electrónico de su cuenta. En
+                        <strong>Perfil</strong> puede gestionar sus datos y
+                        opciones de seguridad. Cierre sesión desde el menú de la
+                        cuenta al terminar.
+                    </p>
+                    <p>
+                        El menú de idioma cambia el idioma de la interfaz y del
+                        manual entre español, inglés y alemán. Las fechas se
+                        muestran en formato <strong>DD.MM.AAAA</strong> en los
+                        tres idiomas.
+                    </p>
+                    <ul class="simple-list">
+                        <li>
+                            El <strong>Conductor</strong> consulta los informes
+                            de transporte, con las recogidas, las fechas del
+                            servicio y los datos de contacto permitidos.
+                        </li>
+                        <li>
+                            El <strong>Jefe de grupo</strong> puede consultar
+                            clientes, temporadas, disponibilidad y reservas, y
+                            trabajar con incidencias.
+                        </li>
+                        <li>
+                            El <strong>Responsable</strong> gestiona clientes,
+                            reservas, pagos, periodos de servicio y catálogos.
+                        </li>
+                        <li>
+                            El <strong>Administrador</strong> también gestiona
+                            cuentas con permisos inferiores y puede revisar los
+                            registros.
+                        </li>
+                        <li>
+                            El <strong>Superadministrador</strong> gestiona el
+                            nivel de acceso más alto. Las reglas de las cuentas
+                            siguen determinando los cambios permitidos.
+                        </li>
+                    </ul>
+                </section>
+                <section id="customers">
+                    <h2>Clientes</h2>
+                    <ol class="simple-list">
+                        <li>
+                            Abra <strong>Clientes</strong>. Busque por
+                            identificador, parte del nombre, correo electrónico
+                            o teléfono del tutor.
+                        </li>
+                        <li>
+                            Abra la ficha para consultar los datos de contacto y
+                            las reservas. La lista muestra el total de
+                            coincidencias y los clientes activos en la página
+                            visible.
+                        </li>
+                        <li>
+                            El responsable y los roles superiores pueden
+                            seleccionar <strong>Añadir cliente</strong> o editar
+                            un registro. Introduzca la fecha de nacimiento en
+                            formato <strong>DD.MM.AAAA</strong> y guarde.
+                        </li>
+                    </ol>
+                </section>
+                <section id="daily">
+                    <h2>Reservas y pagos</h2>
+                    <article class="workflow">
+                        <h3>Crear o modificar una reserva</h3>
+                        <ol class="simple-list">
+                            <li>
+                                Abra <strong>Reserva</strong>. Seleccione un
+                                cliente existente o marque
+                                <strong>Nuevo cliente</strong>. Después, elija
+                                <strong>Continuar al formulario</strong>.
+                            </li>
+                            <li>
+                                Seleccione el servicio y las fechas. El
+                                calendario bloquea los días completos y los que
+                                ya ha reservado el cliente. Al guardar, una
+                                nueva fecha válida se añade al calendario del
+                                servicio.
+                            </li>
+                            <li>
+                                Elija un punto de recogida común o asignado al
+                                servicio. Si procede, indique el nivel y los
+                                datos de la tarjeta, el equipo y el
+                                consentimiento.
+                            </li>
+                            <li>
+                                Compruebe el total en EUR y pulse
+                                <strong>Añadir</strong>. En la lista de
+                                reservas, puede editar las fechas u opciones o
+                                cancelar la reserva para liberar plazas. La
+                                cancelación conserva la reserva y su historial
+                                de pagos.
+                            </li>
+                        </ol>
+                    </article>
+                    <article class="workflow">
+                        <h3>Registrar un pago</h3>
+                        <p>
+                            Introduzca el importe en EUR y pulse
+                            <strong>Registrar pago</strong> en el listado de
+                            reservas. También puede abrir
+                            <strong>Cuotas pendientes</strong> en Clientes y
+                            pulsar <strong>Pagar</strong> en la reserva
+                            correspondiente. Revise el saldo actualizado antes
+                            de registrar otro pago. El sistema rechaza los pagos
+                            superiores al saldo pendiente.
+                        </p>
+                    </article>
+                </section>
+                <section id="modules">
+                    <h2>Servicios y temporadas</h2>
+                    <ul class="simple-list">
+                        <li>
+                            <strong>Servicios</strong> muestra una entrada por
+                            servicio y temporada. Busque por nombre del servicio
+                            o de la temporada y filtre por servicio, fecha o
+                            estado.
+                        </li>
+                        <li>
+                            <strong>Disponibilidad</strong> indica las plazas
+                            reservadas y restantes de cada fecha programada.
+                            Abra la lista del día para ver las reservas activas
+                            y canceladas. Use <strong>Informes</strong> para
+                            abrir la fecha o el intervalo de la temporada
+                            seleccionados.
+                        </li>
+                        <li>
+                            Los responsables pueden crear y editar periodos de
+                            servicio. Los periodos de un mismo servicio deben
+                            tener fechas separadas. Deben conservarse las fechas
+                            de las reservas anteriores.
+                        </li>
+                        <li>
+                            Cada temporada tiene su propia capacidad diaria y
+                            utiliza las tarifas configuradas para el servicio.
+                            La interfaz avisa cuando falta una tarifa.
+                        </li>
+                        <li>
+                            <strong>Temporadas</strong> presenta el resumen de
+                            las temporadas. <strong>Paradas</strong> distingue
+                            puntos de recogida comunes y específicos de un
+                            servicio. En <strong>Tarjetas</strong>,
+                            <strong>Equipo</strong> y
+                            <strong>Servicios adicionales</strong> puede
+                            gestionar los catálogos correspondientes.
+                        </li>
+                    </ul>
+                </section>
+                <section id="reports">
+                    <h2>Panel e informes</h2>
+                    <ol class="simple-list">
+                        <li>
+                            Consulte el panel para ver los totales de la
+                            temporada y los registros de hoy. Los totales
+                            incluyen las reservas anteriores.
+                        </li>
+                        <li>
+                            Abra <strong>Informes</strong>, seleccione el
+                            servicio y el intervalo de fechas y pulse
+                            <strong>Generar</strong>. La cabecera indica el
+                            periodo utilizado. Los cambios posteriores en los
+                            campos se aplican al volver a generar el informe.
+                        </li>
+                        <li>
+                            Los filtros de columna limitan la página visible.
+                            <strong>CSV (Página)</strong> exporta las filas
+                            visibles. <strong>CSV (Todo)</strong> e
+                            <strong>Imprimir (Todo)</strong> usan el servicio y
+                            el intervalo del informe generado en todas las
+                            páginas.
+                        </li>
+                        <li>
+                            Los informes del conductor muestran los datos de
+                            transporte autorizados. Los datos financieros y
+                            otros campos restringidos solo están disponibles
+                            para los roles autorizados.
+                        </li>
+                    </ol>
+                </section>
+                <section id="admin">
+                    <h2>Administración de personal y soporte</h2>
+                    <ul class="simple-list">
+                        <li>
+                            Use <strong>Usuarios</strong> para crear cuentas de
+                            personal dentro de los permisos de su rol. Guarde
+                            los cambios y pida al miembro del personal que
+                            acceda con sus credenciales asignadas.
+                        </li>
+                        <li>
+                            Abra <strong>Registros</strong> para revisar los
+                            eventos guardados. Su rol determina las acciones
+                            disponibles.
+                        </li>
+                        <li>
+                            Use <strong>Soporte</strong> para comunicar una
+                            incidencia y seguir su estado. Incluya el módulo y
+                            los pasos que llevaron al problema. Adjunte archivos
+                            cuando sean necesarios para la investigación.
+                        </li>
+                    </ul>
+                </section>
+                <section id="troubleshoot">
+                    <h2>Solución de problemas</h2>
+                    <details>
+                        <summary>
+                            Una fecha o un punto de recogida no está disponible
+                        </summary>
+                        Revise el servicio y la fecha en Servicios. Después,
+                        compruebe las reservas del cliente y la asignación del
+                        punto de recogida al servicio.
+                    </details>
+                    <details>
+                        <summary>Un informe está vacío</summary>
+                        Compruebe el servicio y las fechas del informe generado.
+                        Quite los filtros de la página o seleccione «Todos los
+                        servicios» y vuelva a generar el informe.
+                    </details>
+                    <details>
+                        <summary>Una acción no está disponible</summary>
+                        Compruebe su rol en Perfil. Si su rol solo permite
+                        consultar el módulo, pida a una persona autorizada que
+                        realice la acción.
+                    </details>
+                </section>
+            </main>
+        </div>
+    </body>
+</html>

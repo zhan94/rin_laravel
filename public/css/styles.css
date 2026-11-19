@@ -1484,13 +1484,13 @@ code {
 
 .customer-list .pill--yes {
     background: rgba(31, 157, 102, 0.12);
-    color: var(--success);
+    color: #12663f;
     border-color: rgba(31, 157, 102, 0.2);
 }
 
 .customer-list .pill--no {
     background: rgba(224, 86, 74, 0.12);
-    color: var(--danger);
+    color: #a52e26;
     border-color: rgba(224, 86, 74, 0.2);
 }
 

@@ -22,6 +22,109 @@ async function signIn(page: Page, account = username): Promise<void> {
     await expect(page).toHaveURL(/\/(dashboard|crm\/customers|crm\/reports)$/);
 }
 
+test('localizes the staff manual, customer fields and password settings', async ({
+    page,
+}) => {
+    await signIn(page, 'demo.admin');
+
+    for (const [
+        locale,
+        manualTitle,
+        troubleshooting,
+        add,
+        firstName,
+        birth,
+        password,
+    ] of [
+        [
+            'de',
+            'RIN-Mitarbeiterhandbuch',
+            'Ein Bericht ist leer',
+            'Kunden hinzufügen',
+            'Vorname',
+            'Geburtsdatum',
+            'Aktuelles Passwort',
+        ],
+        [
+            'es',
+            'Manual del personal de RIN',
+            'Un informe está vacío',
+            'Añadir cliente',
+            'Nombre',
+            'Fecha de nacimiento',
+            'Contraseña actual',
+        ],
+    ]) {
+        await page.goto('/crm/customers?lang=' + locale);
+        await expect(page.locator('html')).toHaveAttribute('lang', locale);
+        const showForm = page.getByRole('button', { name: add, exact: true });
+        await showForm.focus();
+        await page.keyboard.press('Enter');
+        const form = page.locator('form.customer-form-grid');
+        await expect(
+            form.getByRole('textbox', { name: firstName, exact: true }),
+        ).toBeVisible();
+        await expect(
+            form.getByRole('textbox', { name: birth, exact: true }),
+        ).toBeVisible();
+
+        await expect(page.locator('.topbar-link--manual')).toHaveAttribute(
+            'href',
+            '/manual/' + locale,
+        );
+        await page.goto('/manual/' + locale);
+        await expect(
+            page.getByRole('heading', { name: manualTitle }),
+        ).toBeVisible();
+        await expect(page.locator('html')).toHaveAttribute('lang', locale);
+        const summary = page
+            .locator('summary')
+            .filter({ hasText: troubleshooting });
+        await summary.focus();
+        await page.keyboard.press('Enter');
+        await expect(
+            page
+                .locator('details[open] > summary')
+                .filter({ hasText: troubleshooting }),
+        ).toBeVisible();
+
+        await page.goto('/settings/password?lang=' + locale);
+        await expect(page.getByLabel(password, { exact: true })).toBeVisible();
+    }
+});
+
+test('supports keyboard entry, containment, and return focus in the location dialog', async ({
+    page,
+}) => {
+    await signIn(page, 'demo.manager');
+    await page.goto('/crm/locations?lang=de');
+    const opener = page.getByRole('button', { name: 'Haltestelle hinzufügen' });
+    await opener.focus();
+    await page.keyboard.press('Enter');
+    const dialog = page.getByRole('dialog', { name: 'Haltestelle hinzufügen' });
+    await expect(dialog).toBeVisible();
+    await expect(
+        dialog.getByRole('textbox', { name: 'Abholung', exact: true }),
+    ).toBeFocused();
+
+    for (let step = 0; step < 12; step++) {
+        await page.keyboard.press(step % 3 === 0 ? 'Shift+Tab' : 'Tab');
+        // Chrome can focus an internal segment of a native time input.
+        expect(
+            await dialog.evaluate((element) =>
+                element.contains(document.activeElement),
+            ),
+        ).toBe(true);
+    }
+
+    await expect(
+        dialog.getByRole('button', { name: 'Schließen', exact: true }),
+    ).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeHidden();
+    await expect(opener).toBeFocused();
+});
+
 test('protects staff pages and serves the synthetic dashboard and catalogs', async ({
     page,
 }) => {
@@ -650,8 +753,8 @@ test('completes the customer and booking workflow with the synthetic ski service
         .filter({ hasText: 'Add customer' })
         .click();
     const customerForm = page.locator('form.customer-form-grid');
-    await customerForm.getByPlaceholder('First name').fill('Synthetic');
-    await customerForm.getByPlaceholder('Last name').fill(surname);
+    await customerForm.getByLabel('First name').fill('Synthetic');
+    await customerForm.getByLabel('Last name').fill(surname);
     const birthDate = customerForm.getByLabel('Date of birth', { exact: true });
     await birthDate.fill('31.02.2012');
     expect(

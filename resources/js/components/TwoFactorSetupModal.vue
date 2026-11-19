@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useUiI18n } from '@/composables/useUiI18n';
+
 import AlertError from '@/components/AlertError.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -24,6 +26,8 @@ import { useClipboard } from '@vueuse/core';
 import { Check, Copy, ScanLine } from 'lucide-vue-next';
 import { computed, nextTick, ref, useTemplateRef, watch } from 'vue';
 
+const { t } = useUiI18n();
+
 type Props = {
     requiresConfirmation: boolean;
     twoFactorEnabled: boolean;
@@ -46,26 +50,24 @@ const pinInputContainerRef = useTemplateRef('pinInputContainerRef');
 const modalConfig = computed<TwoFactorConfigContent>(() => {
     if (props.twoFactorEnabled) {
         return {
-            title: 'Two-Factor Authentication Enabled',
-            description:
-                'Two-factor authentication is now enabled. Scan the QR code or enter the setup key in your authenticator app.',
-            buttonText: 'Close',
+            title: t('auth.two_factor_active_title'),
+            description: t('auth.two_factor_active_desc'),
+            buttonText: t('common.close'),
         };
     }
 
     if (showVerificationStep.value) {
         return {
-            title: 'Verify Authentication Code',
-            description: 'Enter the 6-digit code from your authenticator app',
-            buttonText: 'Continue',
+            title: t('auth.two_factor_verify'),
+            description: t('auth.two_factor_verify_desc'),
+            buttonText: t('common.continue'),
         };
     }
 
     return {
-        title: 'Enable Two-Factor Authentication',
-        description:
-            'To finish enabling two-factor authentication, scan the QR code or enter the setup key in your authenticator app',
-        buttonText: 'Continue',
+        title: t('auth.two_factor_setup'),
+        description: t('auth.two_factor_setup_desc'),
+        buttonText: t('common.continue'),
     };
 });
 
@@ -195,9 +197,9 @@ watch(
                             <div
                                 class="absolute inset-0 top-1/2 h-px w-full bg-border"
                             />
-                            <span class="relative bg-card px-2 py-1"
-                                >or, enter the code manually</span
-                            >
+                            <span class="relative bg-card px-2 py-1">
+                                {{ t('auth.two_factor_manual_key') }}
+                            </span>
                         </div>
 
                         <div
@@ -256,6 +258,7 @@ watch(
                                     v-model="code"
                                     :maxlength="6"
                                     :disabled="processing"
+                                    :aria-label="t('auth.two_factor_code')"
                                 >
                                     <InputOTPGroup>
                                         <InputOTPSlot
@@ -276,14 +279,14 @@ watch(
                                     @click="showVerificationStep = false"
                                     :disabled="processing"
                                 >
-                                    Back
+                                    {{ t('common.back') }}
                                 </Button>
                                 <Button
                                     type="submit"
                                     class="w-auto flex-1"
                                     :disabled="processing || code.length < 6"
                                 >
-                                    Confirm
+                                    {{ t('common.confirm') }}
                                 </Button>
                             </div>
                         </div>

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useUiI18n } from '@/composables/useUiI18n';
+
 import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -11,21 +13,23 @@ import { edit as editPassword } from '@/routes/user-password';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
 
+const { t } = useUiI18n();
+
 const sidebarNavItems: NavItem[] = [
     {
-        title: 'Profile',
+        title: t('common.profile'),
         href: editProfile(),
     },
     {
-        title: 'Password',
+        title: t('auth.password_label'),
         href: editPassword(),
     },
     {
-        title: 'Two-Factor Auth',
+        title: t('auth.two_factor_title'),
         href: show(),
     },
     {
-        title: 'Appearance',
+        title: t('common.appearance'),
         href: editAppearance(),
     },
 ];
@@ -36,15 +40,15 @@ const { isCurrentUrl } = useCurrentUrl();
 <template>
     <div class="px-4 py-6">
         <Heading
-            title="Settings"
-            description="Manage your profile and account settings"
+            :title="t('common.settings')"
+            :description="t('settings.description')"
         />
 
         <div class="flex flex-col lg:flex-row lg:space-x-12">
             <aside class="w-full max-w-xl lg:w-48">
                 <nav
                     class="flex flex-col space-y-1 space-x-0"
-                    aria-label="Settings"
+                    :aria-label="t('common.settings')"
                 >
                     <Button
                         v-for="item in sidebarNavItems"

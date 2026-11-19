@@ -81,7 +81,11 @@ const { formatNumber } = useUiI18n();
                     </div>
                 </section>
 
-                <div v-if="state.errors.length > 0" class="alert alert-danger">
+                <div
+                    v-if="state.errors.length > 0"
+                    class="alert alert-danger"
+                    role="alert"
+                >
                     <p
                         v-for="error in state.errors"
                         :key="`${error.code}-${error.message}`"
@@ -135,57 +139,76 @@ const { formatNumber } = useUiI18n();
                         class="customer-form-grid grid gap-3 md:grid-cols-4"
                         @submit.prevent="submitCustomer"
                     >
-                        <input
-                            v-model="state.form.firstname"
-                            type="text"
-                            :placeholder="t('customers.first_name')"
-                            class="form-control"
-                            required
-                        />
-                        <input
-                            v-model="state.form.surname"
-                            type="text"
-                            :placeholder="t('customers.surname')"
-                            class="form-control"
-                        />
-                        <input
-                            v-model="state.form.lastname"
-                            type="text"
-                            :placeholder="t('customers.last_name')"
-                            class="form-control"
-                            required
-                        />
-                        <GermanDateInput
-                            v-model="state.form.date_birth"
-                            :aria-label="t('customers.birth_date')"
-                            class="form-control"
-                        />
-                        <input
-                            v-model.number="state.form.age"
-                            type="number"
-                            min="0"
-                            max="120"
-                            :placeholder="t('customers.age')"
-                            class="form-control"
-                        />
-                        <input
-                            v-model="state.form.parent_name"
-                            type="text"
-                            :placeholder="t('customers.parent_name')"
-                            class="form-control"
-                        />
-                        <input
-                            v-model="state.form.parent_phone"
-                            type="text"
-                            :placeholder="t('customers.parent_phone')"
-                            class="form-control"
-                        />
-                        <input
-                            v-model="state.form.email"
-                            type="email"
-                            :placeholder="t('customers.email')"
-                            class="form-control"
-                        />
+                        <label class="grid gap-1 text-sm font-medium">
+                            <span>{{ t('customers.first_name') }}</span>
+                            <input
+                                v-model="state.form.firstname"
+                                type="text"
+                                class="form-control"
+                                required
+                            />
+                        </label>
+                        <label class="grid gap-1 text-sm font-medium">
+                            <span>{{ t('customers.surname') }}</span>
+                            <input
+                                v-model="state.form.surname"
+                                type="text"
+                                class="form-control"
+                            />
+                        </label>
+                        <label class="grid gap-1 text-sm font-medium">
+                            <span>{{ t('customers.last_name') }}</span>
+                            <input
+                                v-model="state.form.lastname"
+                                type="text"
+                                class="form-control"
+                                required
+                            />
+                        </label>
+                        <div class="grid gap-1 text-sm font-medium">
+                            <label for="customer-birth-date">{{
+                                t('customers.birth_date')
+                            }}</label>
+                            <GermanDateInput
+                                id="customer-birth-date"
+                                v-model="state.form.date_birth"
+                                class="form-control"
+                            />
+                        </div>
+                        <label class="grid gap-1 text-sm font-medium">
+                            <span>{{ t('customers.age') }}</span>
+                            <input
+                                v-model.number="state.form.age"
+                                type="number"
+                                min="0"
+                                max="120"
+                                class="form-control"
+                            />
+                        </label>
+                        <label class="grid gap-1 text-sm font-medium">
+                            <span>{{ t('customers.parent_name') }}</span>
+                            <input
+                                v-model="state.form.parent_name"
+                                type="text"
+                                class="form-control"
+                            />
+                        </label>
+                        <label class="grid gap-1 text-sm font-medium">
+                            <span>{{ t('customers.parent_phone') }}</span>
+                            <input
+                                v-model="state.form.parent_phone"
+                                type="text"
+                                class="form-control"
+                            />
+                        </label>
+                        <label class="grid gap-1 text-sm font-medium">
+                            <span>{{ t('customers.email') }}</span>
+                            <input
+                                v-model="state.form.email"
+                                type="email"
+                                class="form-control"
+                            />
+                        </label>
 
                         <div class="flex items-center gap-3 md:col-span-4">
                             <label

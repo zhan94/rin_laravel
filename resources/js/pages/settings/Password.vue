@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useUiI18n } from '@/composables/useUiI18n';
+
 import PasswordController from '@/actions/App/Http/Controllers/Settings/PasswordController';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
@@ -8,20 +10,22 @@ import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { Form, Head } from '@inertiajs/vue3';
+
+const { t } = useUiI18n();
 </script>
 
 <template>
     <AppLayout>
-        <Head title="Password settings" />
+        <Head :title="t('settings.password_title')" />
 
-        <h1 class="sr-only">Password Settings</h1>
+        <h1 class="sr-only">{{ t('settings.password_title') }}</h1>
 
         <SettingsLayout>
             <div class="space-y-6">
                 <Heading
                     variant="small"
-                    title="Update password"
-                    description="Ensure your account is using a long, random password to stay secure"
+                    :title="t('settings.password_update')"
+                    :description="t('settings.password_hint')"
                 />
 
                 <Form
@@ -39,42 +43,46 @@ import { Form, Head } from '@inertiajs/vue3';
                     v-slot="{ errors, processing, recentlySuccessful }"
                 >
                     <div class="grid gap-2">
-                        <Label for="current_password">Current password</Label>
+                        <Label for="current_password">
+                            {{ t('settings.password_current') }}
+                        </Label>
                         <Input
                             id="current_password"
                             name="current_password"
                             type="password"
                             class="mt-1 block w-full"
                             autocomplete="current-password"
-                            placeholder="Current password"
+                            :placeholder="t('settings.password_current')"
                         />
                         <InputError :message="errors.current_password" />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="password">New password</Label>
+                        <Label for="password">
+                            {{ t('settings.password_new') }}
+                        </Label>
                         <Input
                             id="password"
                             name="password"
                             type="password"
                             class="mt-1 block w-full"
                             autocomplete="new-password"
-                            placeholder="New password"
+                            :placeholder="t('settings.password_new')"
                         />
                         <InputError :message="errors.password" />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="password_confirmation"
-                            >Confirm password</Label
-                        >
+                        <Label for="password_confirmation">
+                            {{ t('auth.password_confirm') }}
+                        </Label>
                         <Input
                             id="password_confirmation"
                             name="password_confirmation"
                             type="password"
                             class="mt-1 block w-full"
                             autocomplete="new-password"
-                            placeholder="Confirm password"
+                            :placeholder="t('auth.password_confirm')"
                         />
                         <InputError :message="errors.password_confirmation" />
                     </div>
@@ -83,8 +91,9 @@ import { Form, Head } from '@inertiajs/vue3';
                         <Button
                             :disabled="processing"
                             data-test="update-password-button"
-                            >Save password</Button
                         >
+                            {{ t('settings.password_save') }}
+                        </Button>
 
                         <Transition
                             enter-active-class="transition ease-in-out"
@@ -96,7 +105,7 @@ import { Form, Head } from '@inertiajs/vue3';
                                 v-show="recentlySuccessful"
                                 class="text-sm text-neutral-600"
                             >
-                                Saved.
+                                {{ t('common.saved') }}
                             </p>
                         </Transition>
                     </div>

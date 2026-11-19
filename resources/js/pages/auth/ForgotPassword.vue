@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useUiI18n } from '@/composables/useUiI18n';
+
 import InputError from '@/components/InputError.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
@@ -10,6 +12,8 @@ import { login } from '@/routes';
 import { email } from '@/routes/password';
 import { Form, Head } from '@inertiajs/vue3';
 
+const { t } = useUiI18n();
+
 defineProps<{
     status?: string;
 }>();
@@ -17,10 +21,10 @@ defineProps<{
 
 <template>
     <AuthLayout
-        title="Forgot password"
-        description="Enter your email to receive a password reset link"
+        :title="t('auth.password_forgot_title')"
+        :description="t('auth.password_forgot_desc')"
     >
-        <Head title="Forgot password" />
+        <Head :title="t('auth.password_forgot_title')" />
 
         <div
             v-if="status"
@@ -32,7 +36,7 @@ defineProps<{
         <div class="space-y-6">
             <Form v-bind="email.form()" v-slot="{ errors, processing }">
                 <div class="grid gap-2">
-                    <Label for="email">Email address</Label>
+                    <Label for="email"> {{ t('auth.email') }} </Label>
                     <Input
                         id="email"
                         type="email"
@@ -51,14 +55,16 @@ defineProps<{
                         data-test="email-password-reset-link-button"
                     >
                         <Spinner v-if="processing" />
-                        Email password reset link
+                        {{ t('auth.password_reset_send') }}
                     </Button>
                 </div>
             </Form>
 
             <div class="space-x-1 text-center text-sm text-muted-foreground">
-                <span>Or, return to</span>
-                <TextLink :href="login()">log in</TextLink>
+                <span> {{ t('auth.return_to') }} </span>
+                <TextLink :href="login()">
+                    {{ t('auth.login_link') }}
+                </TextLink>
             </div>
         </div>
     </AuthLayout>

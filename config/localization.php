@@ -8,7 +8,7 @@ return [
     'query_parameter' => 'lang',
     'manual_files' => [
         'en' => 'admin-manual-en.html',
-        'de' => 'admin-manual-en.html',
-        'es' => 'admin-manual-en.html',
+        'de' => 'admin-manual-de.html',
+        'es' => 'admin-manual-es.html',
     ],
 ];

@@ -35,7 +35,7 @@ final readonly class ServiceBookingDateSynchronizer
             if ($hasConflict) {
                 throw new ApiException(
                     errorCode: 'booking_date_conflict',
-                    message: sprintf('Customer already has a booking for %s.', DisplayDate::german($date)),
+                    message: __('Customer already has a booking for :date.', ['date' => DisplayDate::german($date)]),
                     statusCode: 422,
                     details: ['date' => $date],
                 );
@@ -44,7 +44,7 @@ final readonly class ServiceBookingDateSynchronizer
             if (! $this->repository->hasCapacity($serviceDateId, (int) $booking->id)) {
                 throw new ApiException(
                     errorCode: 'booking_capacity_exceeded',
-                    message: sprintf('No capacity for %s.', DisplayDate::german($date)),
+                    message: __('No capacity for :date.', ['date' => DisplayDate::german($date)]),
                     statusCode: 422,
                     details: ['date' => $date],
                 );

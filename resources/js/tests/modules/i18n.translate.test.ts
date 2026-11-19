@@ -1,3 +1,4 @@
+import { UI_MESSAGES } from '@/modules/i18n/messages';
 import {
     interpolate,
     normalizeLocale,
@@ -6,6 +7,26 @@ import {
 import { describe, expect, it } from 'vitest';
 
 describe('i18n translate helpers', () => {
+    it.each(['de', 'es'] as const)(
+        'covers every English message and interpolation parameter in %s',
+        (locale) => {
+            const placeholders = (message: string) =>
+                [...new Set(message.match(/:[a-z_][a-z_0-9]*/gi) ?? [])].sort();
+
+            const target: Record<string, string> = UI_MESSAGES[locale];
+            expect(Object.keys(target).sort()).toEqual(
+                Object.keys(UI_MESSAGES.en).sort(),
+            );
+
+            for (const [key, message] of Object.entries(UI_MESSAGES.en)) {
+                expect(target[key].trim(), key).not.toBe('');
+                expect(placeholders(target[key]), key).toEqual(
+                    placeholders(message),
+                );
+            }
+        },
+    );
+
     it('normalizes supported locales and falls back for invalid values', () => {
         expect(normalizeLocale('de', 'en')).toBe('de');
         expect(normalizeLocale(' ES ', 'en')).toBe('es');

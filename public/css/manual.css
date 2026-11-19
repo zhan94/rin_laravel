@@ -36,7 +36,7 @@ a:hover {
 }
 
 .hero {
-    background: linear-gradient(130deg, #0f6fbf, #16a3b8);
+    background: linear-gradient(130deg, #0e62a8, #0d6978);
     color: #fff;
     padding: 30px 20px 44px;
     border-bottom: 4px solid rgba(255, 255, 255, 0.26);
@@ -58,7 +58,6 @@ a:hover {
 .hero p {
     margin: 0;
     max-width: 900px;
-    opacity: 0.96;
     font-size: clamp(1rem, 1.8vw, 1.08rem);
 }
 

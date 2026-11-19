@@ -331,7 +331,7 @@ final readonly class SeasonManagementService
 
         throw new ApiException(
             errorCode: 'season_overlap',
-            message: sprintf('Season overlap with "%s" (%s).', $name, $range),
+            message: __('Season overlap with ":name" (:range).', ['name' => $name, 'range' => $range]),
             statusCode: 422,
         );
     }
@@ -343,7 +343,7 @@ final readonly class SeasonManagementService
         if (($bounds['min'] ?? null) !== null && $bounds['min'] < $startDate) {
             throw new ApiException(
                 errorCode: 'season_dates_outside_range',
-                message: sprintf('Cannot set start date after existing service date %s.', $this->presenter->dateLabel($bounds['min'])),
+                message: __('Cannot set start date after existing service date :date.', ['date' => $this->presenter->dateLabel($bounds['min'])]),
                 statusCode: 422,
             );
         }
@@ -351,7 +351,7 @@ final readonly class SeasonManagementService
         if (($bounds['max'] ?? null) !== null && $bounds['max'] > $endDate) {
             throw new ApiException(
                 errorCode: 'season_dates_outside_range',
-                message: sprintf('Cannot set end date before existing service date %s.', $this->presenter->dateLabel($bounds['max'])),
+                message: __('Cannot set end date before existing service date :date.', ['date' => $this->presenter->dateLabel($bounds['max'])]),
                 statusCode: 422,
             );
         }

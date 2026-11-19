@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useUiI18n } from '@/composables/useUiI18n';
+
 import AlertError from '@/components/AlertError.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,6 +15,8 @@ import { regenerateRecoveryCodes } from '@/routes/two-factor';
 import { Form } from '@inertiajs/vue3';
 import { Eye, EyeOff, LockKeyhole, RefreshCw } from 'lucide-vue-next';
 import { nextTick, onMounted, ref, useTemplateRef } from 'vue';
+
+const { t } = useUiI18n();
 
 const { recoveryCodesList, fetchRecoveryCodes, errors } = useTwoFactorAuth();
 const isRecoveryCodesVisible = ref<boolean>(false);
@@ -42,24 +46,34 @@ onMounted(async () => {
     <Card class="w-full">
         <CardHeader>
             <CardTitle class="flex gap-3">
-                <LockKeyhole class="size-4" />2FA Recovery Codes
+                <LockKeyhole class="size-4" />
+                {{ t('auth.two_factor_recovery_section') }}
             </CardTitle>
             <CardDescription>
-                Recovery codes let you regain access if you lose your 2FA
-                device. Store them in a secure password manager.
+                {{ t('auth.two_factor_recovery_store') }}
             </CardDescription>
         </CardHeader>
         <CardContent>
             <div
                 class="flex flex-col gap-3 select-none sm:flex-row sm:items-center sm:justify-between"
             >
-                <Button @click="toggleRecoveryCodesVisibility" class="w-fit">
+                <Button
+                    :aria-expanded="isRecoveryCodesVisible"
+                    aria-controls="recovery-codes"
+                    class="w-fit"
+                    @click="toggleRecoveryCodesVisibility"
+                >
                     <component
                         :is="isRecoveryCodesVisible ? EyeOff : Eye"
                         class="size-4"
                     />
-                    {{ isRecoveryCodesVisible ? 'Hide' : 'View' }} Recovery
-                    Codes
+                    {{
+                        t(
+                            isRecoveryCodesVisible
+                                ? 'auth.two_factor_recovery_hide'
+                                : 'auth.two_factor_recovery_view',
+                        )
+                    }}
                 </Button>
 
                 <Form
@@ -75,11 +89,14 @@ onMounted(async () => {
                         type="submit"
                         :disabled="processing"
                     >
-                        <RefreshCw /> Regenerate Codes
+                        <RefreshCw />
+                        {{ t('auth.two_factor_recovery_regenerate') }}
                     </Button>
                 </Form>
             </div>
             <div
+                id="recovery-codes"
+                :aria-hidden="!isRecoveryCodesVisible"
                 :class="[
                     'relative overflow-hidden transition-all duration-300',
                     isRecoveryCodesVisible
@@ -111,10 +128,7 @@ onMounted(async () => {
                         </div>
                     </div>
                     <p class="text-xs text-muted-foreground select-none">
-                        Each recovery code can be used once to access your
-                        account and will be removed after use. If you need more,
-                        click
-                        <span class="font-bold">Regenerate Codes</span> above.
+                        {{ t('auth.two_factor_recovery_once') }}
                     </p>
                 </div>
             </div>

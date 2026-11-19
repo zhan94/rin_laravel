@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useUiI18n } from '@/composables/useUiI18n';
+
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,14 +9,16 @@ import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 import { store } from '@/routes/password/confirm';
 import { Form, Head } from '@inertiajs/vue3';
+
+const { t } = useUiI18n();
 </script>
 
 <template>
     <AuthLayout
-        title="Confirm your password"
-        description="This is a secure area of the application. Please confirm your password before continuing."
+        :title="t('auth.password_confirm_title')"
+        :description="t('auth.password_confirm_desc')"
     >
-        <Head title="Confirm password" />
+        <Head :title="t('auth.password_confirm')" />
 
         <Form
             v-bind="store.form()"
@@ -23,7 +27,9 @@ import { Form, Head } from '@inertiajs/vue3';
         >
             <div class="space-y-6">
                 <div class="grid gap-2">
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="password">
+                        {{ t('auth.password_label') }}
+                    </Label>
                     <Input
                         id="password"
                         type="password"
@@ -44,7 +50,7 @@ import { Form, Head } from '@inertiajs/vue3';
                         data-test="confirm-password-button"
                     >
                         <Spinner v-if="processing" />
-                        Confirm Password
+                        {{ t('auth.password_confirm') }}
                     </Button>
                 </div>
             </div>

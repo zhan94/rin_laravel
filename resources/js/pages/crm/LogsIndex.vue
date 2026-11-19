@@ -194,7 +194,7 @@ const {
                                     "
                                 >
                                     <td colspan="7" class="empty-row">
-                                        No records.
+                                        {{ t('logs.no_records') }}
                                     </td>
                                 </tr>
                             </tbody>

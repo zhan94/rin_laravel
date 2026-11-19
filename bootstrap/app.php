@@ -64,7 +64,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
             return ApiResponseFactory::error(
                 code: $exception->errorCode(),
-                message: $exception->getMessage(),
+                message: __($exception->getMessage()),
                 status: $exception->statusCode(),
                 details: $exception->details(),
             );
@@ -77,7 +77,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
             return ApiResponseFactory::error(
                 code: 'unauthenticated',
-                message: 'Unauthenticated.',
+                message: __('Unauthenticated.'),
                 status: 401,
             );
         });
@@ -91,7 +91,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
             return ApiResponseFactory::error(
                 code: 'forbidden',
-                message: $message !== '' ? $message : 'Forbidden.',
+                message: __($message !== '' ? $message : 'Forbidden.'),
                 status: 403,
             );
         });
@@ -118,7 +118,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
             return ApiResponseFactory::error(
                 code: $code,
-                message: $status === 403 ? 'Access denied.' : (\Symfony\Component\HttpFoundation\Response::$statusTexts[$status] ?? 'Request could not be completed.'),
+                message: __($status === 403 ? 'Access denied.' : (\Symfony\Component\HttpFoundation\Response::$statusTexts[$status] ?? 'Request could not be completed.')),
                 status: $status,
             )->withHeaders($exception->getHeaders());
         });
@@ -140,7 +140,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
             return ApiResponseFactory::error(
                 code: 'internal_error',
-                message: 'Unexpected server error.',
+                message: __('Unexpected server error.'),
                 status: 500,
             );
         });

@@ -76,7 +76,7 @@ const {
                         v-model="state.createForm.season_name"
                         type="text"
                         class="form-control"
-                        placeholder="Season 2026/2027"
+                        :placeholder="t('seasons.name_example')"
                     />
                 </div>
                 <div class="field">

@@ -25,7 +25,7 @@ class PasskeyOptionsController extends Controller
         if ($identifier === '') {
             return response()->json([
                 'ok' => false,
-                'error' => 'Username is required for passkey login.',
+                'error' => __('Username is required for passkey login.'),
             ], 422);
         }
 
@@ -37,7 +37,7 @@ class PasskeyOptionsController extends Controller
         } catch (Throwable) {
             return response()->json([
                 'ok' => false,
-                'error' => 'Invalid login request.',
+                'error' => __('Invalid login request.'),
             ], 400);
         }
     }
@@ -63,7 +63,7 @@ class PasskeyOptionsController extends Controller
 
             return response()->json([
                 'ok' => false,
-                'error' => 'Invalid login request.',
+                'error' => __('Invalid login request.'),
             ], 401);
         }
     }
@@ -114,7 +114,7 @@ class PasskeyOptionsController extends Controller
         if ($user === null) {
             return response()->json([
                 'ok' => false,
-                'error' => 'Access denied.',
+                'error' => __('Access denied.'),
             ], 401);
         }
 
@@ -126,7 +126,7 @@ class PasskeyOptionsController extends Controller
         } catch (Throwable) {
             return response()->json([
                 'ok' => false,
-                'error' => 'Unable to complete the passkey request.',
+                'error' => __('Unable to complete the passkey request.'),
             ], 400);
         }
     }
@@ -137,7 +137,7 @@ class PasskeyOptionsController extends Controller
         if ($user === null) {
             return response()->json([
                 'ok' => false,
-                'error' => 'Access denied.',
+                'error' => __('Access denied.'),
             ], 401);
         }
 
@@ -151,7 +151,7 @@ class PasskeyOptionsController extends Controller
         } catch (Throwable) {
             return response()->json([
                 'ok' => false,
-                'error' => 'Unable to complete the passkey request.',
+                'error' => __('Unable to complete the passkey request.'),
             ], 400);
         }
     }
@@ -162,7 +162,7 @@ class PasskeyOptionsController extends Controller
         if ($user === null) {
             return response()->json([
                 'ok' => false,
-                'error' => 'Access denied.',
+                'error' => __('Access denied.'),
             ], 401);
         }
 
@@ -174,7 +174,7 @@ class PasskeyOptionsController extends Controller
         } catch (Throwable) {
             return response()->json([
                 'ok' => false,
-                'error' => 'Unable to complete the passkey request.',
+                'error' => __('Unable to complete the passkey request.'),
             ], 400);
         }
     }
@@ -185,7 +185,7 @@ class PasskeyOptionsController extends Controller
         if ($user === null) {
             return response()->json([
                 'ok' => false,
-                'error' => 'Access denied.',
+                'error' => __('Access denied.'),
             ], 401);
         }
 
@@ -193,7 +193,7 @@ class PasskeyOptionsController extends Controller
         if ($passkeyId <= 0) {
             return response()->json([
                 'ok' => false,
-                'error' => 'Invalid passkey id.',
+                'error' => __('Invalid passkey id.'),
             ], 422);
         }
 
@@ -202,7 +202,7 @@ class PasskeyOptionsController extends Controller
             if (! $deleted) {
                 return response()->json([
                     'ok' => false,
-                    'error' => 'Passkey not found.',
+                    'error' => __('Passkey not found.'),
                 ], 404);
             }
 
@@ -213,7 +213,7 @@ class PasskeyOptionsController extends Controller
         } catch (Throwable) {
             return response()->json([
                 'ok' => false,
-                'error' => 'Unable to complete the passkey request.',
+                'error' => __('Unable to complete the passkey request.'),
             ], 400);
         }
     }
