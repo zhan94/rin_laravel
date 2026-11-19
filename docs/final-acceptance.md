@@ -1,94 +1,92 @@
 # Final acceptance
 
-**Evaluation date** 18 November 2026. The owner approved local acceptance. The owner authorized a fresh local Git history after the original Laravel history could not be recovered. Publication approval remains open.
+**Evaluation date** 19 November 2026. This review builds on the owner's prior acceptance of the local remediation and approval of the repository baseline. The recruitment review added the localhost session fix, distinct administrator labels, Driver report privacy checks, and cross-database report search.
 
-## Security and business behavior
-
-| Area | Verified change |
+| Decision | Status |
 | --- | --- |
-| Staff provisioning | Public registration is disabled. The user policy blocks administrators from assigning higher roles or changing higher-privilege accounts. Authorization checks load current actor and target records inside staff writes. |
-| Credentials and sessions | Fortify rejects a stored password hash supplied as a password. Password, role, and account status changes invalidate existing browser state and personal tokens. Browser API writes use Sanctum's CSRF middleware. Token creation requires recent password confirmation and issues scoped, expiring tokens. |
-| Passkeys and recovery | Passkey endpoints use the configured origin and relying party, with throttling and recent password confirmation for management. Recovery responses avoid disclosing account existence. |
-| Audit and files | Denied access, credential events, staff changes, and booking and payment writes emit redacted audit events to a dedicated private log. Issue attachments remain private, and database rollback removes a just-written file. Attached historical formats are served as downloads except for approved image MIME types. |
-| Data initialization | The default seeder rejects prepared databases. The Compose demo checks the actual MySQL schema and requires an empty business database on the first run. Former manual screenshots were removed. |
-| Reports | The all-rows print window builds a semantic table with text nodes. The CSV export quotes international text and neutralizes formula-like values. Chrome actually downloaded the CSV and opened the print window. |
-| Concurrency | Parallel MySQL processes competing for the last seat or the same remaining balance produced one successful write each. The rejected requests left counts and payment mirrors consistent. Booking and payment retries use persisted receipts. A stale payment correction returns a conflict, and booked slot dates retain their original IDs. |
-| Dashboard and interface | The dashboard uses configured season boundaries and database aggregates. Inertia tests prove a multi-date booking is counted and summed once. Browser checks cover the new dashboard, translated customer page, and mobile keyboard navigation. The staff creation module is labeled “Add customer.” |
+| Local technical evaluation | **GO** for the synthetic ARM64 demo and documented verification scope. |
+| Repository publication | **NO-GO** until the owner confirms rights to share the application and bundled assets, approves the exact repositories and visibility, and explicitly authorizes publication. The supplied GitLab project is public. Hosted CI is pending. |
 
-The OOP comparison covered role boundaries, capacity checks, payment retries and stale corrections, and dashboard counts. The Laravel implementation retains its own routes, Vue interface, and API envelope. The [architecture notes](architecture.md) record those differences and the compatibility rule for older API clients that omit request keys.
+## Security and functional coverage
 
-## Automated gates and browser verification
+The table revisits the [original Laravel audit](initial-audit.md). The [engineering record](ai-development.md) distinguishes owner decisions, agent-authored work, and automated evidence.
 
-| Check | Local result |
+| Audit or workflow area | Observed evidence |
 | --- | --- |
-| PHP runtime | PHP 8.5.3 on macOS ARM64 and PHP 8.5.12 in Docker |
-| Pest | 190 tests and 1,051 assertions passed in isolated SQLite on macOS and in the clean ARM64 image |
-| PHPStan/Larastan | Level 8, zero errors |
-| Pint | All 412 scanned PHP files passed |
-| Frontend | 76 Vitest tests passed. Vite build, TypeScript checks, ESLint, and Prettier passed. |
-| Advisory feeds | Composer and npm lockfile audits reported zero advisories |
-| Chrome/Playwright | Four tests passed against the Laravel Compose app |
-| MySQL concurrency | Both independent-process races passed on the disposable ARM64 MySQL 8.4 server |
-| GitLab and GitHub | Both workflows call the same quality and secret-scan script. The end-to-end quality gate passed locally on ARM64, including Composer and npm audits and all four Chromium tests inside Docker against the isolated demo. The GitHub workflow passed actionlint 1.7.12. Hosted runs remain pending. |
+| Public staff enrollment and elevated account changes | The registration route is closed. Policy and transaction checks protect both the target and the assigned role. Security and user API tests cover direct requests and self-change constraints. |
+| Stored credentials, recovery and revocation | Fortify rejected stored-hash input. Feature tests cover password verification, recovery, TOTP, account disablement, role eligibility, session stamps and scoped token revocation. Recovery responses hide account existence. |
+| Web/API role parity and CSRF | The role matrix covers page entry and direct API calls. Native Sanctum CSRF tests reject missing or untrusted browser state. The port-specific localhost configuration was verified with a real synthetic login and protected API call. |
+| Driver reporting and sensitive data | The earlier code redacted skill and equipment, while the API still sent information the Driver interface hid. The new regression covers guardian email and birth date, notes, finance fields and totals, plus private email search and hidden-field sort. The existing route, permitted transport contact and outstanding-record count stay available. |
+| SQL injection and mass assignment | The customer and report search review traced parameter bindings and constrained sorts. Report sort fields use an allowlist, and the new cross-engine name query interpolates a fixed dialect expression and binds the search value. Form Requests, DTOs and targeted Eloquent persistence use validated attributes. The privilege and report regressions exercise the relevant security boundaries. |
+| XSS, printing and CSV | Vue text interpolation and print text nodes keep report data in text context. The CSV helper quotes and neutralizes formula-looking values. Chromium downloaded a real CSV and opened the print popup. The Fortify QR SVG is generated by the server. |
+| Uploads and audit events | The issue tests cover private attachments, rollback cleanup and authorization. Staff security events use a private redacted channel with correlation IDs. Framing, referrer and MIME protections are applied by middleware. Obsolete Bootstrap JS was removed during remediation. |
+| Seed safety and migration integrity | Compose checks the connected isolated schema before migrations and demo initialization. The import retains its explicit mapping and read-only source boundary. The historical report contains the verified business counts and relationship checks. [Legacy import report](legacy-data-migration.md) |
+| Concurrent bookings and payments | Independent MySQL processes competed for the last seat and outstanding balance. Both scenarios produced one successful write. The rejected operation was a capacity or remaining-balance conflict, and the payment mirror stayed consistent. Booking and payment tests also cover retry receipts, stale corrections, and preservation of booked dates. |
+| Dashboard, CRUD and notifications | The PHP suite covers the customer lifecycle, bookings and payments, equipment, cards, locations, bonus catalogs, users, issues, logs, seasons, slots and notifications. Dashboard tests cover season boundaries and once-per-booking aggregation. The browser suite loads 12 CRM modules, checks the German profile, and exercises mobile menu focus and report output. |
+| Dependency and static checks | Both current lockfile audits returned zero advisories. PHPStan remains at level 8. Pint, PHP syntax, ESLint, TypeScript and Prettier checks remain enabled. The expanded test initially exposed an older SQLite version without `CONCAT`; the query now selects an equivalent expression for SQLite. |
+| Presentation and performance | Chrome review covered a 1440 × 960 dashboard, 820 × 1024 booking form and list, and 390 × 844 German report. The existing design was retained. The customer list and search benchmark was repeated. Whole-result workloads and the accessibility scope are recorded below. |
 
-Composer metadata validation reported that the root application license is unspecified. Vite emitted a warning about a runtime-resolved legacy background asset. The image was served by the local application. Generated Wayfinder files are excluded from frontend formatting because Vite regenerates them.
+## Verification results
+
+| Gate | Result |
+| --- | --- |
+| Runtime and dependencies | PHP 8.5.3 on macOS ARM64 and PHP 8.5.12 in the ARM64 Docker image. Laravel 12.73.0, Fortify 1.34.1, Sanctum 4.5.0, Vue 3.5.45, TypeScript 5.9.3, Tailwind CSS 4.1.14, Vite 7.3.8. Both lockfiles were retained. Composer validation and platform checks passed with an unspecified root-license warning. |
+| PHP | 190 Pest tests and 1,067 assertions. PHPStan level 8, zero errors. Pint passed 412 files. Syntax passed for 414 PHP files. |
+| Frontend | 80 Vitest tests across 24 files. ESLint, Prettier, Vue type checking and Vite production compilation passed. The deferred background asset resolved in Chrome. |
+| Current dependency audits | Composer and npm both reported zero vulnerabilities on 19 November. npm install emitted deprecation notices for transitive packages. |
+| Chrome and Playwright | Four Chromium checks passed in 5.2 seconds in the clean Docker quality run. The opt-in screenshot test was skipped in CI and run separately on the synthetic demo. A separate Chrome run exercised customer creation, validation, details, update, filtering, deletion, notifications, and the empty state on disposable MySQL. It also verified Driver report masking, permitted full-name search, and denial of direct customer API access. |
+| MySQL | Both concurrency races passed on disposable MySQL 8.4. Demo integrity checks verified relationship counts, payment mirrors and encoding. |
+| Native startup | A clean Git clone installed via Composer and npm under PHP 8.5.3 and Node 24.22.3, migrated and seeded an isolated SQLite file, compiled Vue, and signed in through Chrome. The customers API succeeded and rendered the empty-list state. |
+| CI configurations | GitHub Actions passed actionlint 1.7.12. Local YAML parsing and job-structure checks passed for GitLab. The two platforms call the shared shell gate. GitLab's hosted CI lint and both hosted executions remain pending. |
+
+## Architecture assessment
+
+The Laravel request lifecycle, service container, Eloquent relationships, typed DTOs, Vue composables, and API Resources fit the installed versions. The review retained shared query and transaction boundaries where there is measurable behavior to protect. One-implementation repository interfaces and forwarding methods add navigation cost, and the largest booking and report files have several distinct responsibilities. The review found no concrete reason to reorganize those paths as a condition of this release. Bookings eager-load their related records, reports use paginated IDs with batched details and set-based totals, and the dashboard uses grouped aggregates. The legacy service discriminator and global location sentinel are deliberate constraints on relational normalization. [Source paths and trade-offs](architecture.md)
 
 ## 100,000-customer benchmark
 
-PHP 8.5.3 and SQLite 3.51.2 ran on macOS ARM64. The benchmark used an in-memory database, one warm-up, and the median of seven measured repository calls. Seeding took **0.296 s**. Peak allocated PHP memory was **36.5 MiB**.
+PHP 8.5.3 and SQLite 3.51.2 ran on a MacBook Pro with Apple M4 Pro and 24 GB RAM. The script seeded 100,000 synthetic rows in **0.305 s**, recorded **36.5 MiB** peak allocated PHP memory, and measured repository-call latency using one warm-up and seven measured calls per case. The median call and SQL query counts follow.
 
 | Customer operation | Median | SQL queries |
 | --- | ---: | ---: |
 | First 25 rows | 0.12 ms | 2 |
-| Page 3,900 | 0.47 ms | 2 |
-| Unique substring match | 24.52 ms | 2 |
-| Substring miss | 13.17 ms | 1 |
+| Page 3,900 | 0.48 ms | 2 |
+| Unique substring match | 25.54 ms | 2 |
+| Substring miss | 13.30 ms | 1 |
 
-The substring filter scans the candidate text fields. These timings cover repository calls on SQLite. The MySQL race test verifies locking under concurrent writes. Full-range print and export still retrieve all selected report pages in the browser. The 100,000-customer benchmark does not measure that workload.
+Substring search scans candidate text columns. The result measures SQLite repository calls. Full-range reports, MySQL production latency and browser memory at that dataset size were outside the benchmark. [Reproduction command](operations.md#synthetic-benchmark)
 
 ## Docker installation
 
-Docker Desktop Engine 29.9.3 and Compose v5.7.0 ran on an Apple Silicon Mac. The corrected Laravel install took **137.92 seconds** from a clean source export with no installed dependencies, a fresh BuildKit builder, and fresh application and database volumes. The timer stopped after the expected Laravel health body and the Inertia login page responded. The Docker daemon already had the MySQL, Redis, and Alpine service images. The test used a source export because the workspace does not contain Git metadata.
+Independent `git clone --no-local` checkouts of the runtime revision `fe38d05` ran on the ARM64 Mac. The disposable Docker daemon reported Engine 29.10.0 and Compose 5.7.1. Timing started before `docker compose up --build --detach --wait` and stopped after the public `/up` response and rendered Inertia sign-in page were confirmed at the canonical browser origin.
 
-**Clean Git checkout** Both measurements used independent `git clone --no-local` checkouts of `b3ed179` with clean working trees. The isolated ARM64 Docker Engine was 29.10.0 with Compose v5.7.1. The timer covered `docker compose up --build --wait` through the Laravel health response and the rendered Inertia sign-in page.
-
-| Run | Cache and database state | Time |
+| Run | Docker and database state | Elapsed |
 | --- | --- | ---: |
-| Cold | Empty isolated Docker image store and build cache, fresh demo volumes | **167.35 s** |
-| Warm | Same daemon and retained images and build cache, fresh demo volumes | **11.19 s** |
+| Cold | Empty engine image store, empty build cache, fresh MySQL and app volumes | **66.57 s** |
+| Warm | Same engine, retained images and build cache, fresh MySQL and app volumes | **11.27 s** |
 
-Subsequent commits record acceptance and format the redacted manual references. They preserve application behavior and the benchmarked Docker and CI configuration.
+The preliminary timing attempts exposed a host redirect and an escaped Inertia marker. Those probes were corrected before recording the times above. Both completed runs were under five minutes. The Docker Desktop installation and x86-64 execution were outside the timing.
 
-The OOP app started from its existing read-only checkout into a separate Docker project. A fresh OOP Compose install took **12.23 seconds** with cached images and build layers. Inspection verified separate HTTP ports, bridge networks, and MySQL data volumes. A clean clone of the sanitized Laravel revision ran alongside the separate OOP Compose project. Chrome signed in to both in the same browser and confirmed the OOP session did not grant Laravel access. Both sessions continued to work independently. The procedural legacy application was outside both Compose projects.
+The previous verified ARM64 clean-clone run measured 167.35 seconds cold and 11.19 seconds warm on 18 November. That run also started independent Laravel and OOP demos on separate ports, networks and volumes, then signed into both in the same browser to verify cookie isolation. OOP and the procedural legacy application were outside the change scope of the recruitment review.
 
-The isolated MySQL 8.4.13 Laravel demo had 5 staff accounts, 60 customers, 2 services, 2 locations, 2 cards, 8 bookings, 16 booking-date links, and 8 payment mirrors. With utf8mb4 and foreign-key checks enabled, the aggregate checks returned zero payment disagreements, duplicate customer emails, or customer addresses outside the reserved demo domain.
+The isolated MySQL 8.4.13 demo started with five staff, 60 customers, two services, two locations, two cards, eight bookings, 16 date links and eight payment mirrors. The checks covered 27 foreign-key references with validation enabled and found zero orphaned rows, payment disagreements, invalid booking dates or balances, missing customer fields, duplicate email groups, or non-utf8mb4 text columns. A multilingual string containing a four-byte character round-tripped through the connection. Counts and checks matched after restarting the application. The prepared `rin_lara` records were outside the verification workflow. Earlier import counts, orphan checks and migration ledger evidence remain in the [original audit](initial-audit.md#read-only-database-verification) and [migration report](legacy-data-migration.md).
 
-The prepared `rin_lara` records were left intact. The new receipts and date-index migrations ran in isolated databases. See the [original import report](legacy-data-migration.md) for the pre-remediation record counts and foreign-key checks.
+## Git history and confidentiality
 
-## Git history and sharing
+- The original `ski2.0` workspace and two source archives contain no Git metadata. The neighboring `ski` checkout has 66 commits, no merges or tags, and a remote at `4146933` on `master`. Its tip lacks the Laravel CRM customer page, booking payment service and legacy importer. A neighboring final-review repository belongs to the OOP application.
+- The owner provided [VV-jan/rin_lara](https://gitlab.com/VV-jan/rin_lara). A read-only Git and GitLab project check showed an empty public project with a configured `main` default. After the owner approved a new local history, `42f6172` recorded the verified application baseline. `b3ed179` added the shared CI gates. Documentation and recruitment fixes use separate commits with actual dates and agent authorship.
+- The older `ski` candidate's object review covered 821 blobs, 66 commits and 480 trees. It found two non-example contact literals in the older candidate and no credential requiring rotation. The candidate is outside the new Laravel refs. Two local workstation paths in an unpublished Laravel draft were redacted before the baseline was sealed. The private draft remains outside the shareable history.
+- Gitleaks scanned the worktree, reachable history and raw blobs and commit objects. The source review also checked local configuration, SQL export signatures, private paths and non-demo contact strings. Dependency lockfiles contain legitimate dependency author contacts. No credential requiring rotation was confirmed in the shareable scope.
+- The three replacement screenshots were originally taken on the isolated 60-customer demo. Their database and visual/OCR checks used generated records and reserved example identities. The screenshots are separate from the private interview notes and interactive test artifacts.
 
-The current `ski2.0` workspace has no `.git` directory or worktree pointer. The two local archive variants contain source files. Neither contains Git objects or refs. The neighboring `ski` checkout has 66 reachable commits, no merge commits or tags, and substantial pending edits. Its GitHub remote advertises `master` at `4146933`, the same tip as the local checkout. That tip lacks the CRM customer page, booking payment service, and legacy importer. The neighboring final-review repository contains the framework-free OOP application.
+## Outstanding decisions and limitations
 
-The owner supplied the GitLab project `VV-jan/rin_lara`. The project API reported public visibility and a configured default branch of `main`. Two Git protocol versions returned no advertised refs. The branch and tag APIs also returned empty lists. The project provides no available commits from which to establish the Laravel baseline. The owner then explicitly approved an authentic local source import. The project and the existing local repositories remain intact. [Supplied GitLab project](https://gitlab.com/VV-jan/rin_lara)
-
-### Confidentiality review
-
-- Gitleaks 8.30.1 reported zero credential matches in the shareable Laravel files. A separate literal-credential check found no non-placeholder assignments. Private environments, database exports, dependency folders, logs, and uploads were excluded. The only email-like strings outside reserved demo domains were third-party dependency metadata in lockfiles.
-- The older `ski` candidate passed `git fsck`. Gitleaks reported no credentials in its reachable commit patches or in the contents of all 821 readable blobs and 66 commit objects, including local objects outside the available refs. The audit also checked the filenames represented by 480 trees. It found no private environment or database-export filenames. Two historical files, the README and the user factory, contain non-example contact literals that require owner confirmation if this candidate is ever included in a publication. No credential requiring rotation was confirmed in the reviewed material. Historical objects from the pre-import Laravel workspace remain unavailable.
-- The replacement screenshots were captured on the isolated Compose demo. The database check found 60 generated customers and zero customer emails outside the reserved demo domain. OCR found no non-example email addresses in the three images. The prepared database was outside the screenshot workflow.
-
-### Handoff and publication
-
-The new local repository starts from the verified Laravel source on `main`. Commit `42f6172` imports the application and its existing documentation. Commit `b3ed179` adds the shared verification gates. A separate documentation commit records the checkout timings and acceptance. The initialization was owner-approved after the GitLab destination and previous candidate were investigated. The initial import does not assert continuity with the older checkout. The new commits use current dates and explicit agent attribution. The initial audit and prior migration and remediation records are included. The new repository passed object integrity, source and reachable-history credential scans, and an object-level confidentiality review. No credential requiring rotation or revocation was confirmed. Two manuals contained a workstation path. The references were generalized before sealing the shareable initial history. The earlier unpublished draft was retained separately for private recovery.
-
-After the history review and clean-checkout verification, GitLab and GitHub should receive the same reviewed commit IDs. The supplied GitLab destination is public. Publication requires separate owner approval and confirmation of the application and asset rights. Any confirmed credentials need rotation or revocation before publication. Review the publication rights and approved visibility before sharing these commits. GitLab and GitHub should receive the same reviewed history.
-
-Physical passkey devices, full accessibility conformance, and hosted CI runs remain outside the verified local results. Requiring confirmed email on every legacy staff account remains a policy decision because some imported identities may need a verification rollout. [Engineering process and human approvals](ai-development.md)
+- The intended GitLab destination is public. Confirm the rights to distribute the application, bundled photographs, fonts and logo, then agree to exact visibility and the employer's GitHub destination. Keep the same reviewed commit history on both platforms. Explicit publication approval is pending.
+- Run hosted GitLab lint and both CI pipelines after access and publication approval. GitLab quality needs a trusted privileged Docker-in-Docker runner with its shared TLS client certificate mount.
+- Physical passkeys, full accessibility conformance and x86-64 execution remain outside the verified results. Some customer success notifications and older service-period controls are still English. The tablet booking table uses horizontal scrolling, and the customer list's active badge counts the visible page. Complex forms and role combinations are covered by a combination of feature tests and selected browser checks.
+- A Driver can load reports, but the existing service picker depends on the privileged catalog API, so the Driver sees the all-services option. The broader enterprise search and export workloads need separate MySQL and browser benchmarking before changing the UI contracts.
+- The prepared database still requires an authorized migration rollout for the two additive receipts and date-index migrations. A staff email-verification rollout remains an owner policy decision for imported identities.
 
 ## Synthetic screenshots
 
-Screenshots use the isolated Compose demonstration with `example.test` identities and generated customer records.
-
-- [Season dashboard](screenshots/dashboard.png)
-- [Customer list](screenshots/customers.png)
-- [Mobile navigation](screenshots/mobile-navigation.png)
+[Season dashboard](screenshots/dashboard.png) · [Customer list](screenshots/customers.png) · [Mobile navigation](screenshots/mobile-navigation.png)
