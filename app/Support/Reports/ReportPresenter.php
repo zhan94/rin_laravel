@@ -27,8 +27,8 @@ final class ReportPresenter
             }
 
             if (! isset($byBooking[$bookingId])) {
-                $sumPaid = (int) ($row['sum_paid'] ?? 0);
-                $paid = (int) ($row['paid'] ?? 0);
+                $sumPaid = $isDriver ? 0 : (int) ($row['sum_paid'] ?? 0);
+                $paid = $isDriver ? 0 : (int) ($row['paid'] ?? 0);
 
                 $noteMeta = SkiNoteMeta::fromNote($row['note'] ?? null);
 
@@ -52,10 +52,10 @@ final class ReportPresenter
                     'booking_id' => $bookingId,
                     'customer_id' => (int) ($row['customer_id'] ?? 0),
                     'customer_name' => $this->buildCustomerName($row),
-                    'birth' => $row['date_birth'] !== null ? (string) $row['date_birth'] : null,
+                    'birth' => ! $isDriver && $row['date_birth'] !== null ? (string) $row['date_birth'] : null,
                     'parent_name' => $row['parent_name'] !== null ? (string) $row['parent_name'] : null,
                     'parent_phone' => $row['parent_phone'] !== null ? (string) $row['parent_phone'] : null,
-                    'email' => $row['email'] !== null ? (string) $row['email'] : null,
+                    'email' => ! $isDriver && $row['email'] !== null ? (string) $row['email'] : null,
                     'location' => LocationLabel::routeWithTimes(
                         $row['location_from'] ?? null,
                         $row['location_to'] ?? null,
@@ -67,7 +67,7 @@ final class ReportPresenter
                     'sum_paid' => $sumPaid,
                     'paid' => $paid,
                     'due' => max(0, $sumPaid - $paid),
-                    'note' => $noteMeta->note,
+                    'note' => $isDriver ? null : $noteMeta->note,
                     'skill' => $isDriver
                         ? null
                         : ($skillId > 0 ? [

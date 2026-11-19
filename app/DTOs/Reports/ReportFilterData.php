@@ -25,12 +25,13 @@ final readonly class ReportFilterData
         public int $perPage,
         public string $sort,
         public string $dir,
+        public bool $isDriver = false,
     ) {}
 
     /**
      * @param  array<string,mixed>  $payload
      */
-    public static function fromArray(array $payload): self
+    public static function fromArray(array $payload, bool $isDriver = false): self
     {
         $serviceIdRaw = (int) ($payload['service_id'] ?? 0);
 
@@ -47,6 +48,9 @@ final readonly class ReportFilterData
 
         $sortRaw = strtolower(trim((string) ($payload['sort'] ?? 'id')));
         $sort = in_array($sortRaw, self::SORT_OPTIONS, true) ? $sortRaw : 'id';
+        if ($isDriver && in_array($sort, ['birth', 'level', 'equip', 'due'], true)) {
+            $sort = 'id';
+        }
 
         $dirRaw = strtolower(trim((string) ($payload['dir'] ?? 'desc')));
         $dir = $dirRaw === 'asc' ? 'asc' : 'desc';
@@ -60,6 +64,7 @@ final readonly class ReportFilterData
             perPage: $perPage,
             sort: $sort,
             dir: $dir,
+            isDriver: $isDriver,
         );
     }
 
@@ -79,6 +84,7 @@ final readonly class ReportFilterData
             perPage: $this->perPage,
             sort: $this->sort,
             dir: $this->dir,
+            isDriver: $this->isDriver,
         );
     }
 }

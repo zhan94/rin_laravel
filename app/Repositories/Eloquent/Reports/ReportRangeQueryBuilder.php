@@ -32,13 +32,16 @@ final class ReportRangeQueryBuilder
         if ($filters->search !== '') {
             $term = '%'.$filters->search.'%';
 
-            $query->where(function (Builder $nested) use ($term): void {
+            $query->where(function (Builder $nested) use ($term, $filters): void {
                 $nested->where('c.firstname', 'like', $term)
                     ->orWhere('c.lastname', 'like', $term)
                     ->orWhere('c.parent_name', 'like', $term)
                     ->orWhere('c.parent_phone', 'like', $term)
-                    ->orWhere('c.email', 'like', $term)
                     ->orWhereRaw("CONCAT(COALESCE(c.firstname, ''), ' ', COALESCE(c.lastname, '')) LIKE ?", [$term]);
+
+                if (! $filters->isDriver) {
+                    $nested->orWhere('c.email', 'like', $term);
+                }
             });
         }
 

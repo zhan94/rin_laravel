@@ -146,6 +146,9 @@ class ReportApiTest extends TestCase
         $customer = Customer::factory()->create([
             'firstname' => 'Niki',
             'lastname' => 'Ivanov',
+            'date_birth' => '2014-03-01',
+            'email' => 'dispatch-sample@example.test',
+            'parent_phone' => '+441632960008',
         ]);
 
         $booking = Booking::query()->create([
@@ -153,7 +156,7 @@ class ReportApiTest extends TestCase
             'service' => $service->id,
             'service_type' => Booking::SERVICE_TYPE_SERVICE,
             'sum_paid' => 200,
-            'paid' => 200,
+            'paid' => 100,
             'location' => Location::factory()->create()->id,
             'approved' => true,
             'active' => true,
@@ -166,15 +169,31 @@ class ReportApiTest extends TestCase
             'service_date_id' => $date->id,
         ]);
 
-        $response = $this->getJson('/api/v1/reports?from=2026-12-01&to=2026-12-31');
+        $response = $this->getJson('/api/v1/reports?from=2026-12-01&to=2026-12-31&sort=due');
 
         $response
             ->assertOk()
             ->assertJsonPath('data.is_driver', true)
+            ->assertJsonPath('data.filters.sort', 'id')
             ->assertJsonPath('data.rows.0.booking_id', $booking->id)
+            ->assertJsonPath('data.rows.0.parent_phone', '+441632960008')
+            ->assertJsonPath('data.rows.0.birth', null)
+            ->assertJsonPath('data.rows.0.email', null)
+            ->assertJsonPath('data.rows.0.note', null)
+            ->assertJsonPath('data.rows.0.sum_paid', 0)
+            ->assertJsonPath('data.rows.0.paid', 0)
+            ->assertJsonPath('data.rows.0.due', 0)
             ->assertJsonPath('data.rows.0.skill', null)
             ->assertJsonPath('data.rows.0.equip', null)
+            ->assertJsonPath('data.summary.sum_total', 0)
+            ->assertJsonPath('data.summary.paid_total', 0)
+            ->assertJsonPath('data.summary.due_total', 0)
+            ->assertJsonPath('data.summary.due_count', 1)
             ->assertJsonPath('errors', []);
+
+        $this->getJson('/api/v1/reports?from=2026-12-01&to=2026-12-31&q=dispatch-sample')
+            ->assertOk()
+            ->assertJsonPath('meta.pagination.total', 0);
     }
 
     public function test_report_filters_require_complete_date_range(): void

@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\DTOs\Reports\ReportFilterData;
-use App\Enums\RoleKey;
-use App\Models\User;
 use App\Repositories\Contracts\Reports\ReportRepositoryInterface;
 use App\Support\Bookings\SkiNoteMeta;
 use App\Support\Reports\ReportPresenter;
@@ -21,9 +19,9 @@ final readonly class ReportService
     /**
      * @return array<string,mixed>
      */
-    public function overview(ReportFilterData $filters, User $user): array
+    public function overview(ReportFilterData $filters): array
     {
-        $isDriver = $this->isDriver($user);
+        $isDriver = $filters->isDriver;
 
         if (! $filters->hasDateRange()) {
             return $this->emptyPayload($filters, $isDriver);
@@ -39,13 +37,13 @@ final readonly class ReportService
 
         $bookingIds = $this->repository->getBookingIdsForRange($effectiveFilters, $limit, $offset);
         $rowsRaw = $this->repository->getBookingsForIds($bookingIds);
-        $skillTitleMap = $this->repository->mapSkillTitles($this->collectSkillIds($rowsRaw));
+        $skillTitleMap = $isDriver ? [] : $this->repository->mapSkillTitles($this->collectSkillIds($rowsRaw));
 
         $rows = $this->presenter->rows($rowsRaw, $bookingIds, $isDriver, $skillTitleMap);
 
         $totals = $this->repository->getTotalsForRange($effectiveFilters);
-        $sumTotal = $totals['sum_total'];
-        $paidTotal = $totals['paid_total'];
+        $sumTotal = $isDriver ? 0 : $totals['sum_total'];
+        $paidTotal = $isDriver ? 0 : $totals['paid_total'];
 
         return [
             'is_driver' => $isDriver,
@@ -129,10 +127,5 @@ final readonly class ReportService
         }
 
         return array_values(array_unique($ids));
-    }
-
-    private function isDriver(User $user): bool
-    {
-        return $user->resolvedRoleKey() === RoleKey::DRIVER;
     }
 }
