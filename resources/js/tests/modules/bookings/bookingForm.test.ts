@@ -154,7 +154,7 @@ describe('bookingForm', () => {
             season_end: '2026-03-31',
         };
 
-        applyCustomerPrefillToBookingForm(form, booking);
+        applyCustomerPrefillToBookingForm(form, booking, [{ id: 6 }]);
 
         expect(form).toMatchObject({
             location_id: 6,
@@ -168,6 +168,17 @@ describe('bookingForm', () => {
             paid: null,
             note: 'Manual note',
         });
+
+        form.location_id = 7;
+        applyCustomerPrefillToBookingForm(form, booking, [
+            { id: 6 },
+            { id: 7 },
+        ]);
+        expect(form.location_id).toBe(7);
+
+        form.location_id = 0;
+        applyCustomerPrefillToBookingForm(form, booking, [{ id: 7 }]);
+        expect(form.location_id).toBe(0);
     });
 
     it('applies card and equipment toggle changes', () => {

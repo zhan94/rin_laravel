@@ -105,6 +105,8 @@ export function useBookingsPage() {
 
     const state = reactive(createDefaultBookingPageState());
     let supportRequest = 0;
+    let prefillRequest = 0;
+    let loadedLocationServiceId = 0;
 
     const locationPickerRef = ref<HTMLElement | null>(null);
     const {
@@ -113,7 +115,7 @@ export function useBookingsPage() {
         onCustomerSearchInput,
         onToggleNewCustomer,
         selectCustomerSuggestion,
-    } = useBookingCustomerSearch(state, loadCustomerPrefill);
+    } = useBookingCustomerSearch(state);
 
     function setLocationPickerElement(element: Element | null): void {
         locationPickerRef.value =
@@ -273,7 +275,9 @@ export function useBookingsPage() {
             slot_id: slotId,
             customer_id: customerId,
         } = state.form;
+        if (loadedLocationServiceId !== serviceId) loadedLocationServiceId = 0;
         if (serviceId <= 0 || state.form.service_type !== 1) {
+            loadedLocationServiceId = 0;
             resetBookingServiceSupport(state);
             state.loadingSupport = false;
 
@@ -299,6 +303,7 @@ export function useBookingsPage() {
             state.slots = slotsResponse.data;
 
             state.locations = availabilityResponse.data.locations;
+            loadedLocationServiceId = serviceId;
             state.locationGroups = resolveBookingLocationGroups(
                 state.locations,
                 availabilityResponse.data.location_groups,
@@ -339,9 +344,12 @@ export function useBookingsPage() {
 
             removeInvalidSelectedDates();
             if (state.calendarCursor === '') initializeCalendarCursor();
+            void loadCustomerPrefill();
         } catch (error) {
             if (request !== supportRequest) return;
 
+            loadedLocationServiceId = 0;
+            resetBookingServiceSupport(state);
             state.errors = normalizeApiErrors(
                 error,
                 'Failed to load booking support data.',
@@ -524,8 +532,16 @@ export function useBookingsPage() {
     }
 
     async function loadCustomerPrefill(): Promise<void> {
+        const request = ++prefillRequest;
         const { customer_id: customerId, service_id: serviceId } = state.form;
-        if (state.editingBooking || !customerId || serviceId <= 0) {
+        if (
+            state.editingBooking ||
+            !customerId ||
+            loadedLocationServiceId !== serviceId ||
+            serviceId <= 0 ||
+            state.form.service_type !== 1
+        ) {
+            state.loadingPrefill = false;
             return;
         }
 
@@ -541,26 +557,28 @@ export function useBookingsPage() {
             );
 
             if (
+                request !== prefillRequest ||
                 state.editingBooking ||
                 state.form.customer_id !== customerId ||
                 state.form.service_id !== serviceId ||
-                normalizeDateCsv()[0] !== selectedDate
+                state.form.service_type !== 1 ||
+                loadedLocationServiceId !== serviceId ||
+                normalizeDateCsv()[0] !== selectedDate ||
+                !response.data.found ||
+                response.data.booking === null
             ) {
-                return;
-            }
-
-            if (!response.data.found || response.data.booking === null) {
                 return;
             }
 
             applyCustomerPrefillToBookingForm(
                 state.form,
                 response.data.booking,
+                state.locations,
             );
         } catch {
             // Prefill is optional; keep manual entry working.
         } finally {
-            state.loadingPrefill = false;
+            if (request === prefillRequest) state.loadingPrefill = false;
         }
     }
 
@@ -654,7 +672,7 @@ export function useBookingsPage() {
     }
 
     async function saveBooking(): Promise<void> {
-        if (state.submitting) return;
+        if (state.submitting || state.loadingSupport) return;
 
         state.submitting = true;
         state.errors = [];
@@ -665,7 +683,13 @@ export function useBookingsPage() {
             const validation = validateBookingCreateInput({
                 isServiceBooking: isServiceBooking.value,
                 isSkiService: isSkiService.value,
-                locationId: state.form.location_id,
+                locationId:
+                    loadedLocationServiceId === state.form.service_id &&
+                    state.locations.some(
+                        ({ id }) => id === state.form.location_id,
+                    )
+                        ? state.form.location_id
+                        : 0,
                 dates,
                 skillId: state.form.skill_id,
             });
@@ -708,6 +732,14 @@ export function useBookingsPage() {
                 error,
                 'Failed to create booking.',
             );
+            if (
+                state.errors.some(
+                    ({ code }) => code === 'booking_location_not_allowed',
+                )
+            ) {
+                state.form.location_id = 0;
+                await loadServiceSupport();
+            }
         } finally {
             state.submitting = false;
         }
@@ -793,8 +825,6 @@ export function useBookingsPage() {
 
                 return;
             }
-
-            void loadCustomerPrefill();
         },
     );
 

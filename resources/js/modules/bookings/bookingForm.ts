@@ -1,5 +1,6 @@
 import type {
     BookingSupportCustomer,
+    BookingSupportLocation,
     BookingSupportOption,
     BookingSupportPrefillBooking,
 } from '@/modules/bookings/types';
@@ -116,8 +117,12 @@ export function applyCustomerToBookingForm(
 export function applyCustomerPrefillToBookingForm(
     form: BookingFormState,
     booking: BookingSupportPrefillBooking,
+    locations: readonly Pick<BookingSupportLocation, 'id'>[],
 ): void {
-    if (booking.location > 0) {
+    if (
+        form.location_id <= 0 &&
+        locations.some(({ id }) => id === booking.location)
+    ) {
         form.location_id = booking.location;
     }
 

@@ -190,6 +190,64 @@ test('renders all staff modules and the German Super Admin profile', async ({
     expect(failures).toEqual([]);
 });
 
+test('keeps the selected service pickup options when an older response arrives late', async ({
+    page,
+}) => {
+    await signIn(page, 'demo.manager');
+    await page.goto('/crm/bookings?lang=en');
+    await page
+        .getByRole('checkbox', { name: 'New customer', exact: true })
+        .check();
+    await page
+        .getByRole('button', { name: 'Continue to form', exact: true })
+        .click();
+    const service = page.locator('.booking-details-card select').first();
+    const skiId = await service
+        .getByRole('option', { name: 'Ski school', exact: true })
+        .getAttribute('value');
+    const hikingId = await service
+        .getByRole('option', { name: 'Mountain hiking', exact: true })
+        .getAttribute('value');
+    const skiPath = `booking-support/services/${skiId}/availability`;
+    const hikingPath = `booking-support/services/${hikingId}/availability`;
+    const held = Promise.withResolvers<void>();
+    const intercepted = Promise.withResolvers<void>();
+
+    await page.route(
+        (url) => url.pathname === `/api/v1/${skiPath}`,
+        async (route) => {
+            const response = await route.fetch();
+            intercepted.resolve();
+            await held.promise;
+            await route.fulfill({ response });
+        },
+    );
+
+    try {
+        await service.selectOption({ label: 'Ski school' });
+        await intercepted.promise;
+        const hikingResponse = apiResponse(page, hikingPath, 'GET');
+        await service.selectOption({ label: 'Mountain hiking' });
+        expect((await hikingResponse).status()).toBe(200);
+        const trigger = page.locator('.booking-location-trigger');
+        await expect(trigger).toBeEnabled();
+        const lateResponse = apiResponse(page, skiPath, 'GET');
+        held.resolve();
+        await (await lateResponse).finished();
+
+        await trigger.click();
+        const options = page.locator('.booking-location-option');
+        await expect(
+            options.filter({ hasText: 'Mountain hiking Centre' }),
+        ).toBeVisible();
+        await expect(
+            options.filter({ hasText: 'Ski school Centre' }),
+        ).toHaveCount(0);
+    } finally {
+        held.resolve();
+    }
+});
+
 test('captures approved synthetic demo views when requested', async ({
     page,
 }) => {

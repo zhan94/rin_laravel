@@ -10,10 +10,7 @@ import {
 } from '@/modules/bookings/supportService';
 import type { BookingSupportSuggestion } from '@/modules/bookings/types';
 
-export function useBookingCustomerSearch(
-    state: BookingPageState,
-    loadCustomerPrefill: () => Promise<void>,
-) {
+export function useBookingCustomerSearch(state: BookingPageState) {
     let customerSearchTimer: ReturnType<typeof setTimeout> | null = null;
 
     async function loadCustomerSuggestions(query: string): Promise<void> {
@@ -76,8 +73,6 @@ export function useBookingCustomerSearch(
         } catch {
             state.selectedCustomer = null;
         }
-
-        await loadCustomerPrefill();
     }
 
     function clearCustomerSelection(): void {
