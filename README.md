@@ -26,7 +26,7 @@ Compose installs locked dependencies, builds the frontend, migrates its own MySQ
 - Staff authentication and account administration, with Super Admin, Admin, Manager, Group Leader, and Driver roles.
 - Customer search and pagination, multi-date bookings with capacity checks, and payment applications and corrections.
 - Separate service-season entries with daily capacity and availability, pickup locations, cards, equipment, and bonus services.
-- Seasonal dashboard, role-scoped reports, CSV and print output, staff notifications, and issues with private attachments.
+- Seasonal dashboard, role-scoped reports, CSV and print output, a staff notification API, and issues with private attachments.
 
 The application uses PHP 8.5, Laravel 12, MySQL 8.4, Fortify, Sanctum, Inertia 2, Vue 3, TypeScript, Tailwind CSS 4, and Vite 7. Form Requests validate input, and middleware and policies enforce staff access. Booking and payment services own their transaction boundaries. Row locks protect capacity and balances, and request receipts make supported retries safe. Report repositories keep role-aware queries together. Logs and notifications use Laravel's concrete injection and share their row filters across reads and writes. [Architecture and trade-offs](docs/architecture.md) · [Final architectural review](docs/architectural-review.md)
 

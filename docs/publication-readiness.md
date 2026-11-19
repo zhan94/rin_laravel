@@ -4,6 +4,10 @@
 
 The owner approved the [local product acceptance](product-quality-review.md) and froze feature development. This pass addresses translation, accessibility, repository documentation, and distribution readiness. It uses the [existing Git history](final-acceptance.md#git-history-and-confidentiality) and the verified application architecture, schema, and lockfiles.
 
+## Release candidate
+
+The owner confirmed successful manual acceptance after the final cleanup and architecture review. The release candidate freezes the application code at `54298f1` and records that baseline in a documentation-only commit. The [architectural review](architectural-review.md) describes the final code changes and their regression coverage. The repeatable checks are the [quality and secret-scan jobs](../.github/workflows/ci.yml) and the [standalone installation steps](../README.md#run-the-demo).
+
 ## Localization and accessibility
 
 - German and Spanish now cover every English UI catalog key. Each was missing 356 entries before this pass. Regression tests compare the keys and interpolation parameters across languages. The account settings, password recovery, verification, two-factor authentication, and shared loading and close controls use the same catalog. Laravel also translates the validation, authentication, passkey, and booking errors exercised by the regression suite. Booking and season errors retain their dates and API error codes.
@@ -12,7 +16,7 @@ The owner approved the [local product acceptance](product-quality-review.md) and
 - Chrome exercised keyboard entry and focus in the named Location dialog, Escape and focus return, mobile navigation, the customer form and localized staff manual. The manual header and customer status text were darkened within the existing palette to improve contrast. This is a practical check of the sampled workflows. Full assistive-technology and WCAG conformance testing remain open. [W3C text contrast criteria](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html)
 - User-entered catalog names, historical notes and stored notification text retain their original language. Horizon is a vendor interface. The app's staff UI and manual have separate translation coverage.
 
-## Final local verification
+## Localization and accessibility verification
 
 | Check | Result |
 | --- | --- |
