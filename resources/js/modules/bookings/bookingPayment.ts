@@ -12,9 +12,11 @@ export interface BookingPaymentMessage {
 }
 
 export function parseInlinePaymentAmount(
-    rawValue: string | null | undefined,
+    rawValue: string | number | null | undefined,
 ): ParsedInlinePayment {
-    const amount = Number((rawValue ?? '').trim());
+    const amount = Number(
+        typeof rawValue === 'string' ? rawValue.trim() : (rawValue ?? ''),
+    );
 
     if (!Number.isFinite(amount) || amount <= 0) {
         return {

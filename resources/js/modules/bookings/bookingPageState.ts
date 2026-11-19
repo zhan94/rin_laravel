@@ -35,7 +35,7 @@ export interface BookingPageState {
     customerSuggestions: BookingSupportSuggestion[];
     selectedCustomer: BookingSupportCustomer | null;
     customerSearch: string;
-    paymentDrafts: Record<number, string>;
+    paymentDrafts: Record<number, string | number>;
     paymentMessages: Record<number, string>;
     applyingPaymentId: number;
     cancellingBookingId: number;

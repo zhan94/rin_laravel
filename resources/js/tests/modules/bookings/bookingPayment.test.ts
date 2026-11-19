@@ -12,6 +12,13 @@ describe('bookingPayment', () => {
         });
     });
 
+    it('accepts the numeric value emitted by the payment input', () => {
+        expect(parseInlinePaymentAmount(24)).toEqual({
+            valid: true,
+            amount: 24,
+        });
+    });
+
     it('rejects empty, zero and invalid inline payment amounts', () => {
         expect(parseInlinePaymentAmount('')).toEqual({
             valid: false,
