@@ -28,7 +28,7 @@ Compose installs locked dependencies, builds the frontend, migrates its own MySQ
 - Separate service-season entries with daily capacity and availability, pickup locations, cards, equipment, and bonus services.
 - Seasonal dashboard, role-scoped reports, CSV and print output, staff notifications, and issues with private attachments.
 
-The application uses PHP 8.5, Laravel 12, MySQL 8.4, Fortify, Sanctum, Inertia 2, Vue 3, TypeScript, Tailwind CSS 4, and Vite 7. Form Requests and policies keep validation and authorization at the HTTP boundary. Booking and payment services use row locks to protect capacity and balances, and request receipts make supported retries safe. Report queries shape the data each staff role can receive. [Architecture and trade-offs](docs/architecture.md)
+The application uses PHP 8.5, Laravel 12, MySQL 8.4, Fortify, Sanctum, Inertia 2, Vue 3, TypeScript, Tailwind CSS 4, and Vite 7. Form Requests validate input, and middleware and policies enforce staff access. Booking and payment services own their transaction boundaries. Row locks protect capacity and balances, and request receipts make supported retries safe. Report repositories keep role-aware queries together. Logs and notifications use Laravel's concrete injection and share their row filters across reads and writes. [Architecture and trade-offs](docs/architecture.md) · [Final architectural review](docs/architectural-review.md)
 
 The interface and signed-in staff manual support [English](http://localhost:8081/manual/en), [Deutsch](http://localhost:8081/manual/de), and [Español](http://localhost:8081/manual/es). Dates display as DD.MM.YYYY.
 

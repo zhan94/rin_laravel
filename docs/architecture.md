@@ -36,3 +36,5 @@ During the final review, the Driver report's data boundary was aligned with its 
 Report drafts are separate from the server-confirmed filters used for the table, paging and exports. Report service options contain localized names and IDs, including archived services needed for historical reports. Drivers access the same option endpoint under the report permission boundary. The staff directory scopes results before search and pagination using the account policy's role ordering. The per-target policy still authorizes each account write.
 
 Service period writes and legacy season management now share the overlap lookup and the existing service row lock. The customer benchmark and report query counts continue to support the current pagination and eager-loading choices. [Final product acceptance](product-quality-review.md)
+
+The final architecture pass consolidated the Eloquent visibility queries for logs and notifications and removed their mirrored interfaces. The [final review](architectural-review.md) explains the evidence, the contracts retained, and the trade-offs that still apply.
