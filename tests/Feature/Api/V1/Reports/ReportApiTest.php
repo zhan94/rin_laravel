@@ -194,6 +194,10 @@ class ReportApiTest extends TestCase
         $this->getJson('/api/v1/reports?from=2026-12-01&to=2026-12-31&q=dispatch-sample')
             ->assertOk()
             ->assertJsonPath('meta.pagination.total', 0);
+
+        $this->getJson('/api/v1/reports?from=2026-12-01&to=2026-12-31&q=Niki%20Ivanov')
+            ->assertOk()
+            ->assertJsonPath('data.rows.0.booking_id', $booking->id);
     }
 
     public function test_report_filters_require_complete_date_range(): void

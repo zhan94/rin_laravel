@@ -31,13 +31,16 @@ final class ReportRangeQueryBuilder
 
         if ($filters->search !== '') {
             $term = '%'.$filters->search.'%';
+            $fullName = $query->getConnection()->getDriverName() === 'sqlite'
+                ? "COALESCE(c.firstname, '') || ' ' || COALESCE(c.lastname, '')"
+                : "CONCAT(COALESCE(c.firstname, ''), ' ', COALESCE(c.lastname, ''))";
 
-            $query->where(function (Builder $nested) use ($term, $filters): void {
+            $query->where(function (Builder $nested) use ($term, $filters, $fullName): void {
                 $nested->where('c.firstname', 'like', $term)
                     ->orWhere('c.lastname', 'like', $term)
                     ->orWhere('c.parent_name', 'like', $term)
                     ->orWhere('c.parent_phone', 'like', $term)
-                    ->orWhereRaw("CONCAT(COALESCE(c.firstname, ''), ' ', COALESCE(c.lastname, '')) LIKE ?", [$term]);
+                    ->orWhereRaw("($fullName) LIKE ?", [$term]);
 
                 if (! $filters->isDriver) {
                     $nested->orWhere('c.email', 'like', $term);
