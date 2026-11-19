@@ -67,8 +67,8 @@ describe('bookingPresenter', () => {
     it('selects hero copy for the active booking step', () => {
         const labels = {
             stepOne: {
-                eyebrow: 'Booking',
-                title: 'Add customer',
+                eyebrow: '',
+                title: 'Booking',
                 subtitle: 'Choose customer.',
             },
             stepTwo: {

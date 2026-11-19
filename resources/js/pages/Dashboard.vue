@@ -108,7 +108,7 @@ const seasonCards = computed(() => [
                             href="/crm/bookings"
                             class="btn btn-solid"
                         >
-                            + {{ t('customers.add_customer') }}
+                            + {{ t('bookings.title') }}
                         </Link>
                         <Link href="/crm/customers" class="btn btn-outline">{{
                             t('dashboard.action_database')

@@ -14,7 +14,7 @@ const { t, state, summaryLabel, heroCopy } = bookingPage;
 </script>
 
 <template>
-    <Head :title="t('customers.add_customer')" />
+    <Head :title="t('bookings.title')" />
 
     <AppLayout>
         <div
@@ -23,7 +23,9 @@ const { t, state, summaryLabel, heroCopy } = bookingPage;
             <div class="customer-shell booking-shell">
                 <div class="form-hero">
                     <div>
-                        <div class="eyebrow">{{ heroCopy.eyebrow }}</div>
+                        <div v-if="heroCopy.eyebrow" class="eyebrow">
+                            {{ heroCopy.eyebrow }}
+                        </div>
                         <h1>{{ heroCopy.title }}</h1>
                         <div class="subline">{{ heroCopy.subtitle }}</div>
                     </div>

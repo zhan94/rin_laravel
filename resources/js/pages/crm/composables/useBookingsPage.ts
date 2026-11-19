@@ -152,8 +152,8 @@ export function useBookingsPage() {
     const heroCopy = computed<BookingHeroCopy>(() =>
         buildBookingHeroCopy(state.createStep, {
             stepOne: {
-                eyebrow: t('bookings.eyebrow'),
-                title: t('customers.add_customer'),
+                eyebrow: '',
+                title: t('bookings.title'),
                 subtitle: t('bookings.subtitle'),
             },
             stepTwo: {

@@ -216,7 +216,7 @@ export const UI_MESSAGES = {
         'profile.passkey_remove_confirm': 'Remove this passkey?',
         'profile.passkey_remove_failed': 'Failed to remove passkey.',
         'profile.passkey_removed': 'Passkey removed.',
-        'bookings.eyebrow': 'Booking',
+        'bookings.title': 'Booking',
         'bookings.subtitle': 'Choose customer and service type to continue.',
         'bookings.step2_eyebrow': 'Step 2',
         'bookings.step2_title': 'Booking details',
@@ -1059,7 +1059,7 @@ export const UI_MESSAGES = {
         'profile.passkey_remove_failed':
             'Passkey konnte nicht entfernt werden.',
         'profile.passkey_removed': 'Passkey entfernt.',
-        'bookings.eyebrow': 'Buchung',
+        'bookings.title': 'Buchung',
         'bookings.subtitle':
             'Kunden und Leistungstyp auswählen, um fortzufahren.',
         'bookings.step2_eyebrow': 'Schritt 2',
@@ -1532,7 +1532,7 @@ export const UI_MESSAGES = {
         'profile.passkey_remove_confirm': '¿Eliminar este passkey?',
         'profile.passkey_remove_failed': 'No se pudo eliminar el passkey.',
         'profile.passkey_removed': 'Passkey eliminado.',
-        'bookings.eyebrow': 'Reserva',
+        'bookings.title': 'Reserva',
         'bookings.subtitle': 'Elige cliente y tipo de servicio para continuar.',
         'bookings.step2_eyebrow': 'Paso 2',
         'bookings.step2_title': 'Detalles de la reserva',

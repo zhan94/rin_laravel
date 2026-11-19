@@ -26,12 +26,15 @@ describe('i18n translate helpers', () => {
     });
 
     it.each([
-        ['en', 'Add customer', 'New customer'],
-        ['de', 'Kunden hinzufügen', 'Neuer Kunde'],
-        ['es', 'Añadir cliente', 'Nuevo cliente'],
+        ['en', 'Booking', 'Add customer', 'New customer'],
+        ['de', 'Buchung', 'Kunden hinzufügen', 'Neuer Kunde'],
+        ['es', 'Reserva', 'Añadir cliente', 'Nuevo cliente'],
     ] as const)(
-        'uses customer terminology in the %s booking flow',
-        (locale, addCustomer, newCustomer) => {
+        'uses distinct module and customer labels in %s',
+        (locale, booking, addCustomer, newCustomer) => {
+            expect(translateUiMessage('bookings.title', locale, 'en')).toBe(
+                booking,
+            );
             expect(
                 translateUiMessage('customers.add_customer', locale, 'en'),
             ).toBe(addCustomer);

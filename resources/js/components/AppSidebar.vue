@@ -35,7 +35,7 @@ const sections = computed<SidebarSection[]>(() => [
                 iconClass: 'glyphicon-calendar',
             },
             {
-                title: t('customers.add_customer'),
+                title: t('bookings.title'),
                 href: '/crm/bookings',
                 permission: 'manageBookings',
                 iconClass: 'glyphicon-plus',
