@@ -14,7 +14,7 @@ interface UserRepositoryInterface
     /**
      * @return LengthAwarePaginator<int, \App\Models\User>
      */
-    public function paginate(UserFilterData $filters): LengthAwarePaginator;
+    public function paginate(UserFilterData $filters, User $actor): LengthAwarePaginator;
 
     /**
      * @return list<array{id:int,role_key:string,title:string,translations:array<string,string>,is_active:bool,sort_order:int}>

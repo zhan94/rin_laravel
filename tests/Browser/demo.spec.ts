@@ -557,6 +557,22 @@ test('Group Leader sees customer and season records with read-only controls', as
     await expect(page.locator('main form')).toHaveCount(0);
 });
 
+test('Admin sees permitted staff targets and roles only', async ({ page }) => {
+    await signIn(page, 'demo.admin');
+    await page.goto('/crm/users?lang=en');
+    await expect(page.getByText('demo.manager', { exact: true })).toBeVisible();
+    await expect(
+        page.getByText('demo.super_admin', { exact: true }),
+    ).toHaveCount(0);
+    await page.getByRole('button', { name: /Add user/i }).click();
+    await expect(
+        page.getByRole('option', { name: 'Manager (manager)', exact: true }),
+    ).toBeAttached();
+    await expect(page.getByRole('option', { name: /Super Admin/ })).toHaveCount(
+        0,
+    );
+});
+
 test('records a payment from the Customer unpaid view and refreshes its balance', async ({
     page,
 }) => {

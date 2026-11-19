@@ -29,8 +29,10 @@ final class UserController extends Controller
     {
         Gate::authorize('viewAny', User::class);
 
+        /** @var User $actor */
+        $actor = $request->user();
         $filters = UserFilterData::fromArray($request->query());
-        $paginator = $this->service->paginate($filters);
+        $paginator = $this->service->paginate($filters, $actor);
 
         return $this->success(
             data: UserResource::collection($paginator->items())->resolve(),
@@ -41,7 +43,7 @@ final class UserController extends Controller
                     'current_page' => $paginator->currentPage(),
                     'last_page' => $paginator->lastPage(),
                 ],
-                'roles' => $this->service->roleOptions($request->user()),
+                'roles' => $this->service->roleOptions($actor),
             ],
         );
     }

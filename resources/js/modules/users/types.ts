@@ -27,6 +27,7 @@ export interface UserRecord {
     role: UserRoleSummary | null;
     role_id: number | null;
     is_active: boolean;
+    can_delete: boolean;
     created_at: string | null;
     updated_at: string | null;
 }

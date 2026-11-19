@@ -26,9 +26,9 @@ final readonly class UserService
     /**
      * @return LengthAwarePaginator<int, User>
      */
-    public function paginate(UserFilterData $filters): LengthAwarePaginator
+    public function paginate(UserFilterData $filters, User $actor): LengthAwarePaginator
     {
-        return $this->repository->paginate($filters);
+        return $this->repository->paginate($filters, $actor);
     }
 
     /**

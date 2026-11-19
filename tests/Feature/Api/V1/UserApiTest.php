@@ -85,6 +85,27 @@ class UserApiTest extends TestCase
         $this->assertNotContains((int) $otherUser->id, $ids);
     }
 
+    public function test_user_index_obeys_target_policy_before_pagination_and_search(): void
+    {
+        $admin = $this->createUserWithRole(RoleKey::ADMIN);
+        $super = $this->createUserWithRole(RoleKey::SUPER_ADMIN);
+        $manager = $this->createUserWithRole(RoleKey::MANAGER);
+
+        $this->actingAs($admin)->getJson('/api/v1/users')
+            ->assertOk()
+            ->assertJsonPath('meta.pagination.total', 2)
+            ->assertJsonPath('data.0.id', $manager->id)
+            ->assertJsonPath('data.0.can_delete', true)
+            ->assertJsonPath('data.1.id', $admin->id)
+            ->assertJsonPath('data.1.can_delete', false)
+            ->assertJsonMissing(['username' => $super->username]);
+        $this->getJson('/api/v1/users?q='.$super->username)->assertOk()->assertJsonPath('meta.pagination.total', 0);
+
+        $this->actingAs($super)->getJson('/api/v1/users')->assertOk()
+            ->assertJsonPath('meta.pagination.total', 3)
+            ->assertJsonFragment(['username' => $super->username]);
+    }
+
     public function test_user_can_be_created_with_role(): void
     {
         $this->actingAs($this->createUserWithRole(RoleKey::ADMIN));

@@ -40,6 +40,7 @@ class UserResource extends JsonResource
             ] : null,
             'role_id' => $this->role_id !== null ? (int) $this->role_id : null,
             'is_active' => (bool) data_get($this->resource, 'is_active', true),
+            'can_delete' => $request->user()?->can('delete', $this->resource) ?? false,
             'created_at' => $this->formatAtom(data_get($this->resource, 'created_at')),
             'updated_at' => $this->formatAtom(data_get($this->resource, 'updated_at')),
         ];

@@ -277,6 +277,7 @@ const {
                                             </button>
                                             <button
                                                 type="button"
+                                                v-if="user.can_delete"
                                                 class="icon-btn icon-btn--danger disabled:opacity-60"
                                                 :disabled="
                                                     state.deletingId === user.id

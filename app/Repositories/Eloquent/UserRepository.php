@@ -17,10 +17,16 @@ final class UserRepository implements UserRepositoryInterface
     /**
      * @return LengthAwarePaginator<int, User>
      */
-    public function paginate(UserFilterData $filters): LengthAwarePaginator
+    public function paginate(UserFilterData $filters, User $actor): LengthAwarePaginator
     {
+        $protectedRoles = array_map(
+            static fn (RoleKey $role): string => $role->value,
+            array_filter(RoleKey::cases(), fn (RoleKey $role): bool => ! $actor->canAccessRole($role)),
+        );
+
         return User::query()
             ->with('role')
+            ->when($protectedRoles !== [], fn ($query) => $query->whereDoesntHave('role', fn ($role) => $role->whereIn('role_key', $protectedRoles)))
             ->when($filters->search !== null, function ($query) use ($filters): void {
                 $q = '%'.$filters->search.'%';
                 $searchId = ctype_digit($filters->search) ? (int) $filters->search : null;
