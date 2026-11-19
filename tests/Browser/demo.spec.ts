@@ -571,6 +571,11 @@ test('Admin sees permitted staff targets and roles only', async ({ page }) => {
     await expect(page.getByRole('option', { name: /Super Admin/ })).toHaveCount(
         0,
     );
+    await page.getByRole('button', { name: 'Cancel', exact: true }).click();
+    await page.getByRole('button', { name: 'Logout', exact: true }).click();
+    await expect(
+        page.getByRole('heading', { name: 'Access the system' }),
+    ).toBeVisible();
 });
 
 test('records a payment from the Customer unpaid view and refreshes its balance', async ({

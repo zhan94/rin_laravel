@@ -28,10 +28,6 @@ const availableLocales = computed<SupportedLocale[]>(
     () => localeMeta.value.available,
 );
 const manualUrl = computed<string>(() => `/manual/${currentLocale.value}`);
-const csrfToken =
-    document
-        .querySelector('meta[name="csrf-token"]')
-        ?.getAttribute('content') ?? '';
 const { t } = useUiI18n();
 
 function withLang(lang: SupportedLocale): string {
@@ -116,19 +112,13 @@ function withLang(lang: SupportedLocale): string {
                 <Link :href="editProfile()" class="topbar-link">{{
                     t('common.profile')
                 }}</Link>
-                <form
-                    :action="logout().url"
-                    method="post"
-                    class="topbar-logout-form"
+                <Link
+                    :href="logout()"
+                    as="button"
+                    class="topbar-link topbar-link--ghost"
                 >
-                    <input type="hidden" name="_token" :value="csrfToken" />
-                    <button
-                        type="submit"
-                        class="topbar-link topbar-link--ghost"
-                    >
-                        {{ t('common.logout') }}
-                    </button>
-                </form>
+                    {{ t('common.logout') }}
+                </Link>
             </div>
 
             <details class="topbar-notify topbar-notify-mobile">
