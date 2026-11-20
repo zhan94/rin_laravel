@@ -7,252 +7,1655 @@
         <link rel="stylesheet" href="/css/manual.css" />
     </head>
     <body>
+        <a class="skip-link" href="#manual-content">Skip to manual content</a>
         <header class="hero">
             <div class="hero-inner">
+                <div class="hero-top">
+                    <nav class="language-nav" aria-label="Manual languages">
+                        <a
+                            href="/manual/en"
+                            hreflang="en"
+                            lang="en"
+                            aria-current="page"
+                            >English</a
+                        >
+                        <a href="/manual/de" hreflang="de" lang="de">Deutsch</a>
+                        <a href="/manual/es" hreflang="es" lang="es">Español</a>
+                    </nav>
+                    <a class="app-link" href="/?lang=en">Return to RIN</a>
+                </div>
                 <h1>RIN Staff Manual</h1>
                 <p>
-                    English reference for staff using the Laravel application.
+                    Step-by-step instructions for scheduling services, serving
+                    customers, and running daily operations.
                 </p>
-                <div class="hero-actions">
-                    <div class="app-cta">
-                        <a class="app-link-btn" href="/">Return to RIN</a>
-                    </div>
-                </div>
             </div>
         </header>
         <div class="layout">
-            <nav class="toc" aria-label="On this page">
-                <h2>Contents</h2>
-                <ol>
-                    <li><a href="#quick-start">Sign in and access</a></li>
-                    <li><a href="#customers">Customers</a></li>
-                    <li><a href="#daily">Bookings and payments</a></li>
-                    <li><a href="#modules">Services and seasons</a></li>
-                    <li><a href="#reports">Dashboard and reports</a></li>
-                    <li>
-                        <a href="#admin">Staff administration and issues</a>
-                    </li>
-                    <li><a href="#troubleshoot">Troubleshooting</a></li>
-                </ol>
-            </nav>
-            <main class="content">
-                <section id="quick-start">
-                    <h2>Sign in and access</h2>
+            <aside class="toc">
+                <details open>
+                    <summary id="contents">Contents</summary>
+                    <nav aria-labelledby="contents">
+                        <h2>Get started</h2>
+                        <ul>
+                            <li>
+                                <a href="#quick-start"
+                                    >Sign in and get oriented</a
+                                >
+                            </li>
+                            <li>
+                                <a href="#dashboard"
+                                    >Dashboard and statistics</a
+                                >
+                            </li>
+                            <li><a href="#customers">Customers</a></li>
+                        </ul>
+                        <h2>Run daily operations</h2>
+                        <ul>
+                            <li>
+                                <a href="#modules"
+                                    >Services and service periods</a
+                                >
+                            </li>
+                            <li>
+                                <a href="#availability"
+                                    >Daily availability and capacity</a
+                                >
+                            </li>
+                            <li>
+                                <a href="#seasons"
+                                    >Season archive and annual defaults</a
+                                >
+                            </li>
+                            <li>
+                                <a href="#locations"
+                                    >Pickup and drop-off locations</a
+                                >
+                            </li>
+                            <li><a href="#daily">Create a booking</a></li>
+                            <li>
+                                <a href="#records">Edit or cancel a booking</a>
+                            </li>
+                            <li>
+                                <a href="#payments"
+                                    >Payments and outstanding balances</a
+                                >
+                            </li>
+                            <li>
+                                <a href="#equipment"
+                                    >Equipment, cards, and additional
+                                    activities</a
+                                >
+                            </li>
+                            <li>
+                                <a href="#reports"
+                                    >Generate, filter, print, and export
+                                    reports</a
+                                >
+                            </li>
+                        </ul>
+                        <h2>Manage access and follow up</h2>
+                        <ul>
+                            <li>
+                                <a href="#admin"
+                                    >Staff accounts and activity logs</a
+                                >
+                            </li>
+                            <li><a href="#roles">Roles and permissions</a></li>
+                            <li>
+                                <a href="#issues">Report and track an issue</a>
+                            </li>
+                            <li>
+                                <a href="#profile"
+                                    >Profile and application settings</a
+                                >
+                            </li>
+                            <li>
+                                <a href="#checklist"
+                                    >Shift and recurring checklists</a
+                                >
+                            </li>
+                            <li><a href="#troubleshoot">Troubleshooting</a></li>
+                        </ul>
+                    </nav>
+                </details>
+            </aside>
+            <main class="content" id="manual-content" tabindex="-1">
+                <section class="chapter" id="quick-start">
+                    <h2>Sign in and get oriented</h2>
                     <p>
-                        Sign in with the username or email assigned to your
-                        staff account. Use Profile to manage your details and
-                        security settings. Sign out from the account menu when
-                        you finish.
+                        Start with your assigned staff account. Use the address
+                        provided by your organization and stay on the same
+                        address when signing in or using a passkey.
                     </p>
-                    <p>
-                        The application is available in English, German, and
-                        Spanish. The language menu changes both the interface
-                        and manual. Dates use
-                        <strong>DD.MM.YYYY</strong> in all three interface
-                        languages.
-                    </p>
-                    <ul class="simple-list">
+                    <h3>Start your shift</h3>
+                    <ol>
                         <li>
-                            <strong>Driver</strong> opens transport reports. The
-                            report shows the pickup, service dates, and
-                            permitted contact information.
+                            Enter your username or email and password, then
+                            choose <strong>Log in</strong>. Complete any
+                            two-factor challenge that appears.
                         </li>
                         <li>
-                            <strong>Group Leader</strong> can read customer,
-                            season, availability, and booking details and work
-                            with issues.
+                            Check the page you land on. Most staff open
+                            <strong>Home</strong>. Drivers open
+                            <strong>Reports</strong>.
                         </li>
                         <li>
-                            <strong>Manager</strong> can manage customers,
-                            bookings, payments, service periods, and catalogs.
+                            Choose EN, DE, or ES in the top bar. On a narrow
+                            screen, use <strong>Menu</strong> for module
+                            navigation and account actions.
                         </li>
                         <li>
-                            <strong>Admin</strong> can also manage
-                            lower-privilege staff accounts and review logs.
-                        </li>
-                        <li>
-                            <strong>Super Admin</strong> administers the highest
-                            staff access level. Account rules still govern which
-                            changes can be made.
-                        </li>
-                    </ul>
-                </section>
-                <section id="customers">
-                    <h2>Customers</h2>
-                    <ol class="simple-list">
-                        <li>
-                            Open <strong>Customers</strong>. Search by customer
-                            ID, a name component, email, or guardian phone.
-                        </li>
-                        <li>
-                            Use the view action to review contact details and
-                            the customer's bookings. The list shows the total
-                            matching customers and the active customers on the
-                            visible page.
-                        </li>
-                        <li>
-                            As a Manager or above, use
-                            <strong>Add customer</strong> or the edit action.
-                            Enter the birth date in
-                            <strong>DD.MM.YYYY</strong> and save.
+                            Open <strong>Manual</strong> in the top bar or
+                            mobile menu. Use the contents or search this page
+                            with the browser's Find command.
                         </li>
                     </ol>
-                </section>
-                <section id="daily">
-                    <h2>Bookings and payments</h2>
-                    <article class="workflow">
-                        <h3>Create or change a booking</h3>
-                        <ol class="simple-list">
-                            <li>
-                                Open <strong>Booking</strong>. Select an
-                                existing customer or check
-                                <strong>New customer</strong>, then choose
-                                <strong>Continue to form</strong>.
-                            </li>
-                            <li>
-                                Choose the service and dates. The calendar marks
-                                full days and days already booked for this
-                                customer as unavailable. An eligible new date is
-                                added to the schedule when you save.
-                            </li>
-                            <li>
-                                Choose a pickup from the shared locations or the
-                                locations for the selected service. Enter the
-                                skill level and any card, equipment, or consent
-                                details relevant to the activity.
-                            </li>
-                            <li>
-                                Check the total in EUR and select
-                                <strong>Add</strong>. In
-                                <strong>Records</strong>, use
-                                <strong>Edit</strong> to change dates or options
-                                and <strong>Cancel booking</strong> to release
-                                the places. Cancellation preserves the booking
-                                and its payment history.
-                            </li>
-                        </ol>
-                    </article>
-                    <article class="workflow">
-                        <h3>Apply a payment</h3>
+                    <div class="callout">
+                        <strong>Expected result</strong>
                         <p>
-                            Enter the amount in EUR and choose
-                            <strong>Apply</strong> in Booking records, or choose
-                            <strong>Unpaid fees</strong> on Customers and use
-                            <strong>Pay</strong> on the matching booking. Verify
-                            the updated balance before entering another payment.
-                            The payment action rejects an amount above the
-                            remaining balance.
+                            The menu reflects your access. The interface and
+                            manual share the selected language. Dates appear as
+                            day.month.year in all three languages.
                         </p>
-                    </article>
-                </section>
-                <section id="modules">
-                    <h2>Services and seasons</h2>
-                    <ul class="simple-list">
+                    </div>
+                    <h3>Work safely</h3>
+                    <ol>
                         <li>
-                            <strong>Services</strong> shows one entry per
-                            service and season. Search by service or season name
-                            and filter by service, date, or status.
+                            Search before creating a customer or booking. Use
+                            the exact dates, pickup point, and customer you
+                            intend.
                         </li>
                         <li>
-                            <strong>Availability</strong> shows the booked and
-                            remaining places for each scheduled date. Open the
-                            booking list for that date to review active and
-                            cancelled reservations. Use
-                            <strong>Reports</strong> to open the selected date
-                            or season range.
-                        </li>
-                        <li>
-                            Managers can create and edit service periods.
-                            Periods for the same service must have separate date
-                            ranges. Historical booking dates must be retained.
-                        </li>
-                        <li>
-                            A season uses its own daily capacity and the price
-                            tiers configured for the service. An absent rate
-                            displays <strong>Price not configured</strong>.
-                        </li>
-                        <li>
-                            <strong>Seasons</strong> provides season summaries.
-                            <strong>Locations</strong> distinguishes shared
-                            pickup points from service-specific ones.
-                            <strong>Cards</strong>, <strong>Equipment</strong>,
-                            and <strong>Bonus services</strong> manage the
-                            corresponding catalogs.
-                        </li>
-                    </ul>
-                </section>
-                <section id="reports">
-                    <h2>Dashboard and reports</h2>
-                    <ol class="simple-list">
-                        <li>
-                            Use the dashboard to check season totals and today's
-                            records. Historical bookings remain in the season
-                            totals.
-                        </li>
-                        <li>
-                            Open <strong>Reports</strong>, select a service and
-                            date range, and click <strong>Generate</strong>. The
-                            report header identifies the generated range. Fields
-                            edited afterwards are applied when you generate
+                            Submit a form once and wait for the result. After an
+                            error, check whether a row was saved before trying
                             again.
                         </li>
                         <li>
-                            Header filters refine the visible page. The page CSV
-                            exports the visible rows.
-                            <strong>CSV (All)</strong> and
-                            <strong>Print (All)</strong> use the generated
-                            service and date range across pages.
-                        </li>
-                        <li>
-                            Driver reports show permitted transport information.
-                            Financial and other restricted customer columns are
-                            available only to the relevant staff roles.
+                            Keep credentials out of notes and issue attachments.
+                            Use <strong>Logout</strong> at the end of the shift
+                            and wait for the login page.
                         </li>
                     </ol>
+                    <div class="callout callout--rule">
+                        <strong>Business rule</strong>
+                        <p>
+                            Use the details in
+                            <a href="#roles">Roles and permissions</a> when a
+                            control is missing and
+                            <a href="#troubleshoot">Troubleshooting</a> when an
+                            action fails.
+                        </p>
+                    </div>
+                    <div class="chapter-footer">
+                        <a href="#contents">Contents</a>
+                    </div>
                 </section>
-                <section id="admin">
-                    <h2>Staff administration and issues</h2>
-                    <ul class="simple-list">
+                <section class="chapter" id="dashboard">
+                    <h2>Dashboard and statistics</h2>
+                    <p>
+                        <strong>Home</strong> summarizes the operating season
+                        and shows a list for today. Group Leaders and above can
+                        use it. Drivers are directed to the report view.
+                    </p>
+                    <h3>Read the season cards</h3>
+                    <ol>
                         <li>
-                            Use <strong>Users</strong> to create staff accounts
-                            within your role's authority. Save the account
-                            changes and ask the staff member to sign in using
-                            their assigned credentials.
+                            Confirm the displayed season dates before comparing
+                            totals. The configured start and end dates under
+                            <strong>Seasons</strong> determine the
+                            operating-season window.
                         </li>
                         <li>
-                            Use <strong>Logs</strong> to review recorded events.
-                            The current role determines available actions.
+                            Read the season records, unique clients, scheduled
+                            dates, and the total, paid, and due values. A
+                            multi-day booking counts once in the season booking
+                            and payment totals.
                         </li>
                         <li>
-                            Use <strong>Issues</strong> to report a problem and
-                            follow its status. Include the module and the steps
-                            that led to the issue. Attach files only when they
-                            are needed for the investigation.
+                            Compare the per-service breakdown to identify which
+                            activities have scheduled dates and bookings. The
+                            overall customer line shows active customers out of
+                            all customers.
                         </li>
-                    </ul>
+                    </ol>
+                    <h3>Plan today's work</h3>
+                    <ol>
+                        <li>
+                            Use today's entries to review customers, activities,
+                            pickup points, and contacts. When there are more
+                            than 100 entries, use <strong>Reports</strong> for
+                            the complete date range.
+                        </li>
+                        <li>
+                            Open <strong>Services → Availability</strong> for
+                            the activity and date before promising a place.
+                            Switch to the customer or booking record to confirm
+                            an individual balance.
+                        </li>
+                    </ol>
+                    <div class="callout">
+                        <strong>Expected result</strong>
+                        <p>
+                            After a booking or payment, revisit the dashboard to
+                            check the refreshed totals. Clear differences
+                            between a calendar date, a booking count, and a
+                            customer count before reporting numbers.
+                        </p>
+                    </div>
+                    <div class="callout callout--rule">
+                        <strong>Business rule</strong>
+                        <p>
+                            The dashboard preserves historical booking records
+                            in its aggregates. Use active booked and remaining
+                            places in daily availability when making capacity
+                            decisions.
+                        </p>
+                    </div>
+                    <figure>
+                        <img
+                            src="/img/manual/en/dashboard.jpg"
+                            alt="Screen from the synthetic demo"
+                            width="1440"
+                            height="900"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-dashboard"
+                                >Season cards, today&#x27;s pickup list, and the
+                                per-service breakdown from the synthetic
+                                demo.</span
+                            >
+                            <a
+                                id="view-dashboard"
+                                href="/img/manual/en/dashboard.jpg"
+                                aria-labelledby="view-dashboard caption-dashboard"
+                                >Open screenshot at full size</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <div class="chapter-footer">
+                        <a href="#contents">Contents</a>
+                        <a href="/dashboard?lang=en">Open this module</a>
+                    </div>
                 </section>
-                <section id="troubleshoot">
+                <section class="chapter" id="customers">
+                    <h2>Customers</h2>
+                    <p>
+                        Keep one record for each customer. Contact and birth
+                        details support booking, transport, and report
+                        workflows.
+                    </p>
+                    <h3>Find and review a customer</h3>
+                    <ol>
+                        <li>
+                            Open <strong>Customers</strong>, enter an ID, name
+                            or name component, email, or guardian phone in the
+                            search field, then apply the filter.
+                        </li>
+                        <li>
+                            Open the matching row's view action and check their
+                            name, birth date, contact details, and bookings
+                            before using the record.
+                        </li>
+                        <li>
+                            If there are several matches, compare birth date and
+                            guardian contact. Clear the filter to return to the
+                            full list. The results counter covers all matching
+                            customers. The active counter covers the current
+                            page.
+                        </li>
+                    </ol>
+                    <h3>Add or change a record</h3>
+                    <ol>
+                        <li>
+                            As a Manager or above, choose
+                            <strong>Add customer</strong> or use the edit action
+                            on the matching row.
+                        </li>
+                        <li>
+                            Enter the first and last names. Use the separate
+                            name field where applicable. Enter the birth date as
+                            DD.MM.YYYY and check the email and guardian phone.
+                        </li>
+                        <li>
+                            Set the active checkbox as appropriate, save, then
+                            find the record again. Check the birth date and
+                            contact details before returning to Booking.
+                        </li>
+                    </ol>
+                    <div class="callout">
+                        <strong>Expected result</strong>
+                        <p>
+                            If a booking is already attached, use the customer's
+                            details and booking records when reviewing its dates
+                            and balance.
+                        </p>
+                    </div>
+                    <div class="callout callout--rule">
+                        <strong>Business rule</strong>
+                        <p>
+                            Use <strong>Unpaid fees</strong> to review
+                            outstanding bookings. Group Leaders can review the
+                            list. Payment controls require Manager access or
+                            higher.
+                        </p>
+                    </div>
+                    <figure>
+                        <img
+                            src="/img/manual/en/customers.jpg"
+                            alt="Screen from the synthetic demo"
+                            width="1440"
+                            height="900"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-customers"
+                                >The Add customer form and the customer list
+                                with synthetic contact details.</span
+                            >
+                            <a
+                                id="view-customers"
+                                href="/img/manual/en/customers.jpg"
+                                aria-labelledby="view-customers caption-customers"
+                                >Open screenshot at full size</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <div class="chapter-footer">
+                        <a href="#contents">Contents</a>
+                        <a href="/crm/customers?lang=en">Open this module</a>
+                    </div>
+                </section>
+                <section class="chapter" id="modules">
+                    <h2>Services and service periods</h2>
+                    <p>
+                        The Services screen shows separate entries for each
+                        service and its configured periods. One service can
+                        appear several times with different date ranges and
+                        capacities.
+                    </p>
+                    <h3>Find the relevant service period</h3>
+                    <ol>
+                        <li>
+                            Search by service or season name, or choose a
+                            service and a date within its period.
+                        </li>
+                        <li>
+                            Use the status and sort controls to compare active,
+                            upcoming, and expired periods. An unscheduled
+                            service has no configured period.
+                        </li>
+                        <li>
+                            Check the dates, daily capacity, and price tiers
+                            shown on the service-period row. Open
+                            <strong>Availability</strong> for a specific day or
+                            <strong>Reports</strong> for the period range.
+                        </li>
+                    </ol>
+                    <h3>Maintain services and rates</h3>
+                    <ol>
+                        <li>
+                            As a Manager or above, use
+                            <strong>Add service</strong> where available or the
+                            service catalog's edit controls. Set the service
+                            name and its available translations. Review its
+                            capacity and active state.
+                        </li>
+                        <li>
+                            Review the service duration-price tiers in the
+                            service tools. Choose the tier that matches the
+                            booked duration. Investigate
+                            <strong>Price not configured</strong> before quoting
+                            a standard rate.
+                        </li>
+                        <li>
+                            Use the period actions to open the schedule for the
+                            relevant service. Keep the service catalog, dated
+                            capacity, and seasonal defaults aligned before
+                            taking bookings.
+                        </li>
+                    </ol>
+                    <div class="callout">
+                        <strong>Expected result</strong>
+                        <p>
+                            One service definition can support several periods.
+                            A new period for an existing service keeps the same
+                            service in the calendar, locations, and reports.
+                        </p>
+                    </div>
+                    <div class="callout callout--rule">
+                        <strong>Business rule</strong>
+                        <p>
+                            Filtering by a date within a period finds the period
+                            covering that date. Use its daily availability view
+                            to check whether that specific date is scheduled.
+                        </p>
+                    </div>
+                    <figure>
+                        <img
+                            src="/img/manual/en/services.jpg"
+                            alt="Screen from the synthetic demo"
+                            width="1440"
+                            height="900"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-services"
+                                >The service-period list with the service name,
+                                dates, pricing, capacity, and status
+                                filters.</span
+                            >
+                            <a
+                                id="view-services"
+                                href="/img/manual/en/services.jpg"
+                                aria-labelledby="view-services caption-services"
+                                >Open screenshot at full size</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <div class="chapter-footer">
+                        <a href="#contents">Contents</a>
+                        <a href="/crm/services?lang=en">Open this module</a>
+                    </div>
+                </section>
+                <section class="chapter" id="availability">
+                    <h2>Daily availability and capacity</h2>
+                    <p>
+                        The service period sets the daily capacity. Active
+                        bookings on a specific date consume places. Cancelling a
+                        booking releases its places and retains the booking
+                        history.
+                    </p>
+                    <h3>Check a day and its bookings</h3>
+                    <ol>
+                        <li>
+                            In <strong>Services</strong>, find the service and
+                            period. Open <strong>Availability</strong>.
+                        </li>
+                        <li>
+                            Filter to the intended date or review all scheduled
+                            dates. Read <strong>Booked places</strong> and the
+                            remaining places on the matching row.
+                        </li>
+                        <li>
+                            Open the day's booking list to see active and
+                            cancelled records. Use the day's report action for
+                            transport or other day-specific work.
+                        </li>
+                    </ol>
+                    <h3>Create or edit a service period</h3>
+                    <ol>
+                        <li>
+                            As a Manager or above, open the period creation or
+                            edit action for the service. Select the service if
+                            the form asks for it, enter a period name and daily
+                            capacity, and select the intended calendar dates.
+                        </li>
+                        <li>
+                            Recheck the first and last date and the days
+                            actually selected. Periods for one service need
+                            separate date ranges even if some dates inside a
+                            range have no slot.
+                        </li>
+                        <li>
+                            Save and reopen <strong>Availability</strong>. Check
+                            the schedule and capacity before telling staff that
+                            the period is ready.
+                        </li>
+                    </ol>
+                    <div class="callout">
+                        <strong>Expected result</strong>
+                        <p>
+                            In the demo, a day with capacity 12 and three active
+                            bookings has nine free places. A new booking for
+                            this day and a second day reduces each day’s
+                            remaining capacity by one. Check both dates after
+                            saving.
+                        </p>
+                    </div>
+                    <div class="callout callout--rule">
+                        <strong>Business rule</strong>
+                        <p>
+                            Retain linked historical dates. Edits that remove
+                            dates with booking history or lower capacity below
+                            the active bookings are rejected. The server checks
+                            availability again when a booking is saved.
+                        </p>
+                    </div>
+                    <figure>
+                        <img
+                            src="/img/manual/en/availability.jpg"
+                            alt="Screen from the synthetic demo"
+                            width="560"
+                            height="370"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-availability"
+                                >Daily capacity and bookings shown together for
+                                a selected Ski school date.</span
+                            >
+                            <a
+                                id="view-availability"
+                                href="/img/manual/en/availability.jpg"
+                                aria-labelledby="view-availability caption-availability"
+                                >Open screenshot at full size</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <div class="chapter-footer">
+                        <a href="#contents">Contents</a>
+                        <a href="/crm/services?lang=en">Open this module</a>
+                    </div>
+                </section>
+                <section class="chapter" id="seasons">
+                    <h2>Season archive and annual defaults</h2>
+                    <p>
+                        Use the archive for a summary of service periods and
+                        historical records. The annual season defaults set the
+                        recurring operating window used by the dashboard.
+                    </p>
+                    <h3>Review a period</h3>
+                    <ol>
+                        <li>
+                            Open <strong>Seasons</strong> and choose the
+                            relevant past or current period. Review its service,
+                            date range, and figures.
+                        </li>
+                        <li>
+                            Follow the booking or report context for that period
+                            when available. Use the same service and dates when
+                            comparing with a generated report.
+                        </li>
+                        <li>
+                            For today's free places, return to the
+                            <strong>Services</strong> row and its daily
+                            <strong>Availability</strong>.
+                        </li>
+                    </ol>
+                    <h3>Plan a new season</h3>
+                    <ol>
+                        <li>
+                            As a Manager or above, open
+                            <strong>Seasons</strong> and select the service tab.
+                            Edit
+                            <strong>Default bounds for new season</strong> using
+                            day-month values, for example 01-09. Select the
+                            service to use <strong>Create season</strong> or
+                            edit a selected season by its dates.
+                        </li>
+                        <li>
+                            Before changing defaults, confirm the dates with the
+                            team. Defaults affect the operating window. Each
+                            service still needs the relevant periods and dates.
+                        </li>
+                        <li>
+                            Open the service period after saving. Confirm the
+                            visible date range and capacity before scheduling
+                            customers.
+                        </li>
+                    </ol>
+                    <div class="callout">
+                        <strong>Expected result</strong>
+                        <p>
+                            Seasonal summaries and booking availability answer
+                            different questions. Use the archive for history and
+                            the daily view to confirm bookable capacity.
+                        </p>
+                    </div>
+                    <figure>
+                        <img
+                            src="/img/manual/en/seasons.jpg"
+                            alt="Screen from the synthetic demo"
+                            width="1440"
+                            height="900"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-seasons"
+                                >The season archive and its operating-season
+                                controls.</span
+                            >
+                            <a
+                                id="view-seasons"
+                                href="/img/manual/en/seasons.jpg"
+                                aria-labelledby="view-seasons caption-seasons"
+                                >Open screenshot at full size</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <div class="chapter-footer">
+                        <a href="#contents">Contents</a>
+                        <a href="/crm/seasons?lang=en">Open this module</a>
+                    </div>
+                </section>
+                <section class="chapter" id="locations">
+                    <h2>Pickup and drop-off locations</h2>
+                    <p>
+                        A shared location can be selected by any service. A
+                        service-specific location belongs to the service chosen
+                        in the form.
+                    </p>
+                    <h3>Create or edit a pickup route</h3>
+                    <ol>
+                        <li>
+                            As a Manager or above, open
+                            <strong>Locations</strong> and choose
+                            <strong>Add location</strong>, or edit the existing
+                            route.
+                        </li>
+                        <li>
+                            Enter pickup and drop-off names and their times.
+                            Review the direction of the route and the two times
+                            before saving.
+                        </li>
+                        <li>
+                            Choose <strong>Main (all services)</strong> for a
+                            shared pickup point, or choose a service for an
+                            activity-specific point. Save and check the
+                            appropriate group.
+                        </li>
+                    </ol>
+                    <h3>Verify the booking and report views</h3>
+                    <ol>
+                        <li>
+                            Open a Booking for the relevant service. Check that
+                            its location list contains the expected shared and
+                            service-specific choices.
+                        </li>
+                        <li>
+                            If a pickup is missing, recheck the booking's
+                            selected service and the location's assignment.
+                            Choose the correct scope based on where the route
+                            should be used.
+                        </li>
+                        <li>
+                            For a transport run, generate a dated report and
+                            confirm the displayed route and time before printing
+                            or exporting.
+                        </li>
+                    </ol>
+                    <div class="callout">
+                        <strong>Expected result</strong>
+                        <p>
+                            A shared route appears in the main group when at
+                            least one exists. A service-specific route appears
+                            with its service.
+                        </p>
+                    </div>
+                    <figure>
+                        <img
+                            src="/img/manual/en/locations.jpg"
+                            alt="Screen from the synthetic demo"
+                            width="1440"
+                            height="900"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-locations"
+                                >The location form showing pickup, drop-off,
+                                their times, and the service scope.</span
+                            >
+                            <a
+                                id="view-locations"
+                                href="/img/manual/en/locations.jpg"
+                                aria-labelledby="view-locations caption-locations"
+                                >Open screenshot at full size</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <div class="chapter-footer">
+                        <a href="#contents">Contents</a>
+                        <a href="/crm/locations?lang=en">Open this module</a>
+                    </div>
+                </section>
+                <section class="chapter" id="daily">
+                    <h2>Create a booking</h2>
+                    <p>
+                        Start with the customer, activity, intended dates,
+                        pickup point, and payment details. The Booking workspace
+                        is available to Managers and higher roles.
+                    </p>
+                    <h3>Choose the customer and activity</h3>
+                    <ol>
+                        <li>
+                            Open <strong>Booking</strong>. For an existing
+                            customer, search by name and select the matching
+                            suggestion. Check the contact and birth details
+                            after continuing.
+                        </li>
+                        <li>
+                            If the customer has no existing record, select
+                            <strong>New customer</strong>. Choose the booking
+                            type and select <strong>Continue to form</strong>,
+                            then enter the required name and other details.
+                        </li>
+                        <li>
+                            Select the service or additional activity that was
+                            agreed. For a dated service, choose the correct
+                            pickup from the shared points or the points for that
+                            service.
+                        </li>
+                    </ol>
+                    <h3>Select days, options, and amounts</h3>
+                    <ol>
+                        <li>
+                            Select each intended day in the calendar. You can
+                            choose several dates for the same service in one
+                            booking. Check the selected-date list, including the
+                            month and year.
+                        </li>
+                        <li>
+                            Full dates and dates already booked for this
+                            customer and service are unavailable. An eligible
+                            date can be added to the schedule when the booking
+                            is saved.
+                        </li>
+                        <li>
+                            For a ski service, choose the skill level. Add a
+                            card, equipment and any requested measurements when
+                            applicable. Mark parental consent only when it has
+                            been received. Add a note if staff need it.
+                        </li>
+                        <li>
+                            Confirm the total in EUR, and enter an initial paid
+                            amount only if payment was actually received. Choose
+                            <strong>Add</strong> once and wait for the result.
+                        </li>
+                    </ol>
+                    <div class="callout">
+                        <strong>Expected result</strong>
+                        <p>
+                            The booking appears in <strong>Records</strong>. The
+                            selected customer's details and the corresponding
+                            daily availability reflect the saved booking. Each
+                            selected day uses one place.
+                        </p>
+                    </div>
+                    <div class="callout callout--rule">
+                        <strong>Business rule</strong>
+                        <p>
+                            Additional activities use their own catalog context.
+                            A dated service booking is the workflow for
+                            selecting service slots and reserving places on
+                            several days.
+                        </p>
+                    </div>
+                    <figure>
+                        <img
+                            src="/img/manual/en/booking.jpg"
+                            alt="Screen from the synthetic demo"
+                            width="1060"
+                            height="2092"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-booking"
+                                >A synthetic ski booking form with two dates
+                                selected and the pickup and ski options
+                                visible.</span
+                            >
+                            <a
+                                id="view-booking"
+                                href="/img/manual/en/booking.jpg"
+                                aria-labelledby="view-booking caption-booking"
+                                >Open screenshot at full size</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <div class="chapter-footer">
+                        <a href="#contents">Contents</a>
+                        <a href="/crm/bookings?lang=en">Open this module</a>
+                    </div>
+                </section>
+                <section class="chapter" id="records">
+                    <h2>Edit or cancel a booking</h2>
+                    <p>
+                        Use <strong>Records</strong> on the Booking page to find
+                        a saved reservation. Search when the list spans several
+                        pages. Review the selected activity and dates before
+                        changing anything.
+                    </p>
+                    <h3>Edit a saved booking</h3>
+                    <ol>
+                        <li>
+                            Find the matching customer and row. Choose
+                            <strong>Edit</strong> and check the existing dates,
+                            pickup, options, and balance.
+                        </li>
+                        <li>
+                            Toggle calendar dates to add or remove days. Check
+                            the completed set of dates before saving. Change the
+                            relevant options or note and review the total.
+                        </li>
+                        <li>
+                            Leave payment fields alone for an ordinary edit. If
+                            a payment correction is needed, verify the latest
+                            balance and follow the
+                            <a href="#payments">payment instructions</a>.
+                        </li>
+                        <li>
+                            Save, reopen the record, and compare its itinerary
+                            with the activity's daily availability. Check both
+                            the days added and the days removed.
+                        </li>
+                    </ol>
+                    <h3>Cancel a booking</h3>
+                    <ol>
+                        <li>
+                            Confirm the customer, service, dates, and payment
+                            history before selecting
+                            <strong>Cancel booking</strong>. Confirm when
+                            prompted.
+                        </li>
+                        <li>
+                            Check the row's cancelled status and reopen
+                            <strong>Availability</strong> for a previously
+                            booked day. The released place should appear in the
+                            remaining capacity.
+                        </li>
+                        <li>
+                            Check the booking history to confirm the record is
+                            still available for review. Handle any refund
+                            separately under your organization’s procedures.
+                        </li>
+                    </ol>
+                    <div class="callout callout--rule">
+                        <strong>Business rule</strong>
+                        <p>
+                            Cancellation releases capacity and preserves the
+                            booking and payments. Use an edit when only one day
+                            changes.
+                        </p>
+                    </div>
+                    <figure>
+                        <img
+                            src="/img/manual/en/records.jpg"
+                            alt="Screen from the synthetic demo"
+                            width="1440"
+                            height="900"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-records"
+                                >Booking records with the selected dates, amount
+                                fields, status, and edit and cancel
+                                actions.</span
+                            >
+                            <a
+                                id="view-records"
+                                href="/img/manual/en/records.jpg"
+                                aria-labelledby="view-records caption-records"
+                                >Open screenshot at full size</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <div class="chapter-footer">
+                        <a href="#contents">Contents</a>
+                        <a href="/crm/bookings?lang=en">Open this module</a>
+                    </div>
+                </section>
+                <section class="chapter" id="payments">
+                    <h2>Payments and outstanding balances</h2>
+                    <p>
+                        Compare the agreed total, paid amount, and amount due. A
+                        positive due amount is outstanding. A partial payment
+                        reduces the balance, and a settled record has no
+                        remaining amount.
+                    </p>
+                    <h3>Apply a payment</h3>
+                    <ol>
+                        <li>
+                            Open <strong>Customers → Unpaid fees</strong> or
+                            find the booking in
+                            <strong>Booking → Records</strong>. Match the
+                            customer, activity, and booking before entering
+                            money.
+                        </li>
+                        <li>
+                            Enter the amount received in EUR. Choose
+                            <strong>Pay</strong> in the unpaid list or
+                            <strong>Apply</strong> in <strong>Records</strong>,
+                            then wait for the result.
+                        </li>
+                        <li>
+                            Check the updated paid and due amounts. A fully
+                            settled booking leaves the unpaid list. For a
+                            partial payment, check the smaller balance before
+                            applying any further payment.
+                        </li>
+                    </ol>
+                    <h3>Review a correction</h3>
+                    <ol>
+                        <li>
+                            If a balance needs correcting, reopen the latest
+                            booking first. Use the editable paid amount in the
+                            booking form only for an authorized correction.
+                        </li>
+                        <li>
+                            Compare the entered value and the agreed total. The
+                            application rejects a payment above the remaining
+                            balance and rejects edits based on stale paid
+                            values.
+                        </li>
+                        <li>
+                            Reopen the booking after the change to confirm the
+                            stored balance. Compare the due amount before asking
+                            for another payment.
+                        </li>
+                    </ol>
+                    <div class="callout">
+                        <strong>Expected result</strong>
+                        <p>
+                            For example, a partly paid booking remains visible
+                            in the unpaid view. Once the full balance is
+                            recorded, the record remains in Booking history with
+                            no amount due.
+                        </p>
+                    </div>
+                    <div class="callout callout--rule">
+                        <strong>Business rule</strong>
+                        <p>
+                            Enter the amount taken in EUR and use the displayed
+                            balance for reconciliation.
+                        </p>
+                    </div>
+                    <figure>
+                        <img
+                            src="/img/manual/en/payments.jpg"
+                            alt="Screen from the synthetic demo"
+                            width="1440"
+                            height="900"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-payments"
+                                >The unpaid-fees view with a synthetic balance
+                                and a payment field.</span
+                            >
+                            <a
+                                id="view-payments"
+                                href="/img/manual/en/payments.jpg"
+                                aria-labelledby="view-payments caption-payments"
+                                >Open screenshot at full size</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <div class="chapter-footer">
+                        <a href="#contents">Contents</a>
+                        <a href="/crm/customers?lang=en">Open this module</a>
+                    </div>
+                </section>
+                <section class="chapter" id="equipment">
+                    <h2>Equipment, cards, and additional activities</h2>
+                    <p>
+                        Maintain the catalogs first, then pick their entries in
+                        the appropriate booking. Keep the service link and the
+                        duration-price values consistent with what staff quote.
+                    </p>
+                    <h3>Maintain equipment and cards</h3>
+                    <ol>
+                        <li>
+                            Open <strong>Equipment</strong> for rentals and
+                            <strong>Cards</strong> for passes. As a Manager or
+                            above, add or edit the relevant item.
+                        </li>
+                        <li>
+                            Enter the name and supported translations, then link
+                            it to the service that will use it.
+                        </li>
+                        <li>
+                            Add the price rows for the intended numbers of days
+                            and enter each EUR price. Save and verify the
+                            service and prices in the list.
+                        </li>
+                        <li>
+                            In a ski booking, enable the card or equipment
+                            option as applicable and pick the correct item.
+                            Enter measurements when needed. Check the booking
+                            total before saving.
+                        </li>
+                    </ol>
+                    <h3>Maintain additional activities</h3>
+                    <ol>
+                        <li>
+                            Open <strong>Bonus</strong> to create or edit a
+                            separate activity. Check its title, validity dates,
+                            route or meeting details, description, and any base
+                            or duration prices.
+                        </li>
+                        <li>
+                            Save and open the Booking workflow for an additional
+                            activity. Verify the correct entry and amount before
+                            saving the booking.
+                        </li>
+                        <li>
+                            Review the additional-activity list and booking
+                            record when checking registrations. Use the dated
+                            service reports for transport runs connected to
+                            service slots.
+                        </li>
+                    </ol>
+                    <div class="callout callout--rule">
+                        <strong>Business rule</strong>
+                        <p>
+                            If an item is missing in Booking, check whether you
+                            chose the correct service and whether the catalog
+                            item is linked to it. Review existing records before
+                            removing a catalog item.
+                        </p>
+                    </div>
+                    <figure>
+                        <img
+                            src="/img/manual/en/equipment.jpg"
+                            alt="Screen from the synthetic demo"
+                            width="1440"
+                            height="900"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-equipment"
+                                >A synthetic rental item showing its linked
+                                service and duration prices.</span
+                            >
+                            <a
+                                id="view-equipment"
+                                href="/img/manual/en/equipment.jpg"
+                                aria-labelledby="view-equipment caption-equipment"
+                                >Open screenshot at full size</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <div class="chapter-footer">
+                        <a href="#contents">Contents</a>
+                        <a href="/crm/equips?lang=en">Open this module</a>
+                    </div>
+                </section>
+                <section class="chapter" id="reports">
+                    <h2>Generate, filter, print, and export reports</h2>
+                    <p>
+                        Reports show booking records for a selected service and
+                        date range. Driver accounts open this module directly
+                        and see the transport information allowed for that role.
+                    </p>
+                    <h3>Generate and review a report</h3>
+                    <ol>
+                        <li>
+                            Select a service or <strong>All services</strong>,
+                            enter the start and end dates, and choose
+                            <strong>Generate</strong>. For a single day, use the
+                            same start and end date.
+                        </li>
+                        <li>
+                            Confirm the service and dates in the generated
+                            report header. Inspect the customer rows, pickup
+                            times, and any role-permitted totals.
+                        </li>
+                        <li>
+                            Use the column filters to refine the visible page.
+                            If the report is empty, clear those filters and
+                            confirm the generated range before choosing another
+                            service.
+                        </li>
+                    </ol>
+                    <h3>Export the intended rows</h3>
+                    <ol>
+                        <li>
+                            Use <strong>CSV (Page)</strong> or
+                            <strong>Print (Page)</strong> for the current page,
+                            including its visible filters. Review the download
+                            or print preview before sharing.
+                        </li>
+                        <li>
+                            Use <strong>CSV (All)</strong> or
+                            <strong>Print (All)</strong> for all pages of the
+                            generated service and date range. Generate again
+                            after editing the input fields.
+                        </li>
+                        <li>
+                            Check the result's audience before sharing. Drivers
+                            see permitted transport fields such as pickup,
+                            dates, and contact. Financial data and other
+                            restricted customer fields depend on role.
+                        </li>
+                    </ol>
+                    <div class="callout">
+                        <strong>Expected result</strong>
+                        <p>
+                            Editing a draft date or service leaves the generated
+                            header and export range in place until you choose
+                            Generate again.
+                        </p>
+                    </div>
+                    <div class="callout callout--rule">
+                        <strong>Business rule</strong>
+                        <p>
+                            For a whole-range export, use the generated service
+                            and dates as the scope. Header filters operate on
+                            the current visible page.
+                        </p>
+                    </div>
+                    <figure>
+                        <img
+                            src="/img/manual/en/reports.jpg"
+                            alt="Screen from the synthetic demo"
+                            width="1440"
+                            height="900"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-reports"
+                                >A generated report with its service, date
+                                range, page controls, and CSV and print
+                                actions.</span
+                            >
+                            <a
+                                id="view-reports"
+                                href="/img/manual/en/reports.jpg"
+                                aria-labelledby="view-reports caption-reports"
+                                >Open screenshot at full size</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <figure>
+                        <img
+                            src="/img/manual/en/driver.jpg"
+                            alt="Screen from the synthetic demo"
+                            width="1440"
+                            height="900"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-driver"
+                                >The report opened as a Driver using synthetic
+                                transport records.</span
+                            >
+                            <a
+                                id="view-driver"
+                                href="/img/manual/en/driver.jpg"
+                                aria-labelledby="view-driver caption-driver"
+                                >Open screenshot at full size</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <div class="chapter-footer">
+                        <a href="#contents">Contents</a>
+                        <a href="/crm/reports?lang=en">Open this module</a>
+                    </div>
+                </section>
+                <section class="chapter" id="admin">
+                    <h2>Staff accounts and activity logs</h2>
+                    <p>
+                        Use <strong>Users</strong> to maintain staff access.
+                        Administrator and Super Admin accounts have different
+                        visibility over staff and available roles.
+                    </p>
+                    <h3>Add or update a staff account</h3>
+                    <ol>
+                        <li>
+                            Open <strong>Users</strong>. Search by staff
+                            identity and confirm whether that person already has
+                            an account.
+                        </li>
+                        <li>
+                            Choose <strong>Add user</strong> or the edit action.
+                            Enter the account details, choose an allowed role,
+                            set the active state, and use the password fields
+                            when setting or changing a password.
+                        </li>
+                        <li>
+                            Save once. Check the row and role again. Ask the
+                            staff member to sign in using the assigned
+                            credentials through a secure channel.
+                        </li>
+                        <li>
+                            To revoke access, use the authorized account
+                            controls. Credential, role, and active-state changes
+                            can end existing access. Review the staff member's
+                            responsibilities before changing their role.
+                        </li>
+                    </ol>
+                    <h3>Review activity logs</h3>
+                    <ol>
+                        <li>
+                            Open <strong>Logs</strong> if your role provides
+                            access. Use the entries to check when an action
+                            occurred and which account or page was involved.
+                        </li>
+                        <li>
+                            If entries are missing, check your access.
+                            Administrators do not see their own entries in this
+                            view. Super Admin can review all entries.
+                        </li>
+                        <li>
+                            Follow your organization's rules before deleting log
+                            entries. Confirm the scope if the screen offers
+                            selected or bulk deletion.
+                        </li>
+                    </ol>
+                    <div class="callout callout--rule">
+                        <strong>Business rule</strong>
+                        <p>
+                            Administrator role assignment and actions are
+                            limited by the account policy. A higher-rank account
+                            such as Super Admin remains outside an
+                            Administrator's authority. Staff public registration
+                            is disabled.
+                        </p>
+                    </div>
+                    <figure>
+                        <img
+                            src="/img/manual/en/users.jpg"
+                            alt="Screen from the synthetic demo"
+                            width="1440"
+                            height="900"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-users"
+                                >The synthetic staff list with account roles and
+                                available controls.</span
+                            >
+                            <a
+                                id="view-users"
+                                href="/img/manual/en/users.jpg"
+                                aria-labelledby="view-users caption-users"
+                                >Open screenshot at full size</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <div class="chapter-footer">
+                        <a href="#contents">Contents</a>
+                        <a href="/crm/users?lang=en">Open this module</a>
+                    </div>
+                </section>
+                <section class="chapter" id="roles">
+                    <h2>Roles and permissions</h2>
+                    <p>
+                        Check <strong>Profile</strong> to confirm your role. Use
+                        the available controls and ask an authorized colleague
+                        for operations outside your role.
+                    </p>
+                    <h3>Operational roles</h3>
+                    <ol>
+                        <li>
+                            <strong>Driver</strong> can open Reports for
+                            transport work. Use the allowed pickup, service,
+                            date, and contact fields.
+                        </li>
+                        <li>
+                            <strong>Group Leader</strong> can review the
+                            dashboard, customers, unpaid records, services,
+                            seasons, and daily bookings, and use Issues within
+                            the allowed scope. Customer writes, booking
+                            creation, and payment controls require Manager
+                            access.
+                        </li>
+                        <li>
+                            <strong>Manager</strong> can maintain customers,
+                            create, edit or cancel bookings, record payments,
+                            manage service schedules and catalogs, and review
+                            reports.
+                        </li>
+                    </ol>
+                    <h3>Administrative roles</h3>
+                    <ol>
+                        <li>
+                            <strong>Administrator</strong> has the operational
+                            permissions plus eligible staff administration and
+                            log access. Account actions are limited to
+                            identities and active roles within that
+                            administrator's authority.
+                        </li>
+                        <li>
+                            <strong>Super Admin</strong> has the highest staff
+                            level and, when configured, access to Horizon for
+                            queue monitoring. Per-account and system rules still
+                            apply.
+                        </li>
+                    </ol>
+                    <div class="callout">
+                        <strong>Expected result</strong>
+                        <p>
+                            A Driver logging in lands in Reports. A Group Leader
+                            reviewing the same customer can read the record,
+                            while a Manager can act on it.
+                        </p>
+                    </div>
+                    <div class="callout callout--rule">
+                        <strong>Business rule</strong>
+                        <p>
+                            A missing write action is often a role boundary. If
+                            the expected role differs from the Profile label,
+                            ask an administrator to review the account.
+                        </p>
+                    </div>
+                    <div class="chapter-footer">
+                        <a href="#contents">Contents</a>
+                    </div>
+                </section>
+                <section class="chapter" id="issues">
+                    <h2>Report and track an issue</h2>
+                    <p>
+                        Use <strong>Issues</strong> to record a problem that
+                        needs follow-up. Report the symptom, the module, and the
+                        steps needed to reproduce it.
+                    </p>
+                    <h3>Create a useful issue</h3>
+                    <ol>
+                        <li>
+                            In <strong>New report</strong>, select the module,
+                            issue type, and priority. Enter a short title and
+                            describe what you did, what you expected, and what
+                            happened.
+                        </li>
+                        <li>
+                            Include the service or visible record identifier
+                            when needed. Provide the page path if it helps a
+                            colleague find the problem.
+                        </li>
+                        <li>
+                            Add an attachment only when it helps explain the
+                            issue. Remove private data and credentials from
+                            screenshots. Submit and locate the new issue in the
+                            list.
+                        </li>
+                    </ol>
+                    <h3>Follow progress</h3>
+                    <ol>
+                        <li>
+                            Filter the list by status or module when needed.
+                            Open the issue to read its details and comments.
+                        </li>
+                        <li>
+                            Add a comment to update colleagues. The author and a
+                            Super Admin can also change status or assignee.
+                            Choose the appropriate state, such as open, in
+                            progress, or resolved, and verify the saved result.
+                        </li>
+                        <li>
+                            Return to <strong>Issues</strong> to check the
+                            outcome and read replies.
+                        </li>
+                    </ol>
+                    <div class="callout">
+                        <strong>Expected result</strong>
+                        <p>
+                            A reproducible record lets another staff member
+                            verify the exact problem and follow its resolution.
+                        </p>
+                    </div>
+                    <figure>
+                        <img
+                            src="/img/manual/en/issues.jpg"
+                            alt="Screen from the synthetic demo"
+                            width="1440"
+                            height="900"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-issues"
+                                >The issue report form showing module, issue
+                                type, priority, and details.</span
+                            >
+                            <a
+                                id="view-issues"
+                                href="/img/manual/en/issues.jpg"
+                                aria-labelledby="view-issues caption-issues"
+                                >Open screenshot at full size</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <div class="chapter-footer">
+                        <a href="#contents">Contents</a>
+                        <a href="/crm/issues?lang=en">Open this module</a>
+                    </div>
+                </section>
+                <section class="chapter" id="profile">
+                    <h2>Profile and application settings</h2>
+                    <p>
+                        The top bar or mobile menu opens
+                        <strong>Profile</strong>. Review your personal details
+                        there and confirm the displayed role before doing
+                        privileged work.
+                    </p>
+                    <h3>Update profile or password</h3>
+                    <ol>
+                        <li>
+                            Open <strong>Profile</strong> and review the
+                            editable details. Save any correction and check the
+                            displayed name and email.
+                        </li>
+                        <li>
+                            Use the password settings link to enter the current
+                            password, the new password, and confirmation. Save
+                            and keep the new credential private.
+                        </li>
+                        <li>
+                            Use <strong>Settings → Appearance</strong> to choose
+                            Light, Dark, or System where available. The active
+                            theme may follow your device setting when System is
+                            selected.
+                        </li>
+                    </ol>
+                    <h3>Set up sign-in protection</h3>
+                    <ol>
+                        <li>
+                            For a passkey, enter an optional device name in the
+                            Profile passkey panel and choose
+                            <strong>Add passkey</strong>. Confirm your password
+                            if asked and follow the browser or device prompt.
+                            Sign in later from the same host used for
+                            enrollment.
+                        </li>
+                        <li>
+                            For a two-factor code, use the account's two-factor
+                            settings, follow the authenticator setup, and
+                            complete verification. Store recovery codes securely
+                            and keep them outside shared notes or screenshots.
+                        </li>
+                        <li>
+                            If you lose access, use the recovery process offered
+                            at login or contact your administrator. Report the
+                            step that failed without sharing a credential or
+                            recovery code.
+                        </li>
+                    </ol>
+                    <div class="callout callout--rule">
+                        <strong>Business rule</strong>
+                        <p>
+                            Your browser, operating system, and sign-in address
+                            affect passkey availability. Use the same authorized
+                            URL in daily work.
+                        </p>
+                    </div>
+                    <figure>
+                        <img
+                            src="/img/manual/en/profile.jpg"
+                            alt="Screen from the synthetic demo"
+                            width="1440"
+                            height="900"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-profile"
+                                >Profile settings showing the staff role,
+                                editable details, and passkey controls.</span
+                            >
+                            <a
+                                id="view-profile"
+                                href="/img/manual/en/profile.jpg"
+                                aria-labelledby="view-profile caption-profile"
+                                >Open screenshot at full size</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <div class="chapter-footer">
+                        <a href="#contents">Contents</a>
+                        <a href="/settings/profile?lang=en">Open this module</a>
+                    </div>
+                </section>
+                <section class="chapter" id="checklist">
+                    <h2>Shift and recurring checklists</h2>
+                    <p>
+                        Use these checks to tie the individual modules together
+                        and catch gaps before they affect the next shift.
+                    </p>
+                    <h3>Before a shift or handover</h3>
+                    <ol>
+                        <li>
+                            Check the current dashboard and generate today's
+                            report if needed. Confirm service, dates, pickup
+                            times, and the role appropriate for the people
+                            receiving it.
+                        </li>
+                        <li>
+                            Use <strong>Services → Availability</strong> for
+                            planned sessions and review notes, consent,
+                            equipment, or cards in the relevant bookings.
+                        </li>
+                        <li>
+                            Apply confirmed payments and verify the outstanding
+                            balances. Log problems in <strong>Issues</strong>.
+                            Sign out at the end of the shift.
+                        </li>
+                    </ol>
+                    <h3>Weekly or before a season changes</h3>
+                    <ol>
+                        <li>
+                            Review service periods, available dates, daily
+                            capacity, annual defaults, and old bookings in the
+                            archive.
+                        </li>
+                        <li>
+                            Confirm prices and service links for cards,
+                            equipment, and additional activities. Review shared
+                            and service-specific pickup routes for duplicates or
+                            outdated times.
+                        </li>
+                        <li>
+                            If you administer staff, review active accounts and
+                            role assignments. Revoke access when appropriate and
+                            follow the local log retention rules.
+                        </li>
+                    </ol>
+                    <div class="callout">
+                        <strong>Expected result</strong>
+                        <p>
+                            A colleague can reproduce the reports and find the
+                            current work from the service, date, and booking
+                            details.
+                        </p>
+                    </div>
+                    <div class="chapter-footer">
+                        <a href="#contents">Contents</a>
+                    </div>
+                </section>
+                <section class="chapter" id="troubleshoot">
                     <h2>Troubleshooting</h2>
-                    <details>
+                    <p>
+                        Open the item matching the symptom. Check the on-screen
+                        result before repeating a write.
+                    </p>
+                    <details class="troubleshooting">
+                        <summary>I cannot sign in</summary>
+                        <p>
+                            Check the address, username or email, password, and
+                            Caps Lock. Complete the two-factor challenge if
+                            prompted. Use the reset link or ask an administrator
+                            to check your access.
+                        </p>
+                    </details>
+                    <details class="troubleshooting">
                         <summary>
                             A booking date or pickup is unavailable
                         </summary>
-                        Check the service and date in Services. Then check the
-                        selected customer's existing reservations and the
-                        pickup's service assignment.
+                        <p>
+                            Check that the service and dates agree with Services
+                            → Availability. A full day or an existing active
+                            booking for the same customer and service can block
+                            a date. For a missing pickup, compare the location's
+                            scope and the chosen service.
+                        </p>
                     </details>
-                    <details>
+                    <details class="troubleshooting">
+                        <summary>A service period overlaps another one</summary>
+                        <p>
+                            Review all periods for the same service, including
+                            expired and upcoming entries. Use a date range that
+                            does not intersect another period, and keep dates
+                            with existing booking links.
+                        </p>
+                    </details>
+                    <details class="troubleshooting">
+                        <summary>
+                            A payment is rejected or the balance looks wrong
+                        </summary>
+                        <p>
+                            Reopen the latest booking and check the EUR value
+                            and current balance. An amount over the balance is
+                            rejected. For a stale correction, reload and recheck
+                            before making it again.
+                        </p>
+                    </details>
+                    <details class="troubleshooting">
                         <summary>A report is empty</summary>
-                        Confirm the generated service and dates. Clear the
-                        visible-page filters or select All services and generate
-                        again.
+                        <p>
+                            Check the service and dates printed in the generated
+                            header. Clear current-page column filters or
+                            generate again with All services and the correct
+                            range.
+                        </p>
                     </details>
-                    <details>
+                    <details class="troubleshooting">
                         <summary>An action is unavailable</summary>
-                        Check the role in Profile. Ask an authorized staff
-                        member to perform the action if your role is read-only
-                        for that module.
+                        <p>
+                            Check the staff level in Profile. If your role has
+                            read access only, ask an authorized staff member to
+                            complete the change. Drivers use the report module.
+                        </p>
                     </details>
+                    <details class="troubleshooting">
+                        <summary>
+                            The screen language or dates look unfamiliar
+                        </summary>
+                        <p>
+                            Select the language from the top bar or this
+                            manual's language links. Dates use day.month.year.
+                            Service catalog names can show their configured
+                            fallback language when a translation is missing.
+                        </p>
+                    </details>
+                    <details class="troubleshooting">
+                        <summary>
+                            The page is slow or a save seems stuck
+                        </summary>
+                        <p>
+                            Wait for the current request and inspect the result.
+                            After it settles, revisit the relevant list before
+                            submitting again. If the problem persists, open an
+                            issue with the module and steps.
+                        </p>
+                    </details>
+                    <div class="chapter-footer">
+                        <a href="#contents">Contents</a>
+                    </div>
                 </section>
             </main>
         </div>

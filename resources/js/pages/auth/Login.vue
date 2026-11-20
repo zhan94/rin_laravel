@@ -36,7 +36,7 @@ const {
                             class="login-brand-link"
                             :aria-label="t('auth.open_home')"
                         >
-                            <img src="/img/big.jpg" alt="RIN Sports" />
+                            <img src="/img/big.jpeg" alt="RIN Sports" />
                         </Link>
                     </div>
 

@@ -50,7 +50,7 @@ function withLang(lang: SupportedLocale): string {
                 class="topbar-logo"
                 :aria-label="t('common.home')"
             >
-                <img src="/css/logo.jpg" alt="" />
+                <img src="/css/logo.jpeg" alt="" />
             </Link>
             <Link :href="dashboard()" class="topbar-title-link">{{
                 t('common.home')

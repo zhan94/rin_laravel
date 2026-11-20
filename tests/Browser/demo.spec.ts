@@ -93,6 +93,96 @@ test('localizes the staff manual, customer fields and password settings', async 
     }
 });
 
+test('keeps all staff manual editions illustrated and keyboard accessible', async ({
+    page,
+}) => {
+    await signIn(page, 'demo.driver');
+    const chapters = [
+        'quick-start',
+        'dashboard',
+        'customers',
+        'modules',
+        'availability',
+        'seasons',
+        'locations',
+        'daily',
+        'records',
+        'payments',
+        'equipment',
+        'reports',
+        'admin',
+        'roles',
+        'issues',
+        'profile',
+        'checklist',
+        'troubleshoot',
+    ];
+
+    await page.setViewportSize({ width: 320, height: 844 });
+    await page.goto('/manual/en');
+
+    for (const locale of ['en', 'de', 'es']) {
+        if (locale !== 'en') {
+            await page.locator(`.language-nav [hreflang="${locale}"]`).click();
+        }
+
+        await expect(page.locator('html')).toHaveAttribute('lang', locale);
+        await expect(
+            page.locator('.language-nav [aria-current="page"]'),
+        ).toHaveAttribute('hreflang', locale);
+
+        await page.keyboard.press('Tab');
+        await expect(page.locator('.skip-link')).toBeFocused();
+        await page.keyboard.press('Enter');
+        await expect(page.getByRole('main')).toBeFocused();
+
+        const links = page.locator('.toc nav a');
+        expect(
+            await links.evaluateAll((items) =>
+                items.map((item) => item.getAttribute('href')),
+            ),
+        ).toEqual(chapters.map((id) => `#${id}`));
+        expect(
+            await page
+                .locator('main > section')
+                .evaluateAll((items) => items.map((item) => item.id)),
+        ).toEqual(chapters);
+
+        const bookingLink = page.locator('.toc a[href="#daily"]');
+        await bookingLink.focus();
+        await page.keyboard.press('Enter');
+        await expect(page).toHaveURL(/#daily$/);
+
+        const screenshots = page.locator('main figure img');
+        await expect(screenshots).toHaveCount(15);
+        expect(
+            await screenshots.evaluateAll(async (items) => {
+                const images = items as HTMLImageElement[];
+                for (const image of images) {
+                    image.loading = 'eager';
+                }
+                return Promise.all(
+                    images.map(async (image) => {
+                        await image.decode();
+                        return new URL(image.src).pathname;
+                    }),
+                );
+            }),
+        ).toEqual(
+            Array.from({ length: 15 }, () =>
+                expect.stringContaining(`/img/manual/${locale}/`),
+            ),
+        );
+
+        expect(
+            await page.evaluate(
+                () =>
+                    document.documentElement.scrollWidth === window.innerWidth,
+            ),
+        ).toBe(true);
+    }
+});
+
 test('supports keyboard entry, containment, and return focus in the location dialog', async ({
     page,
 }) => {

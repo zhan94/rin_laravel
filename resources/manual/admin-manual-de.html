@@ -7,261 +7,1757 @@
         <link rel="stylesheet" href="/css/manual.css" />
     </head>
     <body>
+        <a class="skip-link" href="#manual-content"
+            >Zum Handbuchinhalt springen</a
+        >
         <header class="hero">
             <div class="hero-inner">
-                <h1>RIN-Mitarbeiterhandbuch</h1>
-                <p>Arbeitsabläufe und Hilfe für Mitarbeitende in RIN.</p>
-                <div class="hero-actions">
-                    <a class="app-link-btn" href="/">Zurück zu RIN</a>
+                <div class="hero-top">
+                    <nav
+                        class="language-nav"
+                        aria-label="Sprachen des Handbuchs"
+                    >
+                        <a href="/manual/en" hreflang="en" lang="en">English</a>
+                        <a
+                            href="/manual/de"
+                            hreflang="de"
+                            lang="de"
+                            aria-current="page"
+                            >Deutsch</a
+                        >
+                        <a href="/manual/es" hreflang="es" lang="es">Español</a>
+                    </nav>
+                    <a class="app-link" href="/?lang=de">Zurück zu RIN</a>
                 </div>
+                <h1>RIN-Mitarbeiterhandbuch</h1>
+                <p>
+                    Schritt für Schritt durch Leistungsplanung, Kundenbetreuung
+                    und den täglichen Betrieb.
+                </p>
             </div>
         </header>
         <div class="layout">
-            <nav class="toc" aria-label="Auf dieser Seite">
-                <h2>Inhalt</h2>
-                <ol>
-                    <li><a href="#quick-start">Anmeldung und Zugriff</a></li>
-                    <li><a href="#customers">Kunden</a></li>
-                    <li><a href="#daily">Buchungen und Zahlungen</a></li>
-                    <li><a href="#modules">Leistungen und Saisons</a></li>
-                    <li><a href="#reports">Dashboard und Berichte</a></li>
-                    <li><a href="#admin">Benutzerverwaltung und Support</a></li>
-                    <li><a href="#troubleshoot">Problemlösung</a></li>
-                </ol>
-            </nav>
-            <main class="content">
-                <section id="quick-start">
-                    <h2>Anmeldung und Zugriff</h2>
+            <aside class="toc">
+                <details open>
+                    <summary id="contents">Inhaltsverzeichnis</summary>
+                    <nav aria-labelledby="contents">
+                        <h2>Einstieg und Überblick</h2>
+                        <ul>
+                            <li>
+                                <a href="#quick-start"
+                                    >Anmelden und zurechtfinden</a
+                                >
+                            </li>
+                            <li>
+                                <a href="#dashboard"
+                                    >Startseite und Kennzahlen</a
+                                >
+                            </li>
+                            <li><a href="#customers">Kunden</a></li>
+                        </ul>
+                        <h2>Täglicher Betrieb</h2>
+                        <ul>
+                            <li>
+                                <a href="#modules"
+                                    >Leistungen und Leistungssaisons</a
+                                >
+                            </li>
+                            <li>
+                                <a href="#availability"
+                                    >Tagesverfügbarkeit und Kapazität</a
+                                >
+                            </li>
+                            <li>
+                                <a href="#seasons"
+                                    >Saisonarchiv und jährliche Vorgaben</a
+                                >
+                            </li>
+                            <li>
+                                <a href="#locations"
+                                    >Abhol- und Rückbringhaltestellen</a
+                                >
+                            </li>
+                            <li><a href="#daily">Buchung anlegen</a></li>
+                            <li>
+                                <a href="#records"
+                                    >Buchung bearbeiten oder stornieren</a
+                                >
+                            </li>
+                            <li>
+                                <a href="#payments"
+                                    >Zahlungen und offene Gebühren</a
+                                >
+                            </li>
+                            <li>
+                                <a href="#equipment"
+                                    >Ausrüstung, Karten und Zusatzaktivitäten</a
+                                >
+                            </li>
+                            <li>
+                                <a href="#reports"
+                                    >Berichte erstellen, filtern, drucken und
+                                    exportieren</a
+                                >
+                            </li>
+                        </ul>
+                        <h2>Zugänge und Nachverfolgung</h2>
+                        <ul>
+                            <li>
+                                <a href="#admin"
+                                    >Benutzerkonten und Aktivitätsprotokolle</a
+                                >
+                            </li>
+                            <li>
+                                <a href="#roles">Rollen und Berechtigungen</a>
+                            </li>
+                            <li>
+                                <a href="#issues"
+                                    >Probleme melden und verfolgen</a
+                                >
+                            </li>
+                            <li>
+                                <a href="#profile"
+                                    >Profil und Anwendungseinstellungen</a
+                                >
+                            </li>
+                            <li>
+                                <a href="#checklist"
+                                    >Checklisten für Schichten und Planung</a
+                                >
+                            </li>
+                            <li><a href="#troubleshoot">Fehlerbehebung</a></li>
+                        </ul>
+                    </nav>
+                </details>
+            </aside>
+            <main class="content" id="manual-content" tabindex="-1">
+                <section class="chapter" id="quick-start">
+                    <h2>Anmelden und zurechtfinden</h2>
                     <p>
-                        Melden Sie sich mit dem Benutzernamen oder der
-                        E-Mail-Adresse Ihres Mitarbeiterkontos an. Unter
-                        <strong>Profil</strong> verwalten Sie Ihre Daten und
-                        Sicherheitseinstellungen. Melden Sie sich am Ende über
-                        das Kontomenü ab.
+                        Beginnen Sie mit dem Ihnen zugewiesenen Benutzerkonto.
+                        Verwenden Sie die von Ihrer Organisation angegebene
+                        Adresse. Bleiben Sie bei derselben Adresse, wenn Sie
+                        sich anmelden oder einen Passkey verwenden.
                     </p>
-                    <p>
-                        Das Sprachmenü wechselt die Sprache der Oberfläche und
-                        des Handbuchs zwischen Deutsch, Englisch und Spanisch.
-                        Datumsangaben erscheinen in allen drei Sprachen im
-                        Format <strong>TT.MM.JJJJ</strong>.
-                    </p>
-                    <ul class="simple-list">
+                    <h3>Schicht beginnen</h3>
+                    <ol>
                         <li>
-                            <strong>Fahrer</strong> öffnen Transportberichte mit
-                            Abholorten, Terminen und freigegebenen Kontaktdaten.
+                            Geben Sie Ihren Benutzernamen oder Ihre
+                            E-Mail-Adresse und Ihr Passwort ein. Wählen Sie
+                            <strong>Anmelden</strong> und bestätigen Sie
+                            gegebenenfalls die Zwei-Faktor-Abfrage.
                         </li>
                         <li>
-                            <strong>Gruppenleiter</strong> können Kunden,
-                            Saisons, Verfügbarkeiten und Buchungen einsehen und
-                            Supportfälle bearbeiten.
+                            Prüfen Sie, welche Seite geöffnet wird. Für die
+                            meisten Mitarbeitenden ist es die
+                            <strong>Startseite</strong>. Fahrer gelangen zu
+                            <strong>Berichte</strong>.
                         </li>
                         <li>
-                            <strong>Manager</strong> verwalten Kunden,
-                            Buchungen, Zahlungen, Leistungszeiträume und
-                            Kataloge.
+                            Wählen Sie oben EN, DE oder ES. Auf schmalen
+                            Bildschirmen finden Sie die Funktionen und das
+                            Benutzerkonto unter <strong>Menü</strong>.
                         </li>
                         <li>
-                            <strong>Administratoren</strong> verwalten
-                            zusätzlich Mitarbeiterkonten mit geringeren
-                            Berechtigungen und können Protokolle einsehen.
-                        </li>
-                        <li>
-                            <strong>Super-Administratoren</strong> verwalten die
-                            höchste Zugriffsebene. Die Kontoregeln bestimmen
-                            weiterhin, welche Änderungen möglich sind.
-                        </li>
-                    </ul>
-                </section>
-                <section id="customers">
-                    <h2>Kunden</h2>
-                    <ol class="simple-list">
-                        <li>
-                            Öffnen Sie <strong>Kunden</strong> und suchen Sie
-                            nach Kunden-ID, einem Namensteil, E-Mail-Adresse
-                            oder Telefonnummer der erziehungsberechtigten
-                            Person.
-                        </li>
-                        <li>
-                            Öffnen Sie die Detailansicht für Kontaktdaten und
-                            Buchungen. Die Liste zeigt die Gesamtzahl der
-                            Treffer und die Zahl der aktiven Kunden auf der
-                            aktuellen Seite.
-                        </li>
-                        <li>
-                            Ab der Rolle Manager können Sie
-                            <strong>Kunden hinzufügen</strong> oder vorhandene
-                            Angaben bearbeiten. Geben Sie das Geburtsdatum im
-                            Format <strong>TT.MM.JJJJ</strong> ein und speichern
-                            Sie.
+                            Öffnen Sie das <strong>Handbuch</strong> in der
+                            oberen Leiste oder im mobilen Menü. Nutzen Sie das
+                            Inhaltsverzeichnis oder die Suchfunktion Ihres
+                            Browsers.
                         </li>
                     </ol>
-                </section>
-                <section id="daily">
-                    <h2>Buchungen und Zahlungen</h2>
-                    <article class="workflow">
-                        <h3>Eine Buchung anlegen oder ändern</h3>
-                        <ol class="simple-list">
-                            <li>
-                                Öffnen Sie <strong>Buchung</strong>. Wählen Sie
-                                einen vorhandenen Kunden oder aktivieren Sie
-                                <strong>Neuer Kunde</strong>. Wählen Sie dann
-                                <strong>Zum Formular</strong>.
-                            </li>
-                            <li>
-                                Wählen Sie die Leistung und die Termine.
-                                Ausgebuchte Tage und Tage, an denen der Kunde
-                                bereits gebucht hat, sind im Kalender gesperrt.
-                                Zulässige neue Termine werden beim Speichern in
-                                den Plan aufgenommen.
-                            </li>
-                            <li>
-                                Wählen Sie einen gemeinsamen oder der Leistung
-                                zugeordneten Abholort. Geben Sie bei Bedarf die
-                                Könnensstufe sowie Angaben zu Karte, Ausrüstung
-                                und Einwilligung ein.
-                            </li>
-                            <li>
-                                Prüfen Sie die Gesamtsumme in EUR und wählen Sie
-                                <strong>Hinzufügen</strong>. Im
-                                Buchungsverzeichnis können Sie Termine und
-                                Optionen bearbeiten oder die Buchung stornieren
-                                und dadurch Plätze freigeben. Buchung und
-                                Zahlungsverlauf bleiben beim Stornieren
-                                erhalten.
-                            </li>
-                        </ol>
-                    </article>
-                    <article class="workflow">
-                        <h3>Eine Zahlung erfassen</h3>
+                    <div class="callout">
+                        <strong>Erwartetes Ergebnis</strong>
                         <p>
-                            Geben Sie in der Buchungsliste den Betrag in EUR ein
-                            und wählen Sie <strong>Zahlung buchen</strong>.
-                            Unter <strong>Kunden</strong> können Sie auch
-                            <strong>Offene Gebühren</strong> öffnen und bei der
-                            passenden Buchung <strong>Bezahlen</strong> wählen.
-                            Prüfen Sie den aktualisierten offenen Betrag vor
-                            einer weiteren Zahlung. Zahlungen über dem offenen
-                            Betrag werden abgelehnt.
+                            Das Menü richtet sich nach Ihrer Rolle. Oberfläche
+                            und Handbuch verwenden die gewählte Sprache.
+                            Datumsangaben stehen in allen drei Sprachen im
+                            Format TT.MM.JJJJ.
                         </p>
-                    </article>
-                </section>
-                <section id="modules">
-                    <h2>Leistungen und Saisons</h2>
-                    <ul class="simple-list">
+                    </div>
+                    <h3>Sicher arbeiten</h3>
+                    <ol>
                         <li>
-                            Unter <strong>Leistungen</strong> gibt es einen
-                            Eintrag pro Leistung und Saison. Suchen Sie nach dem
-                            Namen der Leistung oder der Saison und filtern Sie
-                            nach Leistung, Datum oder Status.
+                            Suchen Sie zuerst nach dem Kunden oder der Buchung.
+                            Prüfen Sie die gewünschten Daten, die
+                            Abholhaltestelle und den ausgewählten Kunden.
                         </li>
                         <li>
-                            Unter <strong>Verfügbarkeit</strong> sehen Sie pro
-                            Termin die gebuchten und freien Plätze. Die
-                            Buchungsliste des Tages enthält aktive und
-                            stornierte Buchungen. Über
-                            <strong>Berichte</strong> öffnen Sie den
-                            ausgewählten Tag oder Saisonzeitraum.
+                            Senden Sie ein Formular einmal ab und warten Sie auf
+                            die Rückmeldung. Prüfen Sie nach einem Fehler, ob
+                            der Eintrag gespeichert wurde, bevor Sie es erneut
+                            versuchen.
                         </li>
                         <li>
-                            Manager können Leistungszeiträume anlegen und
-                            bearbeiten. Zeiträume derselben Leistung dürfen sich
-                            nicht überschneiden. Frühere Buchungstermine müssen
-                            erhalten bleiben.
-                        </li>
-                        <li>
-                            Je Saison gelten die eigene Tageskapazität und die
-                            für die Leistung hinterlegten Preisstaffeln. Fehlt
-                            ein Tarif, wird darauf hingewiesen.
-                        </li>
-                        <li>
-                            <strong>Saisons</strong> zeigt die Saisonübersicht.
-                            <strong>Haltestellen</strong> unterscheidet
-                            gemeinsame und leistungsspezifische Abholorte. Unter
-                            <strong>Karten</strong>,
-                            <strong>Ausrüstung</strong> und
-                            <strong>Zusatzleistungen</strong> verwalten Sie die
-                            jeweiligen Kataloge.
-                        </li>
-                    </ul>
-                </section>
-                <section id="reports">
-                    <h2>Dashboard und Berichte</h2>
-                    <ol class="simple-list">
-                        <li>
-                            Im Dashboard finden Sie die Saisonwerte und die
-                            heutigen Einträge. Frühere Buchungen bleiben in den
-                            Saisonwerten enthalten.
-                        </li>
-                        <li>
-                            Öffnen Sie <strong>Berichte</strong>, wählen Sie
-                            eine Leistung und einen Zeitraum und klicken Sie auf
-                            <strong>Erstellen</strong>. Im Berichtskopf steht
-                            der verwendete Zeitraum. Änderungen an den Feldern
-                            werden beim nächsten Erstellen übernommen.
-                        </li>
-                        <li>
-                            Die Spaltenfilter schränken die sichtbare Seite ein.
-                            <strong>CSV (Seite)</strong> exportiert die
-                            sichtbaren Zeilen. <strong>CSV (Alle)</strong> und
-                            <strong>Drucken (Alle)</strong> verwenden die
-                            Leistung und den Zeitraum des erstellten Berichts
-                            über alle Seiten hinweg.
-                        </li>
-                        <li>
-                            Transportberichte für Fahrer zeigen freigegebene
-                            Angaben. Finanzen und andere geschützte Kundendaten
-                            stehen nur den dafür berechtigten Rollen zur
-                            Verfügung.
+                            Halten Sie Zugangsdaten aus Notizen und Anhängen
+                            heraus. Wählen Sie am Schichtende
+                            <strong>Abmelden</strong> und warten Sie auf die
+                            Anmeldeseite.
                         </li>
                     </ol>
+                    <div class="callout callout--rule">
+                        <strong>Geschäftsregel</strong>
+                        <p>
+                            Bei fehlenden Funktionen hilft
+                            <a href="#roles">Rollen und Berechtigungen</a>. Wenn
+                            eine Aktion fehlschlägt, öffnen Sie
+                            <a href="#troubleshoot">Fehlerbehebung</a>.
+                        </p>
+                    </div>
+                    <div class="chapter-footer">
+                        <a href="#contents">Inhaltsverzeichnis</a>
+                    </div>
                 </section>
-                <section id="admin">
-                    <h2>Benutzerverwaltung und Support</h2>
-                    <ul class="simple-list">
+                <section class="chapter" id="dashboard">
+                    <h2>Startseite und Kennzahlen</h2>
+                    <p>
+                        Die <strong>Startseite</strong> fasst die Betriebssaison
+                        zusammen und zeigt die heutigen Einträge. Gruppenleiter
+                        und höhere Rollen haben Zugriff. Fahrer werden zu den
+                        Berichten weitergeleitet.
+                    </p>
+                    <h3>Saisonkennzahlen lesen</h3>
+                    <ol>
                         <li>
-                            Legen Sie unter
-                            <strong>Benutzer</strong> Mitarbeiterkonten
-                            entsprechend Ihren Berechtigungen an. Speichern Sie
-                            die Änderungen und bitten Sie die Mitarbeitenden,
-                            sich mit ihren zugewiesenen Zugangsdaten anzumelden.
+                            Prüfen Sie den angezeigten Saisonzeitraum vor jedem
+                            Vergleich. Start und Ende unter
+                            <strong>Saisons</strong> bestimmen den Zeitraum der
+                            Betriebssaison.
                         </li>
                         <li>
-                            Unter <strong>Protokolle</strong> finden Sie
-                            aufgezeichnete Ereignisse. Ihre Rolle bestimmt die
-                            verfügbaren Aktionen.
+                            Lesen Sie die Anzahl der Buchungen, der
+                            unterschiedlichen Kunden und der geplanten Termine
+                            sowie Gesamtbetrag, gezahlte und offene Beträge ab.
+                            Eine Mehrtagesbuchung zählt bei Buchungszahl und
+                            Beträgen einmal.
                         </li>
                         <li>
-                            Melden Sie über <strong>Support</strong> ein Problem
-                            und verfolgen Sie den Bearbeitungsstand. Nennen Sie
-                            den betroffenen Bereich und die Schritte bis zum
-                            Problem. Fügen Sie Dateien bei, wenn sie für die
-                            Untersuchung erforderlich sind.
+                            Prüfen Sie die Aufschlüsselung nach Leistungen. Dort
+                            sehen Sie, für welche Aktivitäten es Termine und
+                            Buchungen gibt. Die Kundenzeile zeigt die Zahl
+                            aktiver Kunden im Verhältnis zu allen Kunden.
                         </li>
-                    </ul>
+                    </ol>
+                    <h3>Den aktuellen Tag planen</h3>
+                    <ol>
+                        <li>
+                            Nutzen Sie die heutigen Einträge, um Kunden,
+                            Leistungen, Haltestellen und Kontakte zu prüfen. Bei
+                            mehr als 100 Einträgen rufen Sie unter
+                            <strong>Berichte</strong> den vollständigen Zeitraum
+                            ab.
+                        </li>
+                        <li>
+                            Öffnen Sie
+                            <strong>Leistungen → Verfügbarkeit</strong> für die
+                            Aktivität und den Tag, bevor Sie einen Platz
+                            zusagen. Den Einzelbetrag prüfen Sie in den Kunden-
+                            oder Buchungsdaten.
+                        </li>
+                    </ol>
+                    <div class="callout">
+                        <strong>Erwartetes Ergebnis</strong>
+                        <p>
+                            Prüfen Sie die aktualisierten Zahlen nach einer
+                            Buchung oder Zahlung auf der Startseite.
+                            Unterscheiden Sie bei Auskünften zwischen der Zahl
+                            der Termine, Buchungen und Kunden.
+                        </p>
+                    </div>
+                    <div class="callout callout--rule">
+                        <strong>Geschäftsregel</strong>
+                        <p>
+                            Die Kennzahlen berücksichtigen historische
+                            Buchungen. Für Kapazitätsentscheidungen verwenden
+                            Sie belegte und freie Plätze in der Tagesansicht.
+                        </p>
+                    </div>
+                    <figure>
+                        <img
+                            src="/img/manual/de/dashboard.jpg"
+                            alt="Bildschirm aus der synthetischen Demo"
+                            width="1440"
+                            height="900"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-dashboard"
+                                >Saisonkennzahlen, die heutige Abholliste und
+                                die Aufschlüsselung nach Leistungen mit
+                                Demodaten.</span
+                            >
+                            <a
+                                id="view-dashboard"
+                                href="/img/manual/de/dashboard.jpg"
+                                aria-labelledby="view-dashboard caption-dashboard"
+                                >Bildschirmfoto in voller Größe öffnen</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <div class="chapter-footer">
+                        <a href="#contents">Inhaltsverzeichnis</a>
+                        <a href="/dashboard?lang=de">Diesen Bereich öffnen</a>
+                    </div>
                 </section>
-                <section id="troubleshoot">
-                    <h2>Problemlösung</h2>
-                    <details>
+                <section class="chapter" id="customers">
+                    <h2>Kunden</h2>
+                    <p>
+                        Führen Sie pro Kunde einen Datensatz. Kontakt- und
+                        Geburtsdaten helfen bei der Buchung, der Beförderung und
+                        der Berichterstellung.
+                    </p>
+                    <h3>Kunden suchen und prüfen</h3>
+                    <ol>
+                        <li>
+                            Öffnen Sie <strong>Kunden</strong>. Geben Sie eine
+                            ID, einen Namen oder Namensteil, eine E-Mail-Adresse
+                            oder die Telefonnummer der Erziehungsberechtigten
+                            ein und wenden Sie den Filter an.
+                        </li>
+                        <li>
+                            Öffnen Sie die Detailansicht der passenden Zeile.
+                            Prüfen Sie Name, Geburtsdatum, Kontaktdaten und
+                            vorhandene Buchungen.
+                        </li>
+                        <li>
+                            Vergleichen Sie bei mehreren Treffern das
+                            Geburtsdatum und den Kontakt der
+                            Erziehungsberechtigten. Setzen Sie den Filter
+                            zurück, um alle Kunden zu sehen. Die Trefferzahl
+                            gilt für alle passenden Kunden. Die Zahl aktiver
+                            Kunden gilt für die aktuelle Seite.
+                        </li>
+                    </ol>
+                    <h3>Kunden anlegen oder ändern</h3>
+                    <ol>
+                        <li>
+                            Wählen Sie als Manager oder mit höherer Rolle
+                            <strong>Kunden hinzufügen</strong>. Bei einem
+                            bestehenden Eintrag öffnen Sie die
+                            Bearbeitungsaktion der Zeile.
+                        </li>
+                        <li>
+                            Tragen Sie Vor- und Nachnamen ein. Nutzen Sie bei
+                            Bedarf das separate Namensfeld. Geben Sie das
+                            Geburtsdatum als TT.MM.JJJJ ein und prüfen Sie
+                            E-Mail und Telefonnummer.
+                        </li>
+                        <li>
+                            Setzen Sie den Aktiv-Status und speichern Sie.
+                            Suchen Sie den Eintrag erneut und prüfen Sie
+                            Geburtsdatum und Kontaktdaten, bevor Sie zur Buchung
+                            wechseln.
+                        </li>
+                    </ol>
+                    <div class="callout">
+                        <strong>Erwartetes Ergebnis</strong>
+                        <p>
+                            Bei vorhandenen Buchungen können Sie Termine und
+                            offene Beträge in der Kundendetailansicht und im
+                            Buchungsdatensatz prüfen.
+                        </p>
+                    </div>
+                    <div class="callout callout--rule">
+                        <strong>Geschäftsregel</strong>
+                        <p>
+                            Unter <strong>Offene Gebühren</strong> sehen Sie
+                            ausstehende Beträge. Gruppenleiter können die Liste
+                            einsehen. Zum Erfassen von Zahlungen ist mindestens
+                            die Rolle Manager erforderlich.
+                        </p>
+                    </div>
+                    <figure>
+                        <img
+                            src="/img/manual/de/customers.jpg"
+                            alt="Bildschirm aus der synthetischen Demo"
+                            width="1440"
+                            height="900"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-customers"
+                                >Das Formular zum Hinzufügen von Kunden und die
+                                Kundenliste mit synthetischen
+                                Kontaktdaten.</span
+                            >
+                            <a
+                                id="view-customers"
+                                href="/img/manual/de/customers.jpg"
+                                aria-labelledby="view-customers caption-customers"
+                                >Bildschirmfoto in voller Größe öffnen</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <div class="chapter-footer">
+                        <a href="#contents">Inhaltsverzeichnis</a>
+                        <a href="/crm/customers?lang=de"
+                            >Diesen Bereich öffnen</a
+                        >
+                    </div>
+                </section>
+                <section class="chapter" id="modules">
+                    <h2>Leistungen und Leistungssaisons</h2>
+                    <p>
+                        Die Leistungsübersicht zeigt jede konfigurierte
+                        Leistungssaison als eigenen Eintrag. Dieselbe Leistung
+                        kann in mehreren Zeiträumen mit unterschiedlichen
+                        Kapazitäten erscheinen.
+                    </p>
+                    <h3>Passenden Leistungszeitraum finden</h3>
+                    <ol>
+                        <li>
+                            Suchen Sie nach Leistungs- oder Saisonname.
+                            Alternativ wählen Sie eine Leistung und ein Datum in
+                            ihrem Zeitraum aus.
+                        </li>
+                        <li>
+                            Filtern und sortieren Sie nach aktiven,
+                            bevorstehenden und abgelaufenen Zeiträumen. Bei
+                            einer Leistung ohne Planung ist noch keine Saison
+                            hinterlegt.
+                        </li>
+                        <li>
+                            Prüfen Sie Zeitraum, Tageskapazität und
+                            Preisstaffeln des Eintrags. Öffnen Sie
+                            <strong>Verfügbarkeit</strong> für einen bestimmten
+                            Tag oder <strong>Berichte</strong> für die Saison.
+                        </li>
+                    </ol>
+                    <h3>Leistungen und Preise pflegen</h3>
+                    <ol>
+                        <li>
+                            Nutzen Sie als Manager oder mit höherer Rolle
+                            <strong>Leistung hinzufügen</strong>, sofern
+                            verfügbar, oder bearbeiten Sie die Leistung im
+                            Katalog. Pflegen Sie Namen und Übersetzungen. Prüfen
+                            Sie Kapazität und Aktiv-Status.
+                        </li>
+                        <li>
+                            Prüfen Sie in den Leistungseinstellungen die Preise
+                            je Anzahl an Tagen. Verwenden Sie die Staffel für
+                            die vereinbarte Dauer. Klären Sie die Meldung
+                            <strong>Kein Preis hinterlegt</strong>, bevor Sie
+                            einen Standardpreis zusagen.
+                        </li>
+                        <li>
+                            Öffnen Sie die Zeitplanung der passenden Leistung
+                            über die Saisonaktionen. Stimmen Sie Katalog,
+                            geplante Kapazität und Saisonvorgaben aufeinander
+                            ab.
+                        </li>
+                    </ol>
+                    <div class="callout">
+                        <strong>Erwartetes Ergebnis</strong>
+                        <p>
+                            Eine Leistung lässt sich in mehreren Zeiträumen
+                            verwenden. Eine neue Saison für eine bestehende
+                            Leistung behält die Zuordnung zu Kalender,
+                            Haltestellen und Berichten.
+                        </p>
+                    </div>
+                    <div class="callout callout--rule">
+                        <strong>Geschäftsregel</strong>
+                        <p>
+                            Der Datumsfilter findet Zeiträume, die das Datum
+                            einschließen. Ob der konkrete Tag geplant ist, sehen
+                            Sie in der Tagesverfügbarkeit.
+                        </p>
+                    </div>
+                    <figure>
+                        <img
+                            src="/img/manual/de/services.jpg"
+                            alt="Bildschirm aus der synthetischen Demo"
+                            width="1440"
+                            height="900"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-services"
+                                >Leistungssaisons mit Leistungsnamen,
+                                Zeiträumen, Preisen, Kapazitäten und
+                                Statusfiltern.</span
+                            >
+                            <a
+                                id="view-services"
+                                href="/img/manual/de/services.jpg"
+                                aria-labelledby="view-services caption-services"
+                                >Bildschirmfoto in voller Größe öffnen</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <div class="chapter-footer">
+                        <a href="#contents">Inhaltsverzeichnis</a>
+                        <a href="/crm/services?lang=de"
+                            >Diesen Bereich öffnen</a
+                        >
+                    </div>
+                </section>
+                <section class="chapter" id="availability">
+                    <h2>Tagesverfügbarkeit und Kapazität</h2>
+                    <p>
+                        Die Leistungssaison gibt die Tageskapazität vor. Aktive
+                        Buchungen belegen Plätze am jeweiligen Termin. Eine
+                        Stornierung gibt die Plätze frei und erhält den
+                        Buchungsverlauf.
+                    </p>
+                    <h3>Termin und Buchungen prüfen</h3>
+                    <ol>
+                        <li>
+                            Suchen Sie unter <strong>Leistungen</strong> den
+                            passenden Eintrag und öffnen Sie
+                            <strong>Verfügbarkeit</strong>.
+                        </li>
+                        <li>
+                            Wählen Sie das gewünschte Datum aus oder prüfen Sie
+                            alle geplanten Tage. Lesen Sie in der passenden
+                            Zeile die belegten und freien Plätze ab.
+                        </li>
+                        <li>
+                            Öffnen Sie die Buchungsliste des Tages für aktive
+                            und stornierte Buchungen. Über die Berichtsaktion
+                            öffnen Sie die Angaben für den Transport oder andere
+                            Aufgaben an diesem Tag.
+                        </li>
+                    </ol>
+                    <h3>Leistungssaison anlegen oder bearbeiten</h3>
+                    <ol>
+                        <li>
+                            Öffnen Sie als Manager oder mit höherer Rolle die
+                            Funktion zum Anlegen oder Bearbeiten der Saison.
+                            Wählen Sie gegebenenfalls die Leistung, tragen Sie
+                            Saisonname und Tageskapazität ein und klicken Sie
+                            die vorgesehenen Termine an.
+                        </li>
+                        <li>
+                            Prüfen Sie das erste und letzte Datum sowie alle
+                            ausgewählten Tage. Zeiträume derselben Leistung
+                            müssen getrennt bleiben, auch wenn einzelne Tage
+                            dazwischen unbeplant sind.
+                        </li>
+                        <li>
+                            Speichern Sie und öffnen Sie
+                            <strong>Verfügbarkeit</strong> erneut. Kontrollieren
+                            Sie die Termine und Kapazitäten, bevor Sie das Team
+                            informieren.
+                        </li>
+                    </ol>
+                    <div class="callout">
+                        <strong>Erwartetes Ergebnis</strong>
+                        <p>
+                            Im Beispiel bleiben bei zwölf Plätzen und drei
+                            aktiven Buchungen neun Plätze frei. Eine neue
+                            Buchung für diesen und einen weiteren Tag verringert
+                            die freien Plätze an beiden Tagen jeweils um eins.
+                            Prüfen Sie beide Tage nach dem Speichern.
+                        </p>
+                    </div>
+                    <div class="callout callout--rule">
+                        <strong>Geschäftsregel</strong>
+                        <p>
+                            Behalten Sie Termine mit Buchungshistorie bei. Die
+                            Anwendung weist das Entfernen verbundener Tage und
+                            eine Kapazität unter der aktiven Belegung zurück.
+                            Beim Speichern einer Buchung wird die Verfügbarkeit
+                            erneut geprüft.
+                        </p>
+                    </div>
+                    <figure>
+                        <img
+                            src="/img/manual/de/availability.jpg"
+                            alt="Bildschirm aus der synthetischen Demo"
+                            width="560"
+                            height="370"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-availability"
+                                >Tageskapazität und Buchungen für einen
+                                ausgewählten Skischultermin.</span
+                            >
+                            <a
+                                id="view-availability"
+                                href="/img/manual/de/availability.jpg"
+                                aria-labelledby="view-availability caption-availability"
+                                >Bildschirmfoto in voller Größe öffnen</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <div class="chapter-footer">
+                        <a href="#contents">Inhaltsverzeichnis</a>
+                        <a href="/crm/services?lang=de"
+                            >Diesen Bereich öffnen</a
+                        >
+                    </div>
+                </section>
+                <section class="chapter" id="seasons">
+                    <h2>Saisonarchiv und jährliche Vorgaben</h2>
+                    <p>
+                        Das Archiv fasst die Leistungssaisons und ihre
+                        historischen Buchungen zusammen. Die jährlichen
+                        Saisonvorgaben bestimmen den wiederkehrenden
+                        Betriebszeitraum auf der Startseite.
+                    </p>
+                    <h3>Zeitraum prüfen</h3>
+                    <ol>
+                        <li>
+                            Öffnen Sie <strong>Saisons</strong> und wählen Sie
+                            den aktuellen oder früheren Zeitraum. Prüfen Sie
+                            Leistung, Daten und Kennzahlen.
+                        </li>
+                        <li>
+                            Öffnen Sie die zugehörigen Buchungen oder Berichte,
+                            sofern diese angeboten werden. Verwenden Sie für
+                            Vergleiche dieselbe Leistung und denselben Zeitraum.
+                        </li>
+                        <li>
+                            Heutige freie Plätze sehen Sie in
+                            <strong>Leistungen → Verfügbarkeit</strong> bei der
+                            passenden Leistung.
+                        </li>
+                    </ol>
+                    <h3>Neue Saison planen</h3>
+                    <ol>
+                        <li>
+                            Öffnen Sie als Manager oder mit höherer Rolle
+                            <strong>Saisons</strong> und wählen Sie die
+                            Registerkarte für Leistungen. Geben Sie unter
+                            <strong>Standardzeitraum für neue Saisons</strong>
+                            Tag und Monat ein, zum Beispiel 01-09. Wählen Sie
+                            die Leistung für
+                            <strong>Saison anlegen</strong> oder bearbeiten Sie
+                            die Daten einer ausgewählten Saison.
+                        </li>
+                        <li>
+                            Stimmen Sie geänderte Vorgaben mit dem Team ab. Sie
+                            beeinflussen den Betriebszeitraum. Planen Sie die
+                            passenden Zeiträume und Termine weiterhin je
+                            Leistung.
+                        </li>
+                        <li>
+                            Öffnen Sie die Leistungssaison nach dem Speichern
+                            erneut. Prüfen Sie den sichtbaren Zeitraum und die
+                            Kapazität, bevor Sie Kunden einplanen.
+                        </li>
+                    </ol>
+                    <div class="callout">
+                        <strong>Erwartetes Ergebnis</strong>
+                        <p>
+                            Nutzen Sie die Saisonübersicht für historische
+                            Angaben und die Tagesansicht für freie Plätze.
+                        </p>
+                    </div>
+                    <figure>
+                        <img
+                            src="/img/manual/de/seasons.jpg"
+                            alt="Bildschirm aus der synthetischen Demo"
+                            width="1440"
+                            height="900"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-seasons"
+                                >Das Saisonarchiv und die Einstellungen zur
+                                Betriebssaison.</span
+                            >
+                            <a
+                                id="view-seasons"
+                                href="/img/manual/de/seasons.jpg"
+                                aria-labelledby="view-seasons caption-seasons"
+                                >Bildschirmfoto in voller Größe öffnen</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <div class="chapter-footer">
+                        <a href="#contents">Inhaltsverzeichnis</a>
+                        <a href="/crm/seasons?lang=de">Diesen Bereich öffnen</a>
+                    </div>
+                </section>
+                <section class="chapter" id="locations">
+                    <h2>Abhol- und Rückbringhaltestellen</h2>
+                    <p>
+                        Gemeinsame Haltestellen stehen für jede Leistung zur
+                        Auswahl. Leistungsspezifische Haltestellen gehören zu
+                        der im Formular gewählten Leistung.
+                    </p>
+                    <h3>Haltestelle anlegen oder ändern</h3>
+                    <ol>
+                        <li>
+                            Öffnen Sie als Manager oder mit höherer Rolle
+                            <strong>Haltestellen</strong>. Wählen Sie
+                            <strong>Haltestelle hinzufügen</strong> oder
+                            bearbeiten Sie eine bestehende Strecke.
+                        </li>
+                        <li>
+                            Erfassen Sie die Namen für Abhol- und Rückbringort
+                            und die jeweiligen Uhrzeiten. Prüfen Sie
+                            Fahrtrichtung und beide Zeiten vor dem Speichern.
+                        </li>
+                        <li>
+                            Wählen Sie
+                            <strong>Gemeinsam (alle Leistungen)</strong> für
+                            einen gemeinsamen Punkt oder eine bestimmte Leistung
+                            für deren Haltestelle. Speichern Sie und prüfen Sie
+                            die passende Gruppe.
+                        </li>
+                    </ol>
+                    <h3>Buchungs- und Berichtsansicht prüfen</h3>
+                    <ol>
+                        <li>
+                            Öffnen Sie eine Buchung für die betreffende
+                            Leistung. Kontrollieren Sie, ob die Liste die
+                            erwarteten gemeinsamen und leistungsspezifischen
+                            Haltestellen enthält.
+                        </li>
+                        <li>
+                            Fehlt eine Haltestelle, prüfen Sie die gewählte
+                            Leistung und die Zuordnung des Punkts. Verwenden Sie
+                            den Bereich, in dem die Strecke angeboten werden
+                            soll.
+                        </li>
+                        <li>
+                            Erstellen Sie für eine Fahrt den Bericht für das
+                            passende Datum. Bestätigen Sie Haltestelle und
+                            Uhrzeit vor dem Druck oder Export.
+                        </li>
+                    </ol>
+                    <div class="callout">
+                        <strong>Erwartetes Ergebnis</strong>
+                        <p>
+                            Sobald es einen gemeinsamen Punkt gibt, wird er in
+                            der Hauptgruppe angezeigt. Ein leistungsspezifischer
+                            Punkt erscheint bei seiner Leistung.
+                        </p>
+                    </div>
+                    <figure>
+                        <img
+                            src="/img/manual/de/locations.jpg"
+                            alt="Bildschirm aus der synthetischen Demo"
+                            width="1440"
+                            height="900"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-locations"
+                                >Das Haltestellenformular mit Abhol- und
+                                Rückbringort, Uhrzeiten und
+                                Leistungszuordnung.</span
+                            >
+                            <a
+                                id="view-locations"
+                                href="/img/manual/de/locations.jpg"
+                                aria-labelledby="view-locations caption-locations"
+                                >Bildschirmfoto in voller Größe öffnen</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <div class="chapter-footer">
+                        <a href="#contents">Inhaltsverzeichnis</a>
+                        <a href="/crm/locations?lang=de"
+                            >Diesen Bereich öffnen</a
+                        >
+                    </div>
+                </section>
+                <section class="chapter" id="daily">
+                    <h2>Buchung anlegen</h2>
+                    <p>
+                        Halten Sie Kunde, Leistung, Termine, Abholhaltestelle
+                        und Zahlungsinformationen bereit. Den Buchungsbereich
+                        können Manager und höhere Rollen nutzen.
+                    </p>
+                    <h3>Kunden und Aktivität auswählen</h3>
+                    <ol>
+                        <li>
+                            Öffnen Sie <strong>Buchung</strong>. Suchen Sie
+                            bestehende Kunden anhand ihres Namens und wählen Sie
+                            den passenden Vorschlag. Prüfen Sie anschließend
+                            Kontakt und Geburtsdatum.
+                        </li>
+                        <li>
+                            Wählen Sie <strong>Neuer Kunde</strong>, wenn noch
+                            kein Kundendatensatz vorhanden ist. Wählen Sie die
+                            Buchungsart und <strong>Zum Formular</strong>.
+                            Erfassen Sie dort Namen und weitere Pflichtangaben.
+                        </li>
+                        <li>
+                            Wählen Sie die vereinbarte Leistung oder
+                            Zusatzaktivität. Für Leistungen mit Terminen wählen
+                            Sie den Abholpunkt aus den gemeinsamen oder
+                            leistungsspezifischen Haltestellen.
+                        </li>
+                    </ol>
+                    <h3>Termine, Optionen und Beträge erfassen</h3>
+                    <ol>
+                        <li>
+                            Klicken Sie im Kalender jeden gewünschten Tag an.
+                            Sie können mehrere Termine einer Leistung gemeinsam
+                            buchen. Prüfen Sie die Auswahl einschließlich Monat
+                            und Jahr.
+                        </li>
+                        <li>
+                            Ausgebuchte Tage und bereits für diesen Kunden und
+                            diese Leistung belegte Termine stehen nicht zur
+                            Verfügung. Ein zulässiger Tag kann beim Speichern in
+                            den Plan aufgenommen werden.
+                        </li>
+                        <li>
+                            Wählen Sie bei einer Skileistung die Könnensstufe.
+                            Ergänzen Sie bei Bedarf Karte, Ausrüstung und
+                            angeforderte Maße. Markieren Sie die
+                            Einverständniserklärung nur, wenn sie vorliegt.
+                            Hinterlegen Sie bei Bedarf eine Notiz.
+                        </li>
+                        <li>
+                            Prüfen Sie den Gesamtbetrag in EUR. Geben Sie eine
+                            Anzahlung nur ein, wenn sie tatsächlich eingegangen
+                            ist. Wählen Sie einmal
+                            <strong>Hinzufügen</strong> und warten Sie auf die
+                            Rückmeldung.
+                        </li>
+                    </ol>
+                    <div class="callout">
+                        <strong>Erwartetes Ergebnis</strong>
+                        <p>
+                            Die Buchung steht in der Buchungsliste. Die
+                            ausgewählten Kundendaten und die Tagesverfügbarkeit
+                            zeigen die gespeicherte Buchung. Jeder gewählte Tag
+                            belegt einen Platz.
+                        </p>
+                    </div>
+                    <div class="callout callout--rule">
+                        <strong>Geschäftsregel</strong>
+                        <p>
+                            Zusatzaktivitäten verwenden ihren eigenen Katalog.
+                            Mit einer Termindienstleistung wählen Sie die
+                            Tagestermine und reservieren mehrere Plätze an
+                            unterschiedlichen Tagen.
+                        </p>
+                    </div>
+                    <figure>
+                        <img
+                            src="/img/manual/de/booking.jpg"
+                            alt="Bildschirm aus der synthetischen Demo"
+                            width="1060"
+                            height="2112"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-booking"
+                                >Ein Demoformular für die Skischule mit zwei
+                                ausgewählten Terminen, Abholort und
+                                Skioptionen.</span
+                            >
+                            <a
+                                id="view-booking"
+                                href="/img/manual/de/booking.jpg"
+                                aria-labelledby="view-booking caption-booking"
+                                >Bildschirmfoto in voller Größe öffnen</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <div class="chapter-footer">
+                        <a href="#contents">Inhaltsverzeichnis</a>
+                        <a href="/crm/bookings?lang=de"
+                            >Diesen Bereich öffnen</a
+                        >
+                    </div>
+                </section>
+                <section class="chapter" id="records">
+                    <h2>Buchung bearbeiten oder stornieren</h2>
+                    <p>
+                        Öffnen Sie die Buchungsliste im Bereich
+                        <strong>Buchung</strong>. Nutzen Sie die Suche bei
+                        langen Listen. Prüfen Sie Leistung und Termine vor jeder
+                        Änderung.
+                    </p>
+                    <h3>Gespeicherte Buchung bearbeiten</h3>
+                    <ol>
+                        <li>
+                            Suchen Sie die Zeile zum richtigen Kunden. Wählen
+                            Sie <strong>Bearbeiten</strong> und prüfen Sie
+                            bisherige Termine, Abholort, Optionen und offene
+                            Beträge.
+                        </li>
+                        <li>
+                            Fügen Sie Tage per Kalender hinzu oder entfernen Sie
+                            sie. Kontrollieren Sie die vollständige
+                            Terminauswahl vor dem Speichern. Aktualisieren Sie
+                            die betroffenen Optionen und Notizen. Prüfen Sie den
+                            Gesamtbetrag.
+                        </li>
+                        <li>
+                            Lassen Sie die Zahlungsfelder bei einer gewöhnlichen
+                            Änderung unverändert. Für eine Korrektur prüfen Sie
+                            zuerst den aktuellen Stand und folgen Sie den
+                            <a href="#payments">Zahlungshinweisen</a>.
+                        </li>
+                        <li>
+                            Speichern Sie, öffnen Sie die Buchung erneut und
+                            vergleichen Sie die Termine mit der
+                            Tagesverfügbarkeit. Prüfen Sie hinzugefügte und
+                            entfernte Tage.
+                        </li>
+                    </ol>
+                    <h3>Buchung stornieren</h3>
+                    <ol>
+                        <li>
+                            Bestätigen Sie Kunde, Leistung, Termine und
+                            Zahlungsverlauf. Wählen Sie
+                            <strong>Buchung stornieren</strong> und bestätigen
+                            Sie die Abfrage.
+                        </li>
+                        <li>
+                            Prüfen Sie den Status und öffnen Sie
+                            <strong>Verfügbarkeit</strong> für einen zuvor
+                            gebuchten Tag. Der freigegebene Platz muss bei den
+                            freien Plätzen erscheinen.
+                        </li>
+                        <li>
+                            Prüfen Sie, dass die Buchung im Verlauf erhalten
+                            bleibt. Bearbeiten Sie mögliche Rückzahlungen
+                            separat nach den Regeln Ihrer Organisation.
+                        </li>
+                    </ol>
+                    <div class="callout callout--rule">
+                        <strong>Geschäftsregel</strong>
+                        <p>
+                            Eine Stornierung gibt Plätze frei und erhält Buchung
+                            und Zahlungsverlauf. Nutzen Sie die Bearbeitung,
+                            wenn sich nur ein Tag ändern soll.
+                        </p>
+                    </div>
+                    <figure>
+                        <img
+                            src="/img/manual/de/records.jpg"
+                            alt="Bildschirm aus der synthetischen Demo"
+                            width="1440"
+                            height="900"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-records"
+                                >Buchungsliste mit Terminen, Beträgen, Status
+                                sowie Bearbeiten- und Stornieren-Aktionen.</span
+                            >
+                            <a
+                                id="view-records"
+                                href="/img/manual/de/records.jpg"
+                                aria-labelledby="view-records caption-records"
+                                >Bildschirmfoto in voller Größe öffnen</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <div class="chapter-footer">
+                        <a href="#contents">Inhaltsverzeichnis</a>
+                        <a href="/crm/bookings?lang=de"
+                            >Diesen Bereich öffnen</a
+                        >
+                    </div>
+                </section>
+                <section class="chapter" id="payments">
+                    <h2>Zahlungen und offene Gebühren</h2>
+                    <p>
+                        Vergleichen Sie vereinbarten Gesamtbetrag, bereits
+                        bezahlten Betrag und offenen Saldo. Ein positiver Saldo
+                        steht noch aus. Teilzahlungen verringern den Saldo. Eine
+                        vollständig bezahlte Buchung hat keinen offenen Betrag.
+                    </p>
+                    <h3>Zahlung erfassen</h3>
+                    <ol>
+                        <li>
+                            Öffnen Sie
+                            <strong>Kunden → Offene Gebühren</strong> oder
+                            suchen Sie den Eintrag in der Buchungsliste.
+                            Vergleichen Sie Kunden, Leistung und Buchung, bevor
+                            Sie einen Betrag eintragen.
+                        </li>
+                        <li>
+                            Geben Sie die erhaltene Zahlung in EUR ein. Wählen
+                            Sie <strong>Zahlung buchen</strong> unter
+                            <strong>Offene Gebühren</strong> oder
+                            <strong>Buchung → Einträge</strong>. Warten Sie auf
+                            die Rückmeldung.
+                        </li>
+                        <li>
+                            Prüfen Sie den aktualisierten gezahlten und offenen
+                            Betrag. Eine vollständig bezahlte Buchung
+                            verschwindet aus den offenen Gebühren. Prüfen Sie
+                            nach einer Teilzahlung den neuen Saldo vor weiteren
+                            Zahlungen.
+                        </li>
+                    </ol>
+                    <h3>Zahlungskorrektur prüfen</h3>
+                    <ol>
+                        <li>
+                            Öffnen Sie für eine Korrektur den aktuellen
+                            Buchungsdatensatz. Ändern Sie den bezahlten Betrag
+                            im Buchungsformular nur bei einer zulässigen
+                            Korrektur.
+                        </li>
+                        <li>
+                            Vergleichen Sie Eingabe und vereinbarten
+                            Gesamtbetrag. Die Anwendung weist Überzahlungen und
+                            Änderungen mit veraltetem Zahlungsstand zurück.
+                        </li>
+                        <li>
+                            Öffnen Sie den Eintrag nach der Änderung erneut und
+                            bestätigen Sie den gespeicherten Saldo. Prüfen Sie
+                            den Restbetrag, bevor Sie erneut Geld anfordern.
+                        </li>
+                    </ol>
+                    <div class="callout">
+                        <strong>Erwartetes Ergebnis</strong>
+                        <p>
+                            Eine teilweise bezahlte Buchung bleibt unter offenen
+                            Gebühren sichtbar. Nach vollständiger Zahlung steht
+                            sie ohne offenen Betrag weiterhin im
+                            Buchungsverlauf.
+                        </p>
+                    </div>
+                    <div class="callout callout--rule">
+                        <strong>Geschäftsregel</strong>
+                        <p>
+                            Geben Sie den erhaltenen Betrag in EUR ein und
+                            nutzen Sie den angezeigten Saldo zum Abgleich.
+                        </p>
+                    </div>
+                    <figure>
+                        <img
+                            src="/img/manual/de/payments.jpg"
+                            alt="Bildschirm aus der synthetischen Demo"
+                            width="1440"
+                            height="900"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-payments"
+                                >Offene Gebühren mit Beispielsaldo und
+                                Eingabefeld für eine Zahlung.</span
+                            >
+                            <a
+                                id="view-payments"
+                                href="/img/manual/de/payments.jpg"
+                                aria-labelledby="view-payments caption-payments"
+                                >Bildschirmfoto in voller Größe öffnen</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <div class="chapter-footer">
+                        <a href="#contents">Inhaltsverzeichnis</a>
+                        <a href="/crm/customers?lang=de"
+                            >Diesen Bereich öffnen</a
+                        >
+                    </div>
+                </section>
+                <section class="chapter" id="equipment">
+                    <h2>Ausrüstung, Karten und Zusatzaktivitäten</h2>
+                    <p>
+                        Pflegen Sie zuerst die Kataloge. Wählen Sie dann die
+                        Einträge in der passenden Buchung. Stimmen Sie Zuordnung
+                        und Dauerpreise mit den Preisen ab, die das Personal
+                        nennt.
+                    </p>
+                    <h3>Ausrüstung und Karten pflegen</h3>
+                    <ol>
+                        <li>
+                            Öffnen Sie <strong>Ausrüstung</strong> für
+                            Leihartikel und <strong>Karten</strong> für Pässe.
+                            Legen Sie als Manager oder mit höherer Rolle einen
+                            Artikel an oder bearbeiten Sie ihn.
+                        </li>
+                        <li>
+                            Pflegen Sie Namen und verfügbare Übersetzungen.
+                            Verknüpfen Sie den Artikel mit der Leistung, in der
+                            er angeboten wird.
+                        </li>
+                        <li>
+                            Ergänzen Sie Preiszeilen für die vorgesehenen Dauern
+                            und tragen Sie die Beträge in EUR ein. Speichern Sie
+                            und prüfen Sie Leistung und Preise in der Liste.
+                        </li>
+                        <li>
+                            Aktivieren Sie bei einer Skibuchung die Karten- oder
+                            Ausrüstungsoption und wählen Sie den passenden
+                            Artikel. Erfassen Sie benötigte Maße und prüfen Sie
+                            den Gesamtbetrag.
+                        </li>
+                    </ol>
+                    <h3>Zusatzaktivitäten pflegen</h3>
+                    <ol>
+                        <li>
+                            Öffnen Sie <strong>Bonus</strong>, um eine
+                            zusätzliche Aktivität anzulegen oder zu bearbeiten.
+                            Prüfen Sie Titel, Gültigkeitsdaten, Strecke oder
+                            Treffpunkt, Beschreibung sowie Grund- und
+                            Dauerpreise.
+                        </li>
+                        <li>
+                            Speichern Sie und öffnen Sie den Buchungsablauf für
+                            eine Zusatzaktivität. Prüfen Sie Angebot und Betrag
+                            vor dem Speichern der Buchung.
+                        </li>
+                        <li>
+                            Prüfen Sie Anmeldungen in der Liste der
+                            Zusatzaktivitäten und in der Buchung. Nutzen Sie
+                            datierte Leistungsberichte für Fahrten zu geplanten
+                            Leistungsterminen.
+                        </li>
+                    </ol>
+                    <div class="callout callout--rule">
+                        <strong>Geschäftsregel</strong>
+                        <p>
+                            Fehlt ein Artikel, prüfen Sie die gewählte Leistung
+                            und die Zuordnung im Katalog. Prüfen Sie vorhandene
+                            Buchungen, bevor Sie einen Artikel entfernen.
+                        </p>
+                    </div>
+                    <figure>
+                        <img
+                            src="/img/manual/de/equipment.jpg"
+                            alt="Bildschirm aus der synthetischen Demo"
+                            width="1440"
+                            height="900"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-equipment"
+                                >Ein synthetischer Leihartikel mit zugewiesener
+                                Leistung und Preisstaffeln.</span
+                            >
+                            <a
+                                id="view-equipment"
+                                href="/img/manual/de/equipment.jpg"
+                                aria-labelledby="view-equipment caption-equipment"
+                                >Bildschirmfoto in voller Größe öffnen</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <div class="chapter-footer">
+                        <a href="#contents">Inhaltsverzeichnis</a>
+                        <a href="/crm/equips?lang=de">Diesen Bereich öffnen</a>
+                    </div>
+                </section>
+                <section class="chapter" id="reports">
+                    <h2>
+                        Berichte erstellen, filtern, drucken und exportieren
+                    </h2>
+                    <p>
+                        Berichte zeigen Buchungen zur gewählten Leistung und zum
+                        gewählten Zeitraum. Fahrer gelangen direkt zu diesem
+                        Modul und sehen die für ihre Rolle freigegebenen
+                        Transportangaben.
+                    </p>
+                    <h3>Bericht erstellen und prüfen</h3>
+                    <ol>
+                        <li>
+                            Wählen Sie eine Leistung oder
+                            <strong>Alle Leistungen</strong>. Tragen Sie Start
+                            und Ende ein und wählen Sie
+                            <strong>Erstellen</strong>. Für einen einzelnen Tag
+                            verwenden Sie dasselbe Start- und Enddatum.
+                        </li>
+                        <li>
+                            Prüfen Sie Leistung und Daten im erzeugten
+                            Berichtskopf. Kontrollieren Sie Kundenzeilen,
+                            Abholzeiten und die für Ihre Rolle sichtbaren
+                            Beträge.
+                        </li>
+                        <li>
+                            Nutzen Sie die Spaltenfilter für die sichtbare
+                            Seite. Ist der Bericht leer, entfernen Sie diese
+                            Filter und bestätigen Sie den erzeugten Zeitraum,
+                            bevor Sie die Leistung ändern.
+                        </li>
+                    </ol>
+                    <h3>Gewünschte Zeilen ausgeben</h3>
+                    <ol>
+                        <li>
+                            Verwenden Sie <strong>CSV (Seite)</strong> oder
+                            <strong>Drucken (Seite)</strong> für die aktuelle
+                            Seite einschließlich ihrer Filter. Prüfen Sie Datei
+                            oder Druckvorschau vor der Weitergabe.
+                        </li>
+                        <li>
+                            Verwenden Sie <strong>CSV (Alle)</strong> oder
+                            <strong>Drucken (Alle)</strong> für alle Seiten der
+                            erstellten Leistungsauswahl und Zeitspanne.
+                            Erstellen Sie den Bericht nach einer Änderung der
+                            Eingabefelder erneut.
+                        </li>
+                        <li>
+                            Prüfen Sie den Empfängerkreis. Fahrer sehen
+                            freigegebene Transportfelder wie Haltestelle, Datum
+                            und Kontakt. Finanzangaben und weitere geschützte
+                            Kundenfelder richten sich nach der Rolle.
+                        </li>
+                    </ol>
+                    <div class="callout">
+                        <strong>Erwartetes Ergebnis</strong>
+                        <p>
+                            Neue Angaben im Formular ändern den Berichtskopf und
+                            den Exportzeitraum erst, wenn Sie erneut
+                            <strong>Erstellen</strong> wählen.
+                        </p>
+                    </div>
+                    <div class="callout callout--rule">
+                        <strong>Geschäftsregel</strong>
+                        <p>
+                            Maßgeblich für den vollständigen Export sind
+                            Leistung und Daten des erstellten Berichts.
+                            Spaltenfilter wirken auf die aktuelle Seite.
+                        </p>
+                    </div>
+                    <figure>
+                        <img
+                            src="/img/manual/de/reports.jpg"
+                            alt="Bildschirm aus der synthetischen Demo"
+                            width="1440"
+                            height="900"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-reports"
+                                >Ein erstellter Bericht mit Leistung,
+                                Datumsbereich, Seitensteuerung, CSV- und
+                                Druckaktionen.</span
+                            >
+                            <a
+                                id="view-reports"
+                                href="/img/manual/de/reports.jpg"
+                                aria-labelledby="view-reports caption-reports"
+                                >Bildschirmfoto in voller Größe öffnen</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <figure>
+                        <img
+                            src="/img/manual/de/driver.jpg"
+                            alt="Bildschirm aus der synthetischen Demo"
+                            width="1440"
+                            height="900"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-driver"
+                                >Berichtsansicht eines Fahrers mit synthetischen
+                                Transportdaten.</span
+                            >
+                            <a
+                                id="view-driver"
+                                href="/img/manual/de/driver.jpg"
+                                aria-labelledby="view-driver caption-driver"
+                                >Bildschirmfoto in voller Größe öffnen</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <div class="chapter-footer">
+                        <a href="#contents">Inhaltsverzeichnis</a>
+                        <a href="/crm/reports?lang=de">Diesen Bereich öffnen</a>
+                    </div>
+                </section>
+                <section class="chapter" id="admin">
+                    <h2>Benutzerkonten und Aktivitätsprotokolle</h2>
+                    <p>
+                        Pflegen Sie Teamzugänge unter <strong>Benutzer</strong>.
+                        Die sichtbaren Konten und verfügbaren Rollen
+                        unterscheiden sich zwischen Administrator und
+                        Super-Administrator.
+                    </p>
+                    <h3>Konto hinzufügen oder ändern</h3>
+                    <ol>
+                        <li>
+                            Öffnen Sie <strong>Benutzer</strong>. Suchen Sie
+                            nach der Person und prüfen Sie, ob bereits ein Konto
+                            existiert.
+                        </li>
+                        <li>
+                            Wählen Sie <strong>Benutzer hinzufügen</strong> oder
+                            öffnen Sie die Bearbeitung. Tragen Sie Kontodaten
+                            ein, wählen Sie eine zulässige Rolle und setzen Sie
+                            den Aktiv-Status. Verwenden Sie die Passwortfelder
+                            beim Festlegen oder Ändern eines Passworts.
+                        </li>
+                        <li>
+                            Speichern Sie einmal. Prüfen Sie die Zeile und die
+                            Rolle. Übermitteln Sie Zugangsdaten über einen
+                            sicheren Kanal und bitten Sie die Person, sich
+                            anzumelden.
+                        </li>
+                        <li>
+                            Verwenden Sie zum Entziehen des Zugangs die
+                            zulässigen Kontofunktionen. Änderungen von Passwort,
+                            Rolle oder Aktiv-Status können laufende Zugänge
+                            beenden. Prüfen Sie vor einem Rollenwechsel die
+                            Aufgaben der Person.
+                        </li>
+                    </ol>
+                    <h3>Aktivitätsprotokolle prüfen</h3>
+                    <ol>
+                        <li>
+                            Öffnen Sie <strong>Protokolle</strong>, sofern Ihre
+                            Rolle Zugriff hat. Prüfen Sie, wann eine Aktion
+                            erfolgte und welches Konto oder welche Seite
+                            beteiligt war.
+                        </li>
+                        <li>
+                            Prüfen Sie bei fehlenden Einträgen Ihre
+                            Berechtigung. Administratoren sehen in dieser
+                            Ansicht ihre eigenen Einträge nicht.
+                            Super-Administratoren können alle Einträge prüfen.
+                        </li>
+                        <li>
+                            Beachten Sie beim Löschen von Protokolleinträgen die
+                            Regeln Ihrer Organisation. Prüfen Sie den Umfang bei
+                            Auswahl- oder Sammellöschung.
+                        </li>
+                    </ol>
+                    <div class="callout callout--rule">
+                        <strong>Geschäftsregel</strong>
+                        <p>
+                            Die Kontorichtlinie begrenzt die Rollenvergabe und
+                            Kontoaktionen von Administratoren. Höhere Rollen wie
+                            Super-Administrator liegen außerhalb ihrer
+                            Zuständigkeit. Die öffentliche Registrierung von
+                            Mitarbeitenden ist deaktiviert.
+                        </p>
+                    </div>
+                    <figure>
+                        <img
+                            src="/img/manual/de/users.jpg"
+                            alt="Bildschirm aus der synthetischen Demo"
+                            width="1440"
+                            height="900"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-users"
+                                >Die synthetische Benutzerliste mit Rollen und
+                                verfügbaren Aktionen.</span
+                            >
+                            <a
+                                id="view-users"
+                                href="/img/manual/de/users.jpg"
+                                aria-labelledby="view-users caption-users"
+                                >Bildschirmfoto in voller Größe öffnen</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <div class="chapter-footer">
+                        <a href="#contents">Inhaltsverzeichnis</a>
+                        <a href="/crm/users?lang=de">Diesen Bereich öffnen</a>
+                    </div>
+                </section>
+                <section class="chapter" id="roles">
+                    <h2>Rollen und Berechtigungen</h2>
+                    <p>
+                        Prüfen Sie Ihre Rolle unter <strong>Profil</strong>.
+                        Nutzen Sie die angebotenen Funktionen und wenden Sie
+                        sich für andere Aufgaben an berechtigte Mitarbeitende.
+                    </p>
+                    <h3>Betriebliche Rollen</h3>
+                    <ol>
+                        <li>
+                            <strong>Fahrer</strong> öffnen Berichte für Fahrten.
+                            Nutzen Sie die freigegebenen Angaben zu Haltestelle,
+                            Leistung, Datum und Kontakt.
+                        </li>
+                        <li>
+                            <strong>Gruppenleiter</strong> sehen Startseite,
+                            Kunden, offene Gebühren, Leistungen, Saisons und
+                            Tagesbuchungen. Ihnen stehen Support-Funktionen im
+                            erlaubten Umfang offen. Kundendaten ändern, buchen
+                            und Zahlungen erfassen dürfen Manager und höhere
+                            Rollen.
+                        </li>
+                        <li>
+                            <strong>Manager</strong> pflegen Kunden, erstellen,
+                            ändern und stornieren Buchungen, erfassen Zahlungen,
+                            pflegen Leistungsplan und Kataloge und erstellen
+                            Berichte.
+                        </li>
+                    </ol>
+                    <h3>Verwaltungsrollen</h3>
+                    <ol>
+                        <li>
+                            <strong>Administratoren</strong> haben zusätzlich
+                            Zugriff auf zulässige Benutzerkonten und Protokolle.
+                            Kontoaktionen sind auf die Konten und Rollen in
+                            ihrer Zuständigkeit begrenzt.
+                        </li>
+                        <li>
+                            <strong>Super-Administratoren</strong> haben die
+                            höchste Benutzerebene und bei entsprechender
+                            Konfiguration Zugriff auf Horizon zur Überwachung
+                            von Warteschlangen. Konto- und Systemregeln gelten
+                            weiterhin.
+                        </li>
+                    </ol>
+                    <div class="callout">
+                        <strong>Erwartetes Ergebnis</strong>
+                        <p>
+                            Ein Fahrer gelangt nach der Anmeldung zu Berichte.
+                            Ein Gruppenleiter darf den Kundeneintrag prüfen. Ein
+                            Manager kann ihn bearbeiten.
+                        </p>
+                    </div>
+                    <div class="callout callout--rule">
+                        <strong>Geschäftsregel</strong>
+                        <p>
+                            Fehlt eine Schreibaktion, prüfen Sie zuerst die
+                            Rolle im Profil. Weicht sie von der erwarteten Rolle
+                            ab, bitten Sie einen Administrator um Prüfung.
+                        </p>
+                    </div>
+                    <div class="chapter-footer">
+                        <a href="#contents">Inhaltsverzeichnis</a>
+                    </div>
+                </section>
+                <section class="chapter" id="issues">
+                    <h2>Probleme melden und verfolgen</h2>
+                    <p>
+                        Nutzen Sie <strong>Support</strong> für Probleme, die
+                        weiterverfolgt werden müssen. Beschreiben Sie das
+                        Symptom, den betroffenen Bereich und die Schritte zum
+                        Nachvollziehen.
+                    </p>
+                    <h3>Meldung erfassen</h3>
+                    <ol>
+                        <li>
+                            Wählen Sie unter
+                            <strong>Neue Meldung</strong> Modul, Art und
+                            Priorität. Erfassen Sie einen kurzen Titel und
+                            beschreiben Sie Aktion, erwartetes Ergebnis und
+                            beobachtetes Verhalten.
+                        </li>
+                        <li>
+                            Ergänzen Sie bei Bedarf die Leistung oder eine
+                            sichtbare Datensatz-ID. Geben Sie den Seitenpfad an,
+                            wenn er beim Auffinden hilft.
+                        </li>
+                        <li>
+                            Hängen Sie nur hilfreiche Dateien an. Entfernen Sie
+                            vertrauliche Daten und Zugangsdaten aus
+                            Bildschirmfotos. Senden Sie die Meldung ab und
+                            suchen Sie sie in der Liste.
+                        </li>
+                    </ol>
+                    <h3>Fortschritt verfolgen</h3>
+                    <ol>
+                        <li>
+                            Filtern Sie bei Bedarf nach Status oder Modul.
+                            Öffnen Sie die Meldung für Details und Kommentare.
+                        </li>
+                        <li>
+                            Informieren Sie das Team per Kommentar. Die Person,
+                            die den Eintrag erstellt hat, und
+                            Super-Administratoren können auch Status und
+                            Zuweisung ändern. Wählen Sie den passenden Status,
+                            etwa offen, in Bearbeitung oder gelöst, und prüfen
+                            Sie das gespeicherte Ergebnis.
+                        </li>
+                        <li>
+                            Kehren Sie zu <strong>Support</strong> zurück, um
+                            das Ergebnis zu prüfen. Dort stehen Fortschritt und
+                            Rückmeldungen zu den Meldungen.
+                        </li>
+                    </ol>
+                    <div class="callout">
+                        <strong>Erwartetes Ergebnis</strong>
+                        <p>
+                            Mit einer nachvollziehbaren Meldung kann eine andere
+                            Person den Fehler reproduzieren und die Bearbeitung
+                            verfolgen.
+                        </p>
+                    </div>
+                    <figure>
+                        <img
+                            src="/img/manual/de/issues.jpg"
+                            alt="Bildschirm aus der synthetischen Demo"
+                            width="1440"
+                            height="900"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-issues"
+                                >Das Formular für eine Supportmeldung mit Modul,
+                                Art, Priorität und Beschreibung.</span
+                            >
+                            <a
+                                id="view-issues"
+                                href="/img/manual/de/issues.jpg"
+                                aria-labelledby="view-issues caption-issues"
+                                >Bildschirmfoto in voller Größe öffnen</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <div class="chapter-footer">
+                        <a href="#contents">Inhaltsverzeichnis</a>
+                        <a href="/crm/issues?lang=de">Diesen Bereich öffnen</a>
+                    </div>
+                </section>
+                <section class="chapter" id="profile">
+                    <h2>Profil und Anwendungseinstellungen</h2>
+                    <p>
+                        Öffnen Sie <strong>Profil</strong> in der oberen Leiste
+                        oder im mobilen Menü. Prüfen Sie dort Ihre persönlichen
+                        Angaben und die Benutzerebene, bevor Sie
+                        Verwaltungsaktionen ausführen.
+                    </p>
+                    <h3>Profil oder Passwort ändern</h3>
+                    <ol>
+                        <li>
+                            Öffnen Sie <strong>Profil</strong> und prüfen Sie
+                            die bearbeitbaren Details. Speichern Sie Korrekturen
+                            und bestätigen Sie den angezeigten Namen und die
+                            E-Mail-Adresse.
+                        </li>
+                        <li>
+                            Öffnen Sie die Passworteinstellungen. Geben Sie das
+                            aktuelle Passwort und das neue Passwort mit
+                            Bestätigung ein. Speichern Sie und behandeln Sie das
+                            Passwort vertraulich.
+                        </li>
+                        <li>
+                            Wählen Sie, sofern verfügbar, unter
+                            <strong>Einstellungen → Darstellung</strong> Hell,
+                            Dunkel oder System. Die Systemoption kann das
+                            Erscheinungsbild des Geräts übernehmen.
+                        </li>
+                    </ol>
+                    <h3>Anmeldung absichern</h3>
+                    <ol>
+                        <li>
+                            Geben Sie im Profilbereich für Passkeys bei Bedarf
+                            einen Gerätenamen ein und wählen Sie
+                            <strong>Passkey hinzufügen</strong>. Bestätigen Sie
+                            gegebenenfalls das Passwort und folgen Sie der
+                            Browser- oder Geräteabfrage. Melden Sie sich später
+                            mit derselben Hostadresse an.
+                        </li>
+                        <li>
+                            Öffnen Sie für Zwei-Faktor-Codes die entsprechenden
+                            Kontoeinstellungen. Richten Sie die
+                            Authenticator-App ein und schließen Sie die
+                            Bestätigung ab. Bewahren Sie Wiederherstellungscodes
+                            sicher außerhalb gemeinsamer Notizen und
+                            Bildschirmfotos auf.
+                        </li>
+                        <li>
+                            Nutzen Sie bei verlorenem Zugang die angebotene
+                            Wiederherstellung oder wenden Sie sich an einen
+                            Administrator. Beschreiben Sie den fehlgeschlagenen
+                            Schritt ohne Zugangsdaten oder Codes.
+                        </li>
+                    </ol>
+                    <div class="callout callout--rule">
+                        <strong>Geschäftsregel</strong>
+                        <p>
+                            Browser, Betriebssystem und Anmeldeadresse
+                            beeinflussen die Verfügbarkeit von Passkeys.
+                            Verwenden Sie im Alltag dieselbe autorisierte
+                            Adresse.
+                        </p>
+                    </div>
+                    <figure>
+                        <img
+                            src="/img/manual/de/profile.jpg"
+                            alt="Bildschirm aus der synthetischen Demo"
+                            width="1440"
+                            height="900"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <figcaption>
+                            <span id="caption-profile"
+                                >Profileinstellungen mit Benutzerebene,
+                                bearbeitbaren Angaben und
+                                Passkey-Funktionen.</span
+                            >
+                            <a
+                                id="view-profile"
+                                href="/img/manual/de/profile.jpg"
+                                aria-labelledby="view-profile caption-profile"
+                                >Bildschirmfoto in voller Größe öffnen</a
+                            >
+                        </figcaption>
+                    </figure>
+                    <div class="chapter-footer">
+                        <a href="#contents">Inhaltsverzeichnis</a>
+                        <a href="/settings/profile?lang=de"
+                            >Diesen Bereich öffnen</a
+                        >
+                    </div>
+                </section>
+                <section class="chapter" id="checklist">
+                    <h2>Checklisten für Schichten und Planung</h2>
+                    <p>
+                        Führen Sie diese Prüfungen modulübergreifend durch,
+                        damit die nächste Schicht den aktuellen Stand übernehmen
+                        kann.
+                    </p>
+                    <h3>Vor Schichtbeginn oder Übergabe</h3>
+                    <ol>
+                        <li>
+                            Prüfen Sie die Startseite und erstellen Sie bei
+                            Bedarf den Bericht für heute. Bestätigen Sie
+                            Leistung, Termine, Abholzeiten und den berechtigten
+                            Empfängerkreis.
+                        </li>
+                        <li>
+                            Prüfen Sie unter
+                            <strong>Leistungen → Verfügbarkeit</strong> die
+                            geplanten Termine. Kontrollieren Sie in den
+                            Buchungen Notizen, Einverständniserklärungen,
+                            Ausrüstung und Karten.
+                        </li>
+                        <li>
+                            Erfassen Sie bestätigte Zahlungen und prüfen Sie
+                            offene Beträge. Melden Sie Probleme unter
+                            <strong>Support</strong>. Melden Sie sich zum
+                            Schichtende ab.
+                        </li>
+                    </ol>
+                    <h3>Wöchentlich oder vor einem Saisonwechsel</h3>
+                    <ol>
+                        <li>
+                            Prüfen Sie Leistungssaisons, geplante Tage,
+                            Tageskapazitäten, jährliche Vorgaben und frühere
+                            Buchungen im Archiv.
+                        </li>
+                        <li>
+                            Prüfen Sie Preise und Leistungszuordnungen für
+                            Karten, Ausrüstung und Zusatzaktivitäten. Suchen Sie
+                            bei gemeinsamen und leistungsspezifischen
+                            Haltestellen nach doppelten Einträgen und veralteten
+                            Zeiten.
+                        </li>
+                        <li>
+                            Prüfen Sie als Kontoverantwortlicher aktive Benutzer
+                            und Rollen. Entziehen Sie bei Bedarf den Zugang und
+                            beachten Sie die lokalen Regeln zur
+                            Protokollaufbewahrung.
+                        </li>
+                    </ol>
+                    <div class="callout">
+                        <strong>Erwartetes Ergebnis</strong>
+                        <p>
+                            Eine andere Person kann Berichte anhand von Leistung
+                            und Datum reproduzieren und über die Buchungsdaten
+                            die offenen Aufgaben finden.
+                        </p>
+                    </div>
+                    <div class="chapter-footer">
+                        <a href="#contents">Inhaltsverzeichnis</a>
+                    </div>
+                </section>
+                <section class="chapter" id="troubleshoot">
+                    <h2>Fehlerbehebung</h2>
+                    <p>
+                        Öffnen Sie den Punkt zum beobachteten Symptom. Prüfen
+                        Sie die Rückmeldung, bevor Sie eine Änderung erneut
+                        senden.
+                    </p>
+                    <details class="troubleshooting">
+                        <summary>Die Anmeldung funktioniert nicht</summary>
+                        <p>
+                            Prüfen Sie Adresse, Benutzername oder
+                            E-Mail-Adresse, Passwort und Feststelltaste.
+                            Bestätigen Sie gegebenenfalls den zweiten Faktor.
+                            Nutzen Sie die Passwortwiederherstellung oder wenden
+                            Sie sich an einen Administrator.
+                        </p>
+                    </details>
+                    <details class="troubleshooting">
                         <summary>
-                            Ein Buchungstermin oder Abholort ist nicht verfügbar
+                            Ein Buchungstag oder eine Haltestelle fehlt
                         </summary>
-                        Prüfen Sie Leistung und Termin unter Leistungen. Prüfen
-                        Sie danach die vorhandenen Buchungen des Kunden und die
-                        Zuordnung des Abholorts zur Leistung.
+                        <p>
+                            Prüfen Sie unter Leistungen → Verfügbarkeit die
+                            Leistung und Termine. Ausgebuchte Tage und aktive
+                            Buchungen desselben Kunden für dieselbe Leistung
+                            können die Auswahl sperren. Prüfen Sie bei einer
+                            fehlenden Haltestelle ihren Geltungsbereich und die
+                            gewählte Leistung.
+                        </p>
                     </details>
-                    <details>
+                    <details class="troubleshooting">
+                        <summary>
+                            Eine Leistungssaison überschneidet sich
+                        </summary>
+                        <p>
+                            Prüfen Sie alle Zeiträume derselben Leistung,
+                            einschließlich abgelaufener und bevorstehender
+                            Saisons. Wählen Sie einen getrennten Zeitraum und
+                            behalten Sie Tage mit bestehenden Buchungen bei.
+                        </p>
+                    </details>
+                    <details class="troubleshooting">
+                        <summary>
+                            Die Zahlung wird abgelehnt oder der Saldo ist falsch
+                        </summary>
+                        <p>
+                            Öffnen Sie den aktuellen Eintrag und prüfen Sie
+                            EUR-Betrag und Saldo. Zahlungen über dem offenen
+                            Betrag werden abgelehnt. Laden Sie bei einer
+                            veralteten Korrektur zuerst neu und prüfen Sie den
+                            aktuellen Stand.
+                        </p>
+                    </details>
+                    <details class="troubleshooting">
                         <summary>Ein Bericht ist leer</summary>
-                        Prüfen Sie die im Bericht verwendete Leistung und den
-                        Zeitraum. Entfernen Sie die Filter der sichtbaren Seite
-                        oder wählen Sie „Alle Leistungen“ und erstellen Sie den
-                        Bericht erneut.
+                        <p>
+                            Prüfen Sie Leistung und Datum im erstellten Bericht.
+                            Entfernen Sie Spaltenfilter der aktuellen Seite oder
+                            erstellen Sie den Bericht erneut für Alle Leistungen
+                            und den richtigen Zeitraum.
+                        </p>
                     </details>
-                    <details>
-                        <summary>Eine Aktion steht nicht zur Verfügung</summary>
-                        Prüfen Sie Ihre Rolle unter Profil. Bitten Sie eine
-                        berechtigte Person um Hilfe, wenn Ihre Rolle für diesen
-                        Bereich nur Lesezugriff hat.
+                    <details class="troubleshooting">
+                        <summary>Eine Aktion ist nicht verfügbar</summary>
+                        <p>
+                            Prüfen Sie die Benutzerebene im Profil. Bitten Sie
+                            bei Lesezugriff eine berechtigte Person um die
+                            Änderung. Fahrer nutzen das Berichtsmodul.
+                        </p>
                     </details>
+                    <details class="troubleshooting">
+                        <summary>
+                            Sprache oder Datum sehen ungewohnt aus
+                        </summary>
+                        <p>
+                            Wählen Sie die Sprache oben oder über die
+                            Handbuchlinks. Daten stehen im Format TT.MM.JJJJ.
+                            Fehlt eine Übersetzung im Leistungskatalog, kann der
+                            hinterlegte Name in einer anderen Sprache
+                            erscheinen.
+                        </p>
+                    </details>
+                    <details class="troubleshooting">
+                        <summary>
+                            Die Seite ist langsam oder das Speichern hängt
+                        </summary>
+                        <p>
+                            Warten Sie auf die Rückmeldung der laufenden
+                            Anfrage. Öffnen Sie danach die passende Liste, bevor
+                            Sie erneut speichern. Melden Sie ein fortbestehendes
+                            Problem mit Modul und Schritten im Support.
+                        </p>
+                    </details>
+                    <div class="chapter-footer">
+                        <a href="#contents">Inhaltsverzeichnis</a>
+                    </div>
                 </section>
             </main>
         </div>
