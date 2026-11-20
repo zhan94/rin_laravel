@@ -38,3 +38,15 @@ yarn-error.log
 **/demo-credentials.txt
 
 /.psysh
+/.agents/
+/.aws/
+/.codex/
+/backups/
+*.sql
+*.sql.gz
+*.dump
+*.sqlite
+*.sqlite-*
+*.pem
+*.key
+*.p12
