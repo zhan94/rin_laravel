@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Tests\TestCase;
@@ -13,6 +14,29 @@ use Tests\TestCase;
 class StaffLocalizationTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_new_visits_use_the_configured_default_and_saved_choices_take_precedence(): void
+    {
+        config(['localization.default_locale' => 'de']);
+        $this->withHeader('Accept-Language', 'en-US,en;q=0.9');
+
+        $this->get('/login')
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->where('locale.current', 'de'));
+
+        $this->get('/login?lang=es')
+            ->assertOk()
+            ->assertCookie('app_locale', 'es')
+            ->assertInertia(fn (Assert $page) => $page->where('locale.current', 'es'));
+
+        $this->get('/login')
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->where('locale.current', 'de'));
+
+        $this->withCookie('app_locale', 'es')->get('/login')
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->where('locale.current', 'es'));
+    }
 
     /** @return array<string, array{string, string, string, string}> */
     public static function localizedContent(): array

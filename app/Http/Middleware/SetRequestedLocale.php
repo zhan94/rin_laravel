@@ -51,7 +51,6 @@ final class SetRequestedLocale
             $request->query($queryParameter),
             $request->cookie($cookieName),
             $request->header('X-Locale'),
-            $request->header('Accept-Language'),
         ] as $candidate) {
             $resolved = $this->matchLocale($candidate, $supported);
             if ($resolved !== null) {
@@ -59,7 +58,8 @@ final class SetRequestedLocale
             }
         }
 
-        return LocalizedText::fallbackLocale();
+        return $this->matchLocale(config('localization.default_locale'), $supported)
+            ?? LocalizedText::fallbackLocale();
     }
 
     /**
