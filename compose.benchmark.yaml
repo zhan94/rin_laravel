@@ -1,0 +1,13 @@
+name: rin-laravel-benchmark
+
+services:
+  mysql:
+    environment:
+      MYSQL_DATABASE: &benchmark_database rin_laravel_benchmark
+
+  app:
+    environment:
+      DB_DATABASE: *benchmark_database
+      DB_DEVELOPMENT_DATABASE: *benchmark_database
+      RIN_DATASET: benchmark
+      SESSION_COOKIE: rin_laravel_benchmark_session

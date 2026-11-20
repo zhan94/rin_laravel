@@ -35,6 +35,8 @@ return [
 
     'development_database' => env('DB_DEVELOPMENT_DATABASE'),
 
+    'synthetic_dataset' => env('RIN_DATASET', 'demo'),
+
     /*
     |--------------------------------------------------------------------------
     | Database Connections
