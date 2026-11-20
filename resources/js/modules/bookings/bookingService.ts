@@ -88,10 +88,10 @@ export function applyBookingPayment(
     bookingId: number,
     amount: number,
     mode: 'increment' | 'set' = 'increment',
-    expectedPaidBgn?: number,
+    expectedPaidEur?: number,
 ): Promise<ApiEnvelope<BookingPaymentApplyResult>> {
     return submitMutation<BookingPaymentApplyResult>(
         `${bookingsBasePath}/${bookingId}/payments/apply`,
-        { amount, mode, expected_paid_bgn: expectedPaidBgn },
+        { amount, mode, expected_paid_eur: expectedPaidEur },
     );
 }

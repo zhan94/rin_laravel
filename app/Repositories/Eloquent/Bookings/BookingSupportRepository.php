@@ -334,8 +334,8 @@ final class BookingSupportRepository implements BookingSupportRepositoryInterfac
             'height' => $row->height !== null ? (int) $row->height : null,
             'approved' => (bool) ($row->approved ?? false),
             'lunch' => (bool) ($row->lunch ?? false),
-            'sum_paid' => $row->sum_paid !== null ? (int) $row->sum_paid : null,
-            'paid' => $row->paid !== null ? (int) $row->paid : null,
+            'sum_paid' => $row->sum_paid !== null ? (float) $row->sum_paid : null,
+            'paid' => $row->paid !== null ? (float) $row->paid : null,
             'note' => $row->note !== null ? (string) $row->note : null,
             'last_date' => $row->last_date !== null ? (string) $row->last_date : null,
         ];

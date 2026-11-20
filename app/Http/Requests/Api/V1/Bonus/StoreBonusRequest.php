@@ -30,10 +30,10 @@ class StoreBonusRequest extends FormRequest
             'date_from' => ['nullable', 'date_format:Y-m-d'],
             'date_to' => ['nullable', 'date_format:Y-m-d', 'after_or_equal:date_from'],
             'description' => ['nullable', 'string'],
-            'price_eur' => ['nullable', 'numeric', 'min:0'],
+            'price_eur' => ['nullable', 'numeric', 'min:0', 'max:99999999.99'],
             'prices' => ['sometimes', 'array'],
             'prices.*.days' => ['required', 'integer', 'min:1'],
-            'prices.*.price_eur' => ['required', 'numeric', 'min:0'],
+            'prices.*.price_eur' => ['required', 'numeric', 'min:0', 'max:99999999.99'],
         ];
     }
 

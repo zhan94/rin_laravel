@@ -10,6 +10,7 @@ use App\Models\Service;
 use App\Models\User;
 use App\Services\BookingPaymentService;
 use App\Services\BookingService;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\DB;
 
@@ -20,8 +21,13 @@ $kernel->bootstrap();
 
 $db = DB::connection();
 if (! $app->environment('testing') || $db->getDriverName() !== 'mysql'
-    || $db->getDatabaseName() !== 'rin_laravel_test' || $db->scalar('SELECT DATABASE()') !== 'rin_laravel_test') {
-    fwrite(STDERR, "Use the isolated rin_laravel_test MySQL database with APP_ENV=testing.\n");
+    || $db->getDatabaseName() !== config('database.development_database')) {
+    fwrite(STDERR, "Designate an isolated MySQL database with DB_DEVELOPMENT_DATABASE and APP_ENV=testing.\n");
+    exit(2);
+}
+DatabaseSeeder::assertDevelopmentDatabase($db);
+if ($db->scalar('SELECT DATABASE()') !== $db->getDatabaseName()) {
+    fwrite(STDERR, "Unexpected MySQL schema.\n");
     exit(2);
 }
 
@@ -113,6 +119,6 @@ if (Booking::count() !== 1 || DB::table('booking_dates')->count() !== 1) {
 
 $booking = Booking::firstOrFail();
 race('payment', $booking->id, $user->id, 'booking_payment_exceeds_remaining');
-if ($booking->refresh()->paid !== 117 || $booking->payment?->paid !== 117) {
+if ($booking->refresh()->paid !== '60.00' || $booking->payment?->paid !== '60.00') {
     throw new RuntimeException('Payment verification found a balance or payment mirror mismatch.');
 }

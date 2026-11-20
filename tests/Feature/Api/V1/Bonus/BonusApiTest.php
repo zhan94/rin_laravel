@@ -30,8 +30,8 @@ class BonusApiTest extends TestCase
 
         $bonus->prices()->create([
             'days' => 2,
-            'price' => 58.67,
-            'per_day' => 29.34,
+            'price' => 30.25,
+            'per_day' => 15.13,
         ]);
 
         $response = $this->getJson('/api/v1/bonus');
@@ -62,9 +62,9 @@ class BonusApiTest extends TestCase
             'location_to' => 'Bansko',
             'date_from' => '2026-03-01',
             'date_to' => '2026-03-05',
-            'price_eur' => 45,
+            'price_eur' => 45.50,
             'prices' => [
-                ['days' => 2, 'price_eur' => 30],
+                ['days' => 2, 'price_eur' => 30.25],
                 ['days' => 4, 'price_eur' => 55],
             ],
         ]);
@@ -76,7 +76,7 @@ class BonusApiTest extends TestCase
             ->assertJsonPath('data.location_from', 'Sofia')
             ->assertJsonPath('data.location_to', 'Bansko')
             ->assertJsonPath('data.prices.0.days', 2)
-            ->assertJsonPath('data.prices.0.price_bgn', 58.67)
+            ->assertJsonPath('data.prices.0.price_eur', 30.25)
             ->assertJsonPath('errors', []);
 
         $bonusId = (int) $response->json('data.id');
@@ -86,14 +86,14 @@ class BonusApiTest extends TestCase
             'title' => 'Weekend Camp',
             'location_from' => 'Sofia',
             'location_to' => 'Bansko',
-            'price' => 88.01,
+            'price' => 45.50,
         ]);
 
         $this->assertDatabaseHas('bonus_price', [
             'bonus_id' => $bonusId,
             'days' => 2,
-            'price' => 58.67,
-            'per_day' => 29.34,
+            'price' => 30.25,
+            'per_day' => 15.13,
         ]);
     }
 
@@ -114,7 +114,7 @@ class BonusApiTest extends TestCase
 
         $bonus->prices()->createMany([
             ['days' => 1, 'price' => 39.12, 'per_day' => 39.12],
-            ['days' => 2, 'price' => 58.67, 'per_day' => 29.34],
+            ['days' => 2, 'price' => 30.25, 'per_day' => 15.13],
         ]);
 
         $response = $this->putJson("/api/v1/bonus/{$bonus->id}", [
@@ -140,8 +140,8 @@ class BonusApiTest extends TestCase
         $this->assertDatabaseHas('bonus_price', [
             'bonus_id' => $bonus->id,
             'days' => 3,
-            'price' => 88.01,
-            'per_day' => 29.34,
+            'price' => 45,
+            'per_day' => 15,
         ]);
     }
 

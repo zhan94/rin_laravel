@@ -21,18 +21,18 @@ class BookingPaymentApiTest extends TestCase
     {
         $this->actingAs(User::factory()->create());
 
-        $booking = $this->makeBooking(sumPaidBgn: 196, paidBgn: 98);
+        $booking = $this->makeBooking(sumPaid: 100.25, paid: 49.82);
 
         $response = $this->postJson("/api/v1/bookings/{$booking->id}/payments/validate", [
-            'amount' => 40,
+            'amount' => 40.13,
         ]);
 
         $response
             ->assertOk()
             ->assertJsonPath('data.valid', true)
-            ->assertJsonPath('data.amount_bgn', 78)
-            ->assertJsonPath('data.remaining_before_bgn', 98)
-            ->assertJsonPath('data.remaining_after_bgn', 20)
+            ->assertJsonPath('data.amount_eur', 40.13)
+            ->assertJsonPath('data.remaining_before_eur', 50.43)
+            ->assertJsonPath('data.remaining_after_eur', 10.3)
             ->assertJsonPath('errors', []);
     }
 
@@ -40,7 +40,7 @@ class BookingPaymentApiTest extends TestCase
     {
         $this->actingAs(User::factory()->create());
 
-        $booking = $this->makeBooking(sumPaidBgn: 196, paidBgn: 98);
+        $booking = $this->makeBooking(sumPaid: 100.25, paid: 49.82);
 
         $response = $this->postJson("/api/v1/bookings/{$booking->id}/payments/validate", [
             'amount' => 80,
@@ -49,9 +49,9 @@ class BookingPaymentApiTest extends TestCase
         $response
             ->assertOk()
             ->assertJsonPath('data.valid', false)
-            ->assertJsonPath('data.amount_bgn', 156)
-            ->assertJsonPath('data.remaining_before_bgn', 98)
-            ->assertJsonPath('data.remaining_after_bgn', 0)
+            ->assertJsonPath('data.amount_eur', 80)
+            ->assertJsonPath('data.remaining_before_eur', 50.43)
+            ->assertJsonPath('data.remaining_after_eur', 0)
             ->assertJsonPath('errors', []);
     }
 
@@ -59,30 +59,30 @@ class BookingPaymentApiTest extends TestCase
     {
         $this->actingAs(User::factory()->create());
 
-        $booking = $this->makeBooking(sumPaidBgn: 196, paidBgn: 0);
+        $booking = $this->makeBooking(sumPaid: 100.25, paid: 0);
 
         $response = $this->postJson("/api/v1/bookings/{$booking->id}/payments/apply", [
-            'amount' => 50,
+            'amount' => 50.18,
             'mode' => 'increment',
         ]);
 
         $response
             ->assertOk()
             ->assertJsonPath('data.payment.mode', 'increment')
-            ->assertJsonPath('data.payment.amount_bgn', 98)
-            ->assertJsonPath('data.payment.paid_bgn', 98)
-            ->assertJsonPath('data.payment.remaining_bgn', 98)
+            ->assertJsonPath('data.payment.amount_eur', 50.18)
+            ->assertJsonPath('data.payment.paid_eur', 50.18)
+            ->assertJsonPath('data.payment.remaining_eur', 50.07)
             ->assertJsonPath('errors', []);
 
         $this->assertDatabaseHas('bookings', [
             'id' => $booking->id,
-            'paid' => 98,
+            'paid' => 50.18,
         ]);
 
         $this->assertDatabaseHas('booking_payments', [
             'booking_id' => $booking->id,
-            'sum_paid' => 196,
-            'paid' => 98,
+            'sum_paid' => 100.25,
+            'paid' => 50.18,
         ]);
     }
 
@@ -90,24 +90,24 @@ class BookingPaymentApiTest extends TestCase
     {
         $this->actingAs(User::factory()->create());
 
-        $booking = $this->makeBooking(sumPaidBgn: 300, paidBgn: 80);
+        $booking = $this->makeBooking(sumPaid: 150.27, paid: 40.90);
 
         $response = $this->postJson("/api/v1/bookings/{$booking->id}/payments/apply", [
-            'amount' => 60,
+            'amount' => 60.03,
             'mode' => 'set',
-            'expected_paid_bgn' => 80,
+            'expected_paid_eur' => 40.90,
         ]);
 
         $response
             ->assertOk()
             ->assertJsonPath('data.payment.mode', 'set')
-            ->assertJsonPath('data.payment.paid_bgn', 117)
-            ->assertJsonPath('data.payment.remaining_bgn', 183)
+            ->assertJsonPath('data.payment.paid_eur', 60.03)
+            ->assertJsonPath('data.payment.remaining_eur', 90.24)
             ->assertJsonPath('errors', []);
 
         $this->assertDatabaseHas('bookings', [
             'id' => $booking->id,
-            'paid' => 117,
+            'paid' => 60.03,
         ]);
     }
 
@@ -115,10 +115,10 @@ class BookingPaymentApiTest extends TestCase
     {
         $this->actingAs(User::factory()->create());
 
-        $booking = $this->makeBooking(sumPaidBgn: 100, paidBgn: 50);
+        $booking = $this->makeBooking(sumPaid: 100, paid: 75);
 
         $response = $this->postJson("/api/v1/bookings/{$booking->id}/payments/apply", [
-            'amount' => 40,
+            'amount' => 40.13,
             'mode' => 'increment',
         ]);
 
@@ -130,30 +130,30 @@ class BookingPaymentApiTest extends TestCase
     public function test_payment_retry_replays_the_receipt_without_charging_twice(): void
     {
         $this->actingAs(User::factory()->create());
-        $booking = $this->makeBooking(sumPaidBgn: 300, paidBgn: 20);
+        $booking = $this->makeBooking(sumPaid: 150.75, paid: 10.24);
         $url = "/api/v1/bookings/{$booking->id}/payments/apply";
-        $payload = ['amount' => 10, 'request_key' => Str::uuid()->toString()];
+        $payload = ['amount' => 10.05, 'request_key' => Str::uuid()->toString()];
 
-        $this->postJson($url, $payload)->assertOk()->assertJsonPath('data.payment.paid_bgn', 40);
-        $this->postJson($url, $payload)->assertOk()->assertJsonPath('data.payment.paid_bgn', 40);
+        $this->postJson($url, $payload)->assertOk()->assertJsonPath('data.payment.paid_eur', 20.29);
+        $this->postJson($url, $payload)->assertOk()->assertJsonPath('data.payment.paid_eur', 20.29);
         $this->postJson($url, array_replace($payload, ['amount' => 11]))->assertConflict();
         $this->assertDatabaseCount('crm_mutation_receipts', 1);
-        $this->assertDatabaseHas('booking_payments', ['booking_id' => $booking->id, 'paid' => 40]);
+        $this->assertDatabaseHas('booking_payments', ['booking_id' => $booking->id, 'paid' => 20.29]);
     }
 
     public function test_stale_correction_preserves_the_current_payment(): void
     {
         $this->actingAs(User::factory()->create());
-        $booking = $this->makeBooking(sumPaidBgn: 300, paidBgn: 80);
+        $booking = $this->makeBooking(sumPaid: 150.27, paid: 40.90);
         $url = "/api/v1/bookings/{$booking->id}/payments/apply";
 
-        $this->postJson($url, ['amount' => 60, 'mode' => 'set'])->assertUnprocessable();
-        $this->postJson($url, ['amount' => 60, 'mode' => 'set', 'expected_paid_bgn' => 50])
+        $this->postJson($url, ['amount' => 60.03, 'mode' => 'set'])->assertUnprocessable();
+        $this->postJson($url, ['amount' => 60.03, 'mode' => 'set', 'expected_paid_eur' => 40.89])
             ->assertConflict()->assertJsonPath('errors.0.code', 'booking_payment_changed');
-        $this->assertDatabaseHas('bookings', ['id' => $booking->id, 'paid' => 80]);
+        $this->assertDatabaseHas('bookings', ['id' => $booking->id, 'paid' => 40.90]);
     }
 
-    private function makeBooking(int $sumPaidBgn, int $paidBgn): Booking
+    private function makeBooking(float $sumPaid, float $paid): Booking
     {
         $service = Service::factory()->create();
         $customer = Customer::factory()->create();
@@ -163,8 +163,8 @@ class BookingPaymentApiTest extends TestCase
             'customer_id' => $customer->id,
             'service' => $service->id,
             'service_type' => Booking::SERVICE_TYPE_SERVICE,
-            'sum_paid' => $sumPaidBgn,
-            'paid' => $paidBgn,
+            'sum_paid' => $sumPaid,
+            'paid' => $paid,
             'location' => $location->id,
             'approved' => false,
             'active' => true,

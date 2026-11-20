@@ -67,7 +67,9 @@ final class LegacyImportTest extends TestCase
         self::assertSame('ski_lessons', $this->target->table('services')->value('legacy_title_key'));
         self::assertSame(0, (int) $this->target->table('locations')->value('active'));
         self::assertSame(42, (int) $this->target->table('booking_winter_details')->value('card_id'));
-        self::assertSame(28.75, (float) $this->target->table('cards_price')->value('price'));
+        self::assertSame(14.70, (float) $this->target->table('cards_price')->value('price'));
+        self::assertSame(23.01, (float) $this->target->table('bookings')->value('sum_paid'));
+        self::assertSame(2.56, (float) $this->target->table('booking_payments')->value('paid'));
         self::assertSame(2, $this->target->table('booking_dates')->where('booking_id', 23)->count());
         self::assertSame('/crm/customers?customer=71', $this->target->table('user_notifications')->value('link_path'));
         self::assertSame(2, $this->target->table('legacy_mutation_receipts')->count());
@@ -91,7 +93,7 @@ final class LegacyImportTest extends TestCase
 
         self::assertArrayHasKey('source / bookings.location orphan', $report->errors);
         self::assertArrayHasKey('source / booking payment mirror disagrees', $report->errors);
-        self::assertArrayHasKey('booking_payments / sum_paid would lose precision or exceed the destination range', $report->errors);
+        self::assertArrayHasKey('booking_payments / sum_paid must have at most two decimal places in the source', $report->errors);
         self::assertArrayHasKey('customers / date_birth has an unrecognized or invalid date', $report->errors);
         self::assertSame(0, $this->target->table('services')->count());
         self::assertSame(0, $this->target->table('bookings')->count());
@@ -166,7 +168,7 @@ final class LegacyImportTest extends TestCase
 
         $unexpectedDatabase = $this->artisan('legacy:import', ['--dry-run' => true]);
         self::assertInstanceOf(PendingCommand::class, $unexpectedDatabase);
-        $unexpectedDatabase->expectsOutputToContain('Expected legacy/briliabg_shadmin')->assertFailed()->run();
+        $unexpectedDatabase->expectsOutputToContain('Expected the configured legacy source')->assertFailed()->run();
     }
 
     public function test_attachment_bytes_are_validated_and_existing_files_are_never_replaced(): void

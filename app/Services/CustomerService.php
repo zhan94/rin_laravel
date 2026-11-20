@@ -40,20 +40,20 @@ final readonly class CustomerService
      *         service_id:?int,
      *         service_type:?int,
      *         service_title:string,
-     *         sum_paid:int,
-     *         paid:int,
-     *         due:int,
+     *         sum_paid:float,
+     *         paid:float,
+     *         due:float,
      *         season_label:string
      *     }>,
      *     records:int,
-     *     total_due:int,
+     *     total_due:float,
      *     current_unpaid_season_label:string,
      *     unpaid_tabs:list<array{
      *         id:string,
      *         label:string,
      *         is_current:bool,
      *         count:int,
-     *         due_total:int
+     *         due_total:float
      *     }>
      * }
      */

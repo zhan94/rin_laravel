@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\DTOs\Bonus;
 
 use App\Support\Localization\LocalizedText;
-use App\Support\Pricing\BgnCurrency;
+use App\Support\Pricing\EurCurrency;
 use DateTimeImmutable;
 
 final readonly class BonusData
@@ -23,7 +23,7 @@ final readonly class BonusData
         public ?string $dateFrom,
         public ?string $dateTo,
         public ?string $description,
-        public ?float $priceBgn,
+        public ?float $priceEur,
         public array $prices,
     ) {}
 
@@ -56,9 +56,9 @@ final readonly class BonusData
             }
         }
 
-        $basePrice = self::normalizeBasePriceToBgn($payload['price_eur'] ?? $payload['price'] ?? null);
+        $basePrice = EurCurrency::normalizeAmount($payload['price_eur'] ?? $payload['price'] ?? null);
         if ($basePrice === null && $prices !== []) {
-            $basePrice = $prices[0]->priceBgn;
+            $basePrice = $prices[0]->priceEur;
         }
 
         return new self(
@@ -70,7 +70,7 @@ final readonly class BonusData
             dateFrom: self::normalizeDate($payload['date_from'] ?? null),
             dateTo: self::normalizeDate($payload['date_to'] ?? null),
             description: self::nullableString($payload['description'] ?? null),
-            priceBgn: $basePrice,
+            priceEur: $basePrice,
             prices: $prices,
         );
     }
@@ -91,7 +91,7 @@ final readonly class BonusData
             'date_from' => $this->dateFrom,
             'date_to' => $this->dateTo,
             'description' => $this->description,
-            'price' => $this->priceBgn !== null ? BgnCurrency::formatDecimal($this->priceBgn) : null,
+            'price' => $this->priceEur,
         ];
     }
 
@@ -119,10 +119,5 @@ final readonly class BonusData
         }
 
         return $date->format('Y-m-d');
-    }
-
-    private static function normalizeBasePriceToBgn(mixed $value): ?float
-    {
-        return BgnCurrency::fromEurValue($value);
     }
 }

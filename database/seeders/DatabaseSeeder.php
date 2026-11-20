@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use Illuminate\Database\Connection;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -12,23 +13,33 @@ final class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        self::assertIsolatedDatabase();
-        $this->call(RoleSeeder::class);
+        $this->call(DemoDatabaseSeeder::class);
     }
 
-    public static function assertIsolatedDatabase(): void
+    public static function assertDevelopmentDatabase(?Connection $connection = null): void
     {
-        $db = DB::connection();
-        $database = $db->getDatabaseName();
+        $connection ??= DB::connection();
+        $designated = config('database.development_database');
 
-        if (! app()->environment(['local', 'testing'])
-            || ! match ($db->getDriverName()) {
-                'sqlite' => in_array($database, [':memory:', database_path('demo.sqlite')], true),
-                'mysql' => in_array($database, ['rin_laravel_demo', 'rin_laravel_test'], true)
-                    && $db->scalar('SELECT DATABASE()') === $database,
-                default => false,
-            }) {
-            throw new RuntimeException('Seeding requires an isolated Laravel demo or test database.');
+        if (self::isLegacyDatabase($connection)) {
+            throw new RuntimeException('The legacy database is read-only.');
         }
+        if (! app()->environment(['local', 'testing'])
+            || ! is_string($designated) || $designated === ''
+            || $connection->getDatabaseName() !== $designated) {
+            throw new RuntimeException(
+                'Seeding and destructive commands require an explicitly designated development database. '
+                .'Set DB_DEVELOPMENT_DATABASE to the isolated database you intend to use in a local or testing environment.',
+            );
+        }
+    }
+
+    public static function isLegacyDatabase(Connection $connection): bool
+    {
+        $legacy = config('database.connections.legacy.database');
+        $database = (string) $connection->getDatabaseName();
+
+        return $connection->getName() === 'legacy'
+            || (is_string($legacy) && $legacy !== '' && strcasecmp($database, $legacy) === 0);
     }
 }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useUiI18n } from '@/composables/useUiI18n';
 import { formatGermanDate } from '@/modules/calendar/dateDisplay';
-import { formatEurBgnPairFromBgn } from '@/modules/money/currency';
+import { formatEur } from '@/modules/money/currency';
 import { useBookingPageContext } from '@/pages/crm/composables/bookingPageContext';
 
 const {
@@ -17,9 +17,7 @@ const {
 const { localeTag } = useUiI18n();
 
 function formatAmount(value: number | null): string {
-    return value === null
-        ? '—'
-        : formatEurBgnPairFromBgn(value, localeTag.value);
+    return value === null ? '—' : formatEur(value, localeTag.value);
 }
 
 defineProps<{

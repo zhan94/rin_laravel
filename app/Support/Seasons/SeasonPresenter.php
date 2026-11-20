@@ -11,6 +11,7 @@ use App\Models\ServiceSlot;
 use App\Support\Localization\DisplayDate;
 use App\Support\Locations\LocationLabel;
 use App\Support\Names\PersonName;
+use App\Support\Pricing\EurCurrency;
 use Carbon\CarbonImmutable;
 
 final class SeasonPresenter
@@ -80,7 +81,7 @@ final class SeasonPresenter
             'customers_count' => (int) ($stats['customers_count'] ?? 0),
             'sum_total' => $sum,
             'paid_total' => $paid,
-            'due_total' => max(0, $sum - $paid),
+            'due_total' => EurCurrency::balance($sum, $paid),
             'location' => null,
             'is_selected' => false,
         ];
@@ -112,7 +113,7 @@ final class SeasonPresenter
             'customers_count' => (int) ($stats['customers_count'] ?? 0),
             'sum_total' => $sum,
             'paid_total' => $paid,
-            'due_total' => max(0, $sum - $paid),
+            'due_total' => EurCurrency::balance($sum, $paid),
             'location' => LocationLabel::route($bonus->location_from, $bonus->location_to),
             'is_selected' => false,
         ];
@@ -151,7 +152,7 @@ final class SeasonPresenter
                     ),
                     'sum_paid' => $sum,
                     'paid' => $paid,
-                    'due' => max(0, $sum - $paid),
+                    'due' => EurCurrency::balance($sum, $paid),
                     'dates' => [],
                 ];
             }
@@ -199,7 +200,7 @@ final class SeasonPresenter
                 ),
                 'sum_paid' => $sum,
                 'paid' => $paid,
-                'due' => max(0, $sum - $paid),
+                'due' => EurCurrency::balance($sum, $paid),
                 'dates' => [],
             ];
         }

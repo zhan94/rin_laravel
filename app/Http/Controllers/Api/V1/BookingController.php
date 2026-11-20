@@ -14,6 +14,7 @@ use App\Http\Resources\Api\V1\Bookings\BookingResource;
 use App\Models\User;
 use App\Services\BookingService;
 use App\Support\Bookings\BookingMutationReceipt;
+use App\Support\Pricing\EurCurrency;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -77,7 +78,7 @@ final class BookingController extends Controller
         $model = $this->service->findOrFail($booking);
         $updated = $this->service->update($model, BookingData::fromArray($request->validated()), $actor,
             preservePaid: ! array_key_exists('paid', $request->validated()),
-            expectedPaid: $request->has('expected_paid_bgn') ? $request->integer('expected_paid_bgn') : null,
+            expectedPaid: EurCurrency::normalizeAmount($request->validated('expected_paid_eur')),
         );
 
         return $this->success(

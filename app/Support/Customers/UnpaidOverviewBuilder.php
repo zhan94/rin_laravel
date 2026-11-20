@@ -18,9 +18,9 @@ use Illuminate\Support\Facades\DB;
  *     service_id:?int,
  *     service_type:?int,
  *     service_title:string,
- *     sum_paid:int,
- *     paid:int,
- *     due:int
+ *     sum_paid:float,
+ *     paid:float,
+ *     due:float
  * }
  * @phpstan-type UnpaidSeasonRow array{
  *     customer_id:int,
@@ -30,9 +30,9 @@ use Illuminate\Support\Facades\DB;
  *     service_id:?int,
  *     service_type:?int,
  *     service_title:string,
- *     sum_paid:int,
- *     paid:int,
- *     due:int,
+ *     sum_paid:float,
+ *     paid:float,
+ *     due:float,
  *     season_label:string
  * }
  * @phpstan-type BookingDateRow array{
@@ -43,7 +43,7 @@ use Illuminate\Support\Facades\DB;
  * }
  * @phpstan-type SeasonDefaults array{start_month:int,start_day:int,end_month:int,end_day:int}
  * @phpstan-type SeasonInfo array{start:DateTimeImmutable,end:DateTimeImmutable,label:string}
- * @phpstan-type UnpaidTab array{id:string,label:string,is_current:bool,count:int,due_total:int}
+ * @phpstan-type UnpaidTab array{id:string,label:string,is_current:bool,count:int,due_total:float}
  */
 final class UnpaidOverviewBuilder
 {
@@ -52,7 +52,7 @@ final class UnpaidOverviewBuilder
      * @return array{
      *     rows:list<UnpaidSeasonRow>,
      *     records:int,
-     *     total_due:int,
+     *     total_due:float,
      *     current_unpaid_season_label:string,
      *     unpaid_tabs:list<UnpaidTab>
      * }
@@ -110,7 +110,7 @@ final class UnpaidOverviewBuilder
         return [
             'rows' => $rowsWithSeason,
             'records' => count($rowsWithSeason),
-            'total_due' => $totalDue,
+            'total_due' => round($totalDue, 2),
             'current_unpaid_season_label' => $currentLabel,
             'unpaid_tabs' => $this->buildUnpaidTabs($rowsBySeason, $currentLabel),
         ];
@@ -337,7 +337,7 @@ final class UnpaidOverviewBuilder
             'label' => $seasonLabel,
             'is_current' => $isCurrent,
             'count' => count($rows),
-            'due_total' => $dueTotal,
+            'due_total' => round($dueTotal, 2),
         ];
     }
 

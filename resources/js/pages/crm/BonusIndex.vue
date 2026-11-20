@@ -7,8 +7,10 @@ import {
     DialogScrollContent,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { useUiI18n } from '@/composables/useUiI18n';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { formatGermanDate } from '@/modules/calendar/dateDisplay';
+import { formatEur } from '@/modules/money/currency';
 import { useBonusPage } from '@/pages/crm/composables/useBonusPage';
 import { Head } from '@inertiajs/vue3';
 
@@ -29,6 +31,8 @@ const {
     removeBonus,
     goToPage,
 } = useBonusPage();
+
+const { localeTag } = useUiI18n();
 </script>
 
 <template>
@@ -171,11 +175,9 @@ const {
                                                 {{
                                                     t('bonus.price_for_days', {
                                                         days: price.days,
-                                                        eur: price.price_eur.toFixed(
-                                                            2,
-                                                        ),
-                                                        bgn: price.price_bgn.toFixed(
-                                                            2,
+                                                        amount: formatEur(
+                                                            price.price_eur,
+                                                            localeTag,
                                                         ),
                                                     })
                                                 }}

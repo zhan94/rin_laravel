@@ -6,6 +6,7 @@ namespace App\Http\Resources\Api\V1\Bookings;
 
 use App\Http\Resources\Api\V1\CustomerResource;
 use App\Http\Resources\Api\V1\Services\ServiceResource;
+use App\Support\Pricing\EurCurrency;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -17,8 +18,8 @@ class BookingResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $sumPaid = $this->sum_paid !== null ? (int) $this->sum_paid : null;
-        $paid = $this->paid !== null ? (int) $this->paid : null;
+        $sumPaid = $this->sum_paid !== null ? (float) $this->sum_paid : null;
+        $paid = $this->paid !== null ? (float) $this->paid : null;
 
         $payment = null;
         if ($this->relationLoaded('payment') && $this->payment !== null) {
@@ -38,7 +39,7 @@ class BookingResource extends JsonResource
             'location_id' => $this->location !== null ? (int) $this->location : null,
             'sum_paid' => $sumPaid,
             'paid' => $paid,
-            'due' => ($sumPaid !== null && $paid !== null) ? max(0, $sumPaid - $paid) : null,
+            'due' => ($sumPaid !== null && $paid !== null) ? EurCurrency::balance($sumPaid, $paid) : null,
             'approved' => (bool) $this->approved,
             'active' => (bool) $this->active,
             'lunch' => (bool) $this->lunch,

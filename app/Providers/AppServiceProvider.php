@@ -77,8 +77,9 @@ class AppServiceProvider extends ServiceProvider
     {
         Date::use(CarbonImmutable::class);
 
+        $designated = config('database.development_database');
         DB::prohibitDestructiveCommands(
-            app()->isProduction(),
+            ! app()->environment(['local', 'testing']) || ! is_string($designated) || $designated === '',
         );
 
         Password::defaults(fn (): ?Password => app()->isProduction()

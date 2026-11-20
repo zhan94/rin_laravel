@@ -6,7 +6,7 @@ namespace App\DTOs\Bookings;
 
 use App\Models\Booking;
 use App\Support\Bookings\SkiNoteMeta;
-use App\Support\Pricing\BgnCurrency;
+use App\Support\Pricing\EurCurrency;
 use DateTimeImmutable;
 
 final readonly class BookingData
@@ -28,8 +28,8 @@ final readonly class BookingData
         public int $slotId,
         public ?int $locationId,
         public array $dates,
-        public ?int $sumPaid,
-        public ?int $paid,
+        public ?float $sumPaid,
+        public ?float $paid,
         public bool $approved,
         public bool $lunch,
         public ?string $note,
@@ -79,8 +79,8 @@ final readonly class BookingData
             slotId: max(0, (int) ($payload['slot_id'] ?? $payload['slot'] ?? 0)),
             locationId: self::normalizePositiveInt($payload['location_id'] ?? $payload['location'] ?? null),
             dates: self::normalizeDates($payload['dates'] ?? []),
-            sumPaid: self::normalizeAmountToBgn($payload['sum_paid'] ?? null),
-            paid: self::normalizeAmountToBgn($payload['paid'] ?? null),
+            sumPaid: EurCurrency::normalizeAmount($payload['sum_paid'] ?? null),
+            paid: EurCurrency::normalizeAmount($payload['paid'] ?? null),
             approved: self::normalizeBool($payload['approved'] ?? false),
             lunch: self::normalizeBool($payload['lunch'] ?? false),
             note: $noteMeta->note,
@@ -205,11 +205,6 @@ final readonly class BookingData
         $normalized = strtolower(trim((string) $value));
 
         return in_array($normalized, ['1', 'true', 'yes', 'on'], true);
-    }
-
-    private static function normalizeAmountToBgn(mixed $value): ?int
-    {
-        return BgnCurrency::intFromEurValue($value);
     }
 
     /**

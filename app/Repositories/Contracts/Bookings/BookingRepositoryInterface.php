@@ -45,7 +45,7 @@ interface BookingRepositoryInterface
      */
     public function syncBookingDates(int $bookingId, array $dateServiceDateMap): void;
 
-    public function syncPaymentTotals(int $bookingId, ?int $sumPaid, ?int $paid): void;
+    public function syncPaymentTotals(int $bookingId, ?float $sumPaid, ?float $paid): void;
 
     public function findLatestSkillForCustomerService(int $customerId, int $serviceId, int $serviceType): ?int;
 

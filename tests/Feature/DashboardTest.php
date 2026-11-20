@@ -46,8 +46,8 @@ class DashboardTest extends TestCase
             'service_id' => $service->id,
             'location_id' => $location->id,
             'dates' => ['2026-12-02', '2026-12-03'],
-            'sum_paid' => 100,
-            'paid' => 20,
+            'sum_paid' => 100.25,
+            'paid' => 20.1,
         ]));
 
         $this->get(route('dashboard'))->assertInertia(fn (Assert $page) => $page
@@ -55,7 +55,7 @@ class DashboardTest extends TestCase
             ->where('season.start', '2026-09-01')
             ->where('today', '2026-12-02')
             ->where('customers', ['total' => 2, 'active' => 1])
-            ->where('stats', ['records' => 1, 'clients' => 1, 'dates' => 2, 'sum' => 196, 'paid' => 39, 'due' => 157, 'today' => 1])
+            ->where('stats', ['records' => 1, 'clients' => 1, 'dates' => 2, 'sum' => 100.25, 'paid' => 20.1, 'due' => 80.15, 'today' => 1])
             ->where('daily.0.customer', 'Synthetic Customer')
             ->where('byService.0.dates', 2)
         );

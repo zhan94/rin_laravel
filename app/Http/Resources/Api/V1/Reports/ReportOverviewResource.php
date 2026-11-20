@@ -25,9 +25,9 @@ class ReportOverviewResource extends JsonResource
                 'dir' => (string) data_get($this->resource, 'filters.dir', 'desc'),
             ],
             'summary' => [
-                'sum_total' => (int) data_get($this->resource, 'summary.sum_total', 0),
-                'paid_total' => (int) data_get($this->resource, 'summary.paid_total', 0),
-                'due_total' => (int) data_get($this->resource, 'summary.due_total', 0),
+                'sum_total' => (float) data_get($this->resource, 'summary.sum_total', 0),
+                'paid_total' => (float) data_get($this->resource, 'summary.paid_total', 0),
+                'due_total' => (float) data_get($this->resource, 'summary.due_total', 0),
                 'due_count' => (int) data_get($this->resource, 'summary.due_count', 0),
                 'total_count' => (int) data_get($this->resource, 'summary.total_count', 0),
             ],

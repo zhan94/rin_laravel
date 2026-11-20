@@ -2,7 +2,7 @@
 import { useUiI18n } from '@/composables/useUiI18n';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { formatGermanDate } from '@/modules/calendar/dateDisplay';
-import { formatEurBgnPairFromBgn } from '@/modules/money/currency';
+import { formatEur } from '@/modules/money/currency';
 import { Head, Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
@@ -56,15 +56,15 @@ const seasonCards = computed(() => [
     },
     {
         title: t('dashboard.stat_season_sum'),
-        value: formatEurBgnPairFromBgn(props.stats.sum, localeTag.value),
+        value: formatEur(props.stats.sum, localeTag.value),
     },
     {
         title: t('dashboard.stat_paid'),
-        value: formatEurBgnPairFromBgn(props.stats.paid, localeTag.value),
+        value: formatEur(props.stats.paid, localeTag.value),
     },
     {
         title: t('dashboard.stat_due'),
-        value: formatEurBgnPairFromBgn(props.stats.due, localeTag.value),
+        value: formatEur(props.stats.due, localeTag.value),
     },
     {
         title: t('dashboard.stat_today_records'),

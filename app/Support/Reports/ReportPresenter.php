@@ -7,6 +7,7 @@ namespace App\Support\Reports;
 use App\Support\Bookings\SkiNoteMeta;
 use App\Support\Locations\LocationLabel;
 use App\Support\Names\PersonName;
+use App\Support\Pricing\EurCurrency;
 
 final class ReportPresenter
 {
@@ -27,8 +28,8 @@ final class ReportPresenter
             }
 
             if (! isset($byBooking[$bookingId])) {
-                $sumPaid = $isDriver ? 0 : (int) ($row['sum_paid'] ?? 0);
-                $paid = $isDriver ? 0 : (int) ($row['paid'] ?? 0);
+                $sumPaid = $isDriver ? 0 : (float) ($row['sum_paid'] ?? 0);
+                $paid = $isDriver ? 0 : (float) ($row['paid'] ?? 0);
 
                 $noteMeta = SkiNoteMeta::fromNote($row['note'] ?? null);
 
@@ -66,7 +67,7 @@ final class ReportPresenter
                     'dates' => [],
                     'sum_paid' => $sumPaid,
                     'paid' => $paid,
-                    'due' => max(0, $sumPaid - $paid),
+                    'due' => EurCurrency::balance($sumPaid, $paid),
                     'note' => $isDriver ? null : $noteMeta->note,
                     'skill' => $isDriver
                         ? null

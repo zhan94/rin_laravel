@@ -22,7 +22,7 @@ final class ImportLegacyDatabase extends Command
         {--chunk=1000 : Source rows per batch, from 1 to 5000}
         {--replace-season-defaults : Permit replacing the exact migration-seeded season calendar}';
 
-    protected $description = 'Validate and import the legacy CRM into rin_lara';
+    protected $description = 'Validate and import the legacy CRM into the configured destination';
 
     public function handle(DatabaseManager $databases, LegacyImporter $importer): int
     {
@@ -37,13 +37,15 @@ final class ImportLegacyDatabase extends Command
         $replaceSeason = (bool) $this->option('replace-season-defaults');
         $source = $databases->connection('legacy');
         $target = $databases->connection();
-        $lock = 'ski2:legacy:import:rin_lara';
+        $destination = $target->getDatabaseName();
+        $lock = 'ski2:legacy:import:'.$destination;
+        $lock = strlen($lock) <= 64 ? $lock : hash('sha256', $lock);
         $locked = false;
 
         try {
             $this->checkConnections($source, $target);
             if (! $dryRun && (! $this->input->isInteractive() || ! $this->confirm(
-                'Import this approved dataset into rin_lara?'.($replaceSeason ? ' This includes replacing the migration-seeded season calendar.' : '')
+                "Import this approved dataset into [{$destination}]?".($replaceSeason ? ' This includes replacing the migration-seeded season calendar.' : '')
             ))) {
                 $this->error('Database writes require interactive approval for the current dataset.');
 
@@ -59,7 +61,7 @@ final class ImportLegacyDatabase extends Command
                 }
             }
 
-            $this->info($dryRun ? 'Validating briliabg_shadmin → rin_lara' : 'Importing briliabg_shadmin → rin_lara');
+            $this->info(sprintf('%s %s → %s', $dryRun ? 'Validating' : 'Importing', $source->getDatabaseName(), $destination));
             $report = $importer->run($source, $target, $chunk, $dryRun, $replaceSeason, function (string $table, int $done, int $total): void {
                 if ($done === $total || ($done > 0 && $done % 10000 === 0)) {
                     $this->line(sprintf('%s  %d/%d', $table, $done, $total));
@@ -92,16 +94,19 @@ final class ImportLegacyDatabase extends Command
 
     private function checkConnections(Connection $source, Connection $target): void
     {
-        if ($target->getName() !== 'mysql' || $target->getDatabaseName() !== 'rin_lara'
-            || $source->getName() !== 'legacy' || $source->getDriverName() !== 'mysql'
-            || $source->getDatabaseName() !== 'briliabg_shadmin') {
-            throw new DomainException('Expected legacy/briliabg_shadmin and default mysql/rin_lara connections.');
+        $sourceDatabase = config('database.connections.legacy.database');
+        $destination = config('legacy-import.destination_database');
+        if (! is_string($sourceDatabase) || $sourceDatabase === '' || ! is_string($destination) || $destination === ''
+            || strcasecmp($sourceDatabase, $destination) === 0 || $target->getName() === 'legacy'
+            || $source->getDriverName() !== 'mysql' || $target->getDriverName() !== 'mysql'
+            || $source->getDatabaseName() !== $sourceDatabase || $target->getDatabaseName() !== $destination) {
+            throw new DomainException('Expected the configured legacy source and a distinct default MySQL destination matching LEGACY_IMPORT_DATABASE.');
         }
 
         $from = $source->selectOne('SELECT DATABASE() AS schema_name, @@transaction_read_only AS read_only, @@transaction_isolation AS isolation_mode, @@character_set_connection AS encoding', [], false);
         $to = $target->selectOne('SELECT DATABASE() AS schema_name, @@foreign_key_checks AS foreign_keys, @@character_set_connection AS encoding, @@sql_mode AS sql_mode', [], false);
 
-        if ($from->schema_name !== 'briliabg_shadmin' || $to->schema_name !== 'rin_lara'
+        if ($from->schema_name !== $sourceDatabase || $to->schema_name !== $destination
             || (int) $from->read_only !== 1 || $from->isolation_mode !== 'REPEATABLE-READ'
             || (int) $to->foreign_keys !== 1 || $from->encoding !== 'utf8mb4' || $to->encoding !== 'utf8mb4'
             || ! preg_match('/\bSTRICT_(?:ALL|TRANS)_TABLES\b/', $to->sql_mode)) {

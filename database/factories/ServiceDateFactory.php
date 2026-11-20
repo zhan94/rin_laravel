@@ -22,7 +22,7 @@ class ServiceDateFactory extends Factory
     {
         return [
             'slot_id' => ServiceSlot::factory(),
-            'slot_date' => fake()->date(),
+            'slot_date' => fn (array $attributes): string => (string) ServiceSlot::query()->findOrFail($attributes['slot_id'])->getRawOriginal('date_start'),
             'is_active' => true,
         ];
     }

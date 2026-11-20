@@ -72,8 +72,8 @@ class ReportApiTest extends TestCase
             'customer_id' => $customer->id,
             'service' => $service->id,
             'service_type' => Booking::SERVICE_TYPE_SERVICE,
-            'sum_paid' => 300,
-            'paid' => 120,
+            'sum_paid' => 300.25,
+            'paid' => 120.12,
             'location' => $location->id,
             'approved' => true,
             'active' => true,
@@ -106,16 +106,16 @@ class ReportApiTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.is_driver', false)
             ->assertJsonPath('meta.pagination.total', 1)
-            ->assertJsonPath('data.summary.sum_total', 300)
-            ->assertJsonPath('data.summary.paid_total', 120)
-            ->assertJsonPath('data.summary.due_total', 180)
+            ->assertJsonPath('data.summary.sum_total', 300.25)
+            ->assertJsonPath('data.summary.paid_total', 120.12)
+            ->assertJsonPath('data.summary.due_total', 180.13)
             ->assertJsonPath('data.summary.due_count', 1)
             ->assertJsonPath('data.rows.0.booking_id', $booking->id)
             ->assertJsonPath('data.rows.0.customer_name', 'Mira Petrova')
             ->assertJsonPath('data.rows.0.location', 'Base - Lift (08:15 - 08:45)')
-            ->assertJsonPath('data.rows.0.sum_paid', 300)
-            ->assertJsonPath('data.rows.0.paid', 120)
-            ->assertJsonPath('data.rows.0.due', 180)
+            ->assertJsonPath('data.rows.0.sum_paid', 300.25)
+            ->assertJsonPath('data.rows.0.paid', 120.12)
+            ->assertJsonPath('data.rows.0.due', 180.13)
             ->assertJsonPath('data.rows.0.equip.title', 'Ski Set')
             ->assertJsonCount(2, 'data.rows.0.dates')
             ->assertJsonPath('errors', []);

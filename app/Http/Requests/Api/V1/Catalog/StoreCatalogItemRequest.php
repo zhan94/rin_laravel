@@ -27,7 +27,7 @@ class StoreCatalogItemRequest extends FormRequest
             'service' => ['required', 'integer', 'exists:services,id'],
             'prices' => ['sometimes', 'array'],
             'prices.*.days' => ['required', 'integer', 'min:1'],
-            'prices.*.price_eur' => ['required', 'numeric', 'min:0'],
+            'prices.*.price_eur' => ['required', 'numeric', 'min:0', 'max:99999999.99'],
         ];
     }
 

@@ -17,8 +17,8 @@ class BookingPaymentResource extends JsonResource
     {
         return [
             'booking_id' => (int) $this->booking_id,
-            'sum_paid' => $this->sum_paid !== null ? (int) $this->sum_paid : null,
-            'paid' => $this->paid !== null ? (int) $this->paid : null,
+            'sum_paid' => $this->sum_paid !== null ? (float) $this->sum_paid : null,
+            'paid' => $this->paid !== null ? (float) $this->paid : null,
             'created_at' => $this->created_at?->toAtomString(),
             'updated_at' => $this->updated_at?->toAtomString(),
         ];

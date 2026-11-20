@@ -17,7 +17,7 @@ test('catalog item data classes share the same payload normalization rules', fun
         ],
         'service_id' => 7,
         'prices' => [
-            ['days' => 2, 'price_eur' => 20],
+            ['days' => 2, 'price_eur' => 20.25],
             ['days' => 0, 'price_eur' => 10],
             'invalid',
         ],
@@ -34,6 +34,6 @@ test('catalog item data classes share the same payload normalization rules', fun
         ->and($card->toPersistence())->toBe($equip->toPersistence())
         ->and($card->prices)->toHaveCount(1)
         ->and($equip->prices)->toHaveCount(1)
-        ->and($card->prices[0]->priceBgn)->toBe(39.12)
-        ->and($equip->prices[0]->perDayBgn)->toBe(19.56);
+        ->and($card->prices[0]->priceEur)->toBe(20.25)
+        ->and($equip->prices[0]->perDayEur)->toBe(10.13);
 });

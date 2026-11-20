@@ -11,6 +11,7 @@ use App\Models\Customer;
 use App\Repositories\Contracts\CustomerRepositoryInterface;
 use App\Support\Localization\LocalizedText;
 use App\Support\Names\PersonName;
+use App\Support\Pricing\EurCurrency;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
@@ -51,9 +52,9 @@ final class CustomerRepository implements CustomerRepositoryInterface
      *     service_id:?int,
      *     service_type:?int,
      *     service_title:string,
-     *     sum_paid:int,
-     *     paid:int,
-     *     due:int
+     *     sum_paid:float,
+     *     paid:float,
+     *     due:float
      * }>
      */
     public function unpaidRows(?string $search = null): array
@@ -123,8 +124,8 @@ final class CustomerRepository implements CustomerRepositoryInterface
                 $row->lastname ?? null,
             ]);
 
-            $sumPaid = (int) ($row->sum_paid ?? 0);
-            $paid = (int) ($row->paid ?? 0);
+            $sumPaid = (float) ($row->sum_paid ?? 0);
+            $paid = (float) ($row->paid ?? 0);
             $serviceType = $row->service_type !== null ? (int) $row->service_type : null;
 
             $serviceTitle = '';
@@ -156,11 +157,11 @@ final class CustomerRepository implements CustomerRepositoryInterface
                 'service_title' => $serviceTitle,
                 'sum_paid' => $sumPaid,
                 'paid' => $paid,
-                'due' => max(0, $sumPaid - $paid),
+                'due' => EurCurrency::balance($sumPaid, $paid),
             ];
         })->values()->all();
 
-        /** @var list<array{customer_id:int,customer_name:string,date_birth:?string,booking_id:int,service_id:?int,service_type:?int,service_title:string,sum_paid:int,paid:int,due:int}> $unpaidRows */
+        /** @var list<array{customer_id:int,customer_name:string,date_birth:?string,booking_id:int,service_id:?int,service_type:?int,service_title:string,sum_paid:float,paid:float,due:float}> $unpaidRows */
         return $unpaidRows;
     }
 

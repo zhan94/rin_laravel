@@ -22,7 +22,7 @@ interface ReportRepositoryInterface
     public function getBookingsForIds(array $bookingIds): array;
 
     /**
-     * @return array{sum_total:int,paid_total:int,due_count:int}
+     * @return array{sum_total:float,paid_total:float,due_count:int}
      */
     public function getTotalsForRange(ReportFilterData $filters): array;
 

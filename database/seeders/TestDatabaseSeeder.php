@@ -10,12 +10,10 @@ class TestDatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        DatabaseSeeder::assertIsolatedDatabase();
+        DatabaseSeeder::assertDevelopmentDatabase();
 
         $this->call([
-            RoleSeeder::class,
-            LegacyLookupSeeder::class,
-            LegacyCatalogSeeder::class,
+            CoreBusinessSeeder::class,
             TestUsersSeeder::class,
             TestLocationsSeeder::class,
         ]);

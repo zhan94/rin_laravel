@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { useUiI18n } from '@/composables/useUiI18n';
 import { formatGermanDate } from '@/modules/calendar/dateDisplay';
+import { formatEur } from '@/modules/money/currency';
 import type { BonusGroup } from '@/pages/crm/composables/useServicesPage';
 
 type Translate = (key: string, params?: Record<string, unknown>) => string;
@@ -9,6 +11,8 @@ defineProps<{
     loading: boolean;
     t: Translate;
 }>();
+
+const { localeTag } = useUiI18n();
 </script>
 
 <template>
@@ -58,7 +62,10 @@ defineProps<{
                                 <td>
                                     {{
                                         row.price_eur !== null
-                                            ? `${row.price_eur.toFixed(2)} EUR`
+                                            ? formatEur(
+                                                  row.price_eur,
+                                                  localeTag,
+                                              )
                                             : '-'
                                     }}
                                 </td>

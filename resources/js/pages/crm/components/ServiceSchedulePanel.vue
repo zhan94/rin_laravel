@@ -2,7 +2,7 @@
 import GermanDateInput from '@/components/GermanDateInput.vue';
 import { useUiI18n } from '@/composables/useUiI18n';
 import { formatGermanDate } from '@/modules/calendar/dateDisplay';
-import { formatEurBgnPairFromBgn } from '@/modules/money/currency';
+import { formatEur } from '@/modules/money/currency';
 import type {
     PaginationMeta,
     ServiceDefinition,
@@ -267,7 +267,7 @@ function changePage(offset: number): void {
                                         :key="price.id"
                                     >
                                         <span class="whitespace-nowrap">{{
-                                            formatEurBgnPairFromBgn(
+                                            formatEur(
                                                 Number(price.price),
                                                 localeTag,
                                             )

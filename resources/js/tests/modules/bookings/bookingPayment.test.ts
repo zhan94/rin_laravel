@@ -36,7 +36,7 @@ describe('bookingPayment', () => {
         expect(buildPaymentAppliedMessage(12.345)).toEqual({
             messageKey: 'bookings.payment_remaining',
             params: {
-                amount: '12.35',
+                amount: '€12.35',
             },
         });
     });

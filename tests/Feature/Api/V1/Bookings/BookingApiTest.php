@@ -35,8 +35,8 @@ class BookingApiTest extends TestCase
             'service_id' => $service->id,
             'location_id' => $location->id,
             'dates' => ['2026-12-02', '2026-12-01'],
-            'sum_paid' => 100,
-            'paid' => 50,
+            'sum_paid' => 100.25,
+            'paid' => 50.10,
             'skill_id' => 2,
             'equip_enabled' => false,
         ];
@@ -57,14 +57,14 @@ class BookingApiTest extends TestCase
             'service' => $service->id,
             'service_type' => 1,
             'location' => $location->id,
-            'sum_paid' => 196,
-            'paid' => 98,
+            'sum_paid' => 100.25,
+            'paid' => 50.10,
         ]);
 
         $this->assertDatabaseHas('booking_payments', [
             'booking_id' => $bookingId,
-            'sum_paid' => 196,
-            'paid' => 98,
+            'sum_paid' => 100.25,
+            'paid' => 50.10,
         ]);
 
         $this->assertDatabaseCount('booking_dates', 2);

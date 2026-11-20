@@ -3,8 +3,6 @@ import type { LocalizedText } from '@/modules/localization';
 export interface BonusPrice {
     id: number;
     days: number;
-    price_bgn: number;
-    per_day_bgn: number;
     price_eur: number;
     per_day_eur: number;
 }
@@ -19,7 +17,6 @@ export interface BonusRecord {
     date_from: string | null;
     date_to: string | null;
     description: string | null;
-    price_bgn: number | null;
     price_eur: number | null;
     prices: BonusPrice[];
     prices_count: number | null;

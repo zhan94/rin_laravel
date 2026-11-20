@@ -19,7 +19,7 @@ const {
     canLoadNextPage,
     applyPreset,
     formatDateLabel,
-    formatCurrencyPair,
+    formatCurrency,
     generateReport,
     goToPage,
     onPerPageChange,
@@ -270,13 +270,13 @@ const { formatNumber } = useUiI18n();
                             t('reports.total_amount')
                         }}</span>
                         <span class="stat-value">{{
-                            formatCurrencyPair(stats.sum)
+                            formatCurrency(stats.sum)
                         }}</span>
                     </div>
                     <div v-if="!isDriverView" class="stat-card admin-only">
                         <span class="stat-label">{{ t('reports.paid') }}</span>
                         <span class="stat-value">{{
-                            formatCurrencyPair(stats.paid)
+                            formatCurrency(stats.paid)
                         }}</span>
                     </div>
                     <div v-if="!isDriverView" class="stat-card admin-only">
@@ -284,7 +284,7 @@ const { formatNumber } = useUiI18n();
                             t('reports.remaining')
                         }}</span>
                         <span class="stat-value">{{
-                            formatCurrencyPair(stats.due)
+                            formatCurrency(stats.due)
                         }}</span>
                     </div>
                 </div>

@@ -6,7 +6,9 @@ import {
     DialogScrollContent,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { useUiI18n } from '@/composables/useUiI18n';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { formatEur } from '@/modules/money/currency';
 import { useEquipsPage } from '@/pages/crm/composables/useEquipsPage';
 import { Head } from '@inertiajs/vue3';
 
@@ -28,6 +30,8 @@ const {
     removeEquip,
     goToPage,
 } = useEquipsPage();
+
+const { localeTag } = useUiI18n();
 </script>
 
 <template>
@@ -200,18 +204,12 @@ const {
                                                     }}</span
                                                 >
                                                 <span class="price-sep">—</span>
-                                                <span class="price-amount"
-                                                    >{{
-                                                        price.price_eur.toFixed(
-                                                            2,
-                                                        )
-                                                    }}€ ({{
-                                                        price.price_bgn.toFixed(
-                                                            2,
-                                                        )
-                                                    }}
-                                                    BGN)</span
-                                                >
+                                                <span class="price-amount">{{
+                                                    formatEur(
+                                                        price.price_eur,
+                                                        localeTag,
+                                                    )
+                                                }}</span>
                                             </div>
                                             <label
                                                 v-if="equip.prices.length > 2"

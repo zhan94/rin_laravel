@@ -16,11 +16,11 @@ services:
         condition: service_completed_successfully
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: "true"
-      MYSQL_DATABASE: rin_laravel_demo
+      MYSQL_DATABASE: &demo_database rin_laravel_demo
       MYSQL_USER: rin_demo
       MYSQL_PASSWORD_FILE: /run/rin/db-password
     healthcheck:
-      test: ["CMD-SHELL", "MYSQL_PWD=$$(cat /run/rin/db-password) mysql --protocol=TCP -h 127.0.0.1 -u rin_demo rin_laravel_demo -e 'SELECT 1' >/dev/null"]
+      test: ["CMD-SHELL", "MYSQL_PWD=$$(cat /run/rin/db-password) mysql --protocol=TCP -h 127.0.0.1 -u rin_demo \"$$MYSQL_DATABASE\" -e 'SELECT 1' >/dev/null"]
       interval: 2s
       timeout: 3s
       retries: 35
@@ -54,7 +54,8 @@ services:
       DB_CONNECTION: mysql
       DB_HOST: mysql
       DB_PORT: 3306
-      DB_DATABASE: rin_laravel_demo
+      DB_DATABASE: *demo_database
+      DB_DEVELOPMENT_DATABASE: *demo_database
       DB_USERNAME: rin_demo
       REDIS_HOST: redis
       SESSION_DRIVER: database

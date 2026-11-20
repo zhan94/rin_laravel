@@ -4,247 +4,201 @@ declare(strict_types=1);
 
 namespace Database\Seeders\Support;
 
+use App\Enums\SeasonType;
+use Carbon\CarbonImmutable;
+
 final class SeedCatalog
 {
-    /**
-     * @return array<int,string>
-     */
+    // Snowboard uses Laravel's existing winter service identity.
+    private const SERVICES = [
+        1 => ['Ski school', 'Skischule', 'Escuela de esquí', 'ski_school', 12, [1 => 30.68, 3 => 84.36, 5 => 138.05], SeasonType::WINTER],
+        11 => ['Snowboard school', 'Snowboardschule', 'Escuela de snowboard', 'snowboard_school', 10, [1 => 33.23, 3 => 92.03, 5 => 150.83], SeasonType::WINTER],
+        3 => ['Swimming lessons', 'Schwimmkurse', 'Clases de natación', 'swimming_lessons', 8, [1 => 15.34, 3 => 38.35, 5 => 61.36], SeasonType::SUMMER],
+        4 => ['Mountain walks', 'Bergwanderungen', 'Caminatas de montaña', 'mountain_walks', 15, [1 => 23.01, 3 => 61.36, 5 => 99.70], SeasonType::SUMMER],
+        5 => ['Private coaching', 'Einzeltraining', 'Entrenamiento individual', 'private_coaching', 1, [1 => 46.02, 3 => 130.38, 5 => 214.74], SeasonType::OTHER],
+    ];
+
+    private const CARDS = [
+        1 => ['Ski day pass', 'Ski-Tagespass', 'Pase diario de esquí', 1, 12.78],
+        2 => ['Ski week pass', 'Ski-Wochenpass', 'Pase semanal de esquí', 1, 10.23],
+        3 => ['Snowboard day pass', 'Snowboard-Tagespass', 'Pase diario de snowboard', 11, 12.78],
+        4 => ['Snowboard week pass', 'Snowboard-Wochenpass', 'Pase semanal de snowboard', 11, 10.23],
+    ];
+
+    private const EQUIPMENT = [
+        1 => ['Ski equipment set', 'Skiausrüstungsset', 'Equipo de esquí', 1, 7.67],
+        2 => ['Snowboard equipment set', 'Snowboardausrüstungsset', 'Equipo de snowboard', 11, 9.20],
+        3 => ['Swimming equipment set', 'Schwimmausrüstungsset', 'Equipo de natación', 3, 2.56],
+        4 => ['Walking poles', 'Wanderstöcke', 'Bastones de senderismo', 4, 2.05],
+    ];
+
+    private const ACTIVITIES = [
+        1 => ['Forest adventure day', 'Abenteuertag im Wald', 'Día de aventura en el bosque', 'forest_adventure_day', 'Market Square', 'Oakwood Activity Centre', -6, 1, 40.90],
+        2 => ['Winter activity camp', 'Wintercamp', 'Campamento de invierno', 'winter_activity_camp', 'Central Station', 'Pine Ridge Lodge', 14, 5, 153.39],
+        3 => ['Swimming weekend', 'Schwimmwochenende', 'Fin de semana de natación', 'swimming_weekend', 'Town Library', 'Bluewater Pool', 5, 2, 61.36],
+    ];
+
+    /** @return array<int,string> */
     public static function serviceTitles(): array
     {
-        return [
-            1 => 'Ski School',
-            2 => 'Mountain School',
-            3 => 'Summer Club',
-            4 => 'Summer Camp',
-            11 => 'Snowboard',
-            14 => 'Swim Camp',
-            15 => 'Kindergarten Swimming',
-            16 => 'Student Swimming',
-            17 => 'Winter Camp',
-        ];
+        return array_map(static fn (array $service): string => $service[0], self::SERVICES);
     }
 
-    /**
-     * @return list<array<string,mixed>>
-     */
+    /** @return list<array<string,mixed>> */
     public static function services(): array
     {
-        return array_map(
-            static fn (int $id, string $title): array => [
+        $rows = [];
+        foreach (self::SERVICES as $id => [$en, $de, $es, $key, $capacity]) {
+            $rows[] = [
                 'id' => $id,
-                ...self::localizedTitlePayload($title),
-                'title_key' => null,
-                'max' => match ($id) {
-                    1 => 24,
-                    2, 3, 4 => 25,
-                    11, 17 => 20,
-                    14 => 18,
-                    15 => 20,
-                    16 => 80,
-                    default => 0,
-                },
+                ...self::localizedTitlePayload($en, $de, $es),
+                'legacy_title_key' => $key,
+                'max' => $capacity,
                 'active' => true,
-            ],
-            array_keys(self::serviceTitles()),
-            self::serviceTitles(),
-        );
+            ];
+        }
+
+        return $rows;
     }
 
-    /**
-     * @return list<array{id:int,services:int,price:float,days:int,per_day:float}>
-     */
+    public static function seasonType(int $serviceId): SeasonType
+    {
+        return self::SERVICES[$serviceId][6] ?? SeasonType::OTHER;
+    }
+
+    /** @return list<array<string,int|float>> */
     public static function servicePrices(): array
     {
-        return [
-            ['id' => 295, 'services' => 3, 'price' => 250.00, 'days' => 5, 'per_day' => 50.00],
-            ['id' => 296, 'services' => 3, 'price' => 450.00, 'days' => 10, 'per_day' => 45.00],
-            ['id' => 297, 'services' => 4, 'price' => 180.00, 'days' => 3, 'per_day' => 60.00],
-            ['id' => 300, 'services' => 2, 'price' => 350.00, 'days' => 10, 'per_day' => 35.00],
-            ['id' => 301, 'services' => 2, 'price' => 900.00, 'days' => 30, 'per_day' => 30.00],
-        ];
+        $rows = [];
+        foreach (self::SERVICES as $id => $service) {
+            foreach ($service[5] as $days => $price) {
+                $rows[] = self::priceRow(count($rows) + 1, 'services', $id, $days, $price);
+            }
+        }
+
+        return $rows;
     }
 
-    /**
-     * @return array<int,string>
-     */
-    public static function bonusTitles(): array
-    {
-        return [
-            1 => 'Swim Camp',
-            2 => 'Winter Camp',
-            3 => 'Winter Camp',
-        ];
-    }
-
-    /**
-     * @return list<array<string,mixed>>
-     */
-    public static function bonuses(): array
-    {
-        return [
-            [
-                'id' => 1,
-                ...self::localizedTitlePayload(self::bonusTitles()[1]),
-                'title_key' => null,
-                'location_from' => 'National History Museum Boyana',
-                'location_to' => 'National History Museum Boyana',
-                'date_from' => '2020-08-24',
-                'date_to' => '2020-08-28',
-                'price' => null,
-                'description' => '5.1. Swim camp for advanced and beginner participants.',
-            ],
-            [
-                'id' => 2,
-                ...self::localizedTitlePayload(self::bonusTitles()[2]),
-                'title_key' => null,
-                'location_from' => 'National History Museum Boyana',
-                'location_to' => 'National History Museum Boyana',
-                'date_from' => '2020-12-26',
-                'date_to' => '2020-11-30',
-                'price' => null,
-                'description' => null,
-            ],
-            [
-                'id' => 3,
-                ...self::localizedTitlePayload(self::bonusTitles()[3]),
-                'title_key' => null,
-                'location_from' => 'National History Museum Boyana',
-                'location_to' => 'National History Museum Boyana',
-                'date_from' => '2020-12-26',
-                'date_to' => '2020-12-30',
-                'price' => null,
-                'description' => null,
-            ],
-        ];
-    }
-
-    /**
-     * @return list<array{id:int,bonus_id:int,price:float,days:int,per_day:float}>
-     */
-    public static function bonusPrices(): array
-    {
-        return [
-            ['id' => 4, 'bonus_id' => 3, 'price' => 100.00, 'days' => 10, 'per_day' => 10.00],
-            ['id' => 5, 'bonus_id' => 3, 'price' => 180.00, 'days' => 20, 'per_day' => 9.00],
-            ['id' => 6, 'bonus_id' => 3, 'price' => 260.00, 'days' => 30, 'per_day' => 8.67],
-            ['id' => 7, 'bonus_id' => 1, 'price' => 360.00, 'days' => 5, 'per_day' => 72.00],
-            ['id' => 8, 'bonus_id' => 2, 'price' => 440.00, 'days' => 5, 'per_day' => 88.00],
-            ['id' => 9, 'bonus_id' => 3, 'price' => 440.00, 'days' => 5, 'per_day' => 88.00],
-        ];
-    }
-
-    /**
-     * @return array<int,string>
-     */
+    /** @return array<int,string> */
     public static function cardTitles(): array
     {
-        return [
-            1 => 'Aleko',
-            2 => 'Vetrovala',
-            3 => 'Machirski',
-            4 => 'Ofeliite Ski Zone Machirski',
-        ];
+        return array_map(static fn (array $card): string => $card[0], self::CARDS);
     }
 
-    /**
-     * @return list<array<string,mixed>>
-     */
+    /** @return list<array<string,mixed>> */
     public static function cards(): array
     {
-        return [
-            ['id' => 1, ...self::localizedTitlePayload(self::cardTitles()[1]), 'service' => 1],
-            ['id' => 2, ...self::localizedTitlePayload(self::cardTitles()[2]), 'service' => 1],
-            ['id' => 3, ...self::localizedTitlePayload(self::cardTitles()[3]), 'service' => 2],
-            ['id' => 4, ...self::localizedTitlePayload(self::cardTitles()[4]), 'service' => 1],
-        ];
+        return self::products(self::CARDS);
     }
 
-    /**
-     * @return list<array{id:int,card_id:int,price:float,days:int,per_day:float}>
-     */
+    /** @return list<array<string,int|float>> */
     public static function cardPrices(): array
     {
-        return [
-            ['id' => 22, 'card_id' => 2, 'price' => 4.00, 'days' => 16, 'per_day' => 0.25],
-            ['id' => 23, 'card_id' => 2, 'price' => 12.00, 'days' => 55, 'per_day' => 0.22],
-            ['id' => 24, 'card_id' => 2, 'price' => 55.00, 'days' => 111, 'per_day' => 0.50],
-            ['id' => 28, 'card_id' => 1, 'price' => 80.00, 'days' => 20, 'per_day' => 4.00],
-            ['id' => 29, 'card_id' => 1, 'price' => 120.00, 'days' => 30, 'per_day' => 4.00],
-            ['id' => 30, 'card_id' => 1, 'price' => 150.00, 'days' => 40, 'per_day' => 3.75],
-            ['id' => 34, 'card_id' => 4, 'price' => 35.00, 'days' => 1, 'per_day' => 35.00],
-            ['id' => 35, 'card_id' => 4, 'price' => 25.00, 'days' => 1, 'per_day' => 25.00],
-        ];
+        return self::productPrices(self::CARDS, 'card_id');
     }
 
-    /**
-     * @return array<int,string>
-     */
+    /** @return array<int,string> */
     public static function equipTitles(): array
     {
-        return [
-            17 => 'Partial Package',
-            18 => 'Training',
-            19 => 'Full Package',
-        ];
+        return array_map(static fn (array $equipment): string => $equipment[0], self::EQUIPMENT);
     }
 
-    /**
-     * @return list<array<string,mixed>>
-     */
+    /** @return list<array<string,mixed>> */
     public static function equips(): array
     {
-        return [
-            ['id' => 17, ...self::localizedTitlePayload(self::equipTitles()[17]), 'service' => 1],
-            ['id' => 18, ...self::localizedTitlePayload(self::equipTitles()[18]), 'service' => 1],
-            ['id' => 19, ...self::localizedTitlePayload(self::equipTitles()[19]), 'service' => 1],
-        ];
+        return self::products(self::EQUIPMENT);
     }
 
-    /**
-     * @return list<array{id:int,equip_id:int,price:float,days:int,per_day:float}>
-     */
+    /** @return list<array<string,int|float>> */
     public static function equipPrices(): array
     {
-        return [
-            ['id' => 36, 'equip_id' => 17, 'price' => 60.00, 'days' => 1, 'per_day' => 60.00],
-            ['id' => 37, 'equip_id' => 17, 'price' => 110.00, 'days' => 2, 'per_day' => 55.00],
-            ['id' => 38, 'equip_id' => 17, 'price' => 155.00, 'days' => 3, 'per_day' => 51.67],
-            ['id' => 39, 'equip_id' => 17, 'price' => 190.00, 'days' => 4, 'per_day' => 47.50],
-            ['id' => 40, 'equip_id' => 17, 'price' => 230.00, 'days' => 5, 'per_day' => 46.00],
-            ['id' => 41, 'equip_id' => 17, 'price' => 260.00, 'days' => 6, 'per_day' => 43.33],
-            ['id' => 77, 'equip_id' => 19, 'price' => 70.00, 'days' => 1, 'per_day' => 70.00],
-            ['id' => 78, 'equip_id' => 19, 'price' => 120.00, 'days' => 2, 'per_day' => 60.00],
-            ['id' => 79, 'equip_id' => 19, 'price' => 165.00, 'days' => 3, 'per_day' => 55.00],
-            ['id' => 80, 'equip_id' => 19, 'price' => 200.00, 'days' => 4, 'per_day' => 50.00],
-            ['id' => 81, 'equip_id' => 19, 'price' => 240.00, 'days' => 5, 'per_day' => 48.00],
-            ['id' => 82, 'equip_id' => 19, 'price' => 270.00, 'days' => 6, 'per_day' => 45.00],
-        ];
+        return self::productPrices(self::EQUIPMENT, 'equip_id');
     }
 
-    /**
-     * @return list<array{id:int,location_from:string,location_to:string,from_time:string,to_time:string,service_id:int}>
-     */
+    /** @return array<int,string> */
+    public static function bonusTitles(): array
+    {
+        return array_map(static fn (array $activity): string => $activity[0], self::ACTIVITIES);
+    }
+
+    /** @return list<array<string,mixed>> */
+    public static function bonuses(CarbonImmutable $today): array
+    {
+        $rows = [];
+        foreach (self::ACTIVITIES as $id => [$en, $de, $es, $key, $pickup, $destination, $offset, $days, $price]) {
+            $start = $today->addDays($offset);
+            $rows[] = [
+                'id' => $id,
+                ...self::localizedTitlePayload($en, $de, $es),
+                'legacy_title_key' => $key,
+                'location_from' => $pickup,
+                'location_to' => $destination,
+                'date_from' => $start->toDateString(),
+                'date_to' => $start->addDays($days - 1)->toDateString(),
+                'price' => $price,
+                'description' => 'Example programme with supervised activities and transport.',
+                'active' => true,
+            ];
+        }
+
+        return $rows;
+    }
+
+    /** @return list<array<string,int|float>> */
+    public static function bonusPrices(): array
+    {
+        $rows = [];
+        foreach (self::ACTIVITIES as $id => $activity) {
+            foreach (array_unique([1, $activity[7]]) as $days) {
+                $amount = $activity[8] / $activity[7] * $days;
+                $rows[] = self::priceRow(count($rows) + 1, 'bonus_id', $id, $days, $amount);
+            }
+        }
+
+        return $rows;
+    }
+
+    /** @return list<array<string,int|string|bool>> */
     public static function locations(): array
     {
-        return [
-            ['id' => 1, 'location_from' => 'HIT', 'location_to' => 'HIT', 'from_time' => '8:00', 'to_time' => '16:45', 'service_id' => 0],
-            ['id' => 2, 'location_from' => 'Russian Embassy', 'location_to' => 'Russian Embassy', 'from_time' => '8:20', 'to_time' => '16:30', 'service_id' => 0],
-            ['id' => 3, 'location_from' => 'Evlogi Georgiev', 'location_to' => 'NDK', 'from_time' => '8:30', 'to_time' => '16:20', 'service_id' => 0],
-            ['id' => 4, 'location_from' => 'NDK', 'location_to' => 'NDK', 'from_time' => '08:30', 'to_time' => '16:20', 'service_id' => 0],
-            ['id' => 5, 'location_from' => 'T. Kableshkov', 'location_to' => 'BILLA Bulgaria Blvd.', 'from_time' => '8:50', 'to_time' => '16:10', 'service_id' => 0],
-            ['id' => 7, 'location_from' => 'SHELL Bulgaria', 'location_to' => 'SHELL Bulgaria', 'from_time' => '8:40', 'to_time' => '16:15', 'service_id' => 0],
-            ['id' => 8, 'location_from' => 'Skiorkata Stop - Boyana', 'location_to' => 'Skiorkata Stop - Boyana', 'from_time' => '9:00', 'to_time' => '16:00', 'service_id' => 0],
-            ['id' => 33, 'location_from' => 'Camelini Montessori Kindergarten', 'location_to' => 'Camelini Montessori Kindergarten', 'from_time' => '13:30', 'to_time' => '15:40', 'service_id' => 15],
-            ['id' => 35, 'location_from' => '51 SU Elisaveta Bagryana', 'location_to' => '51 SU Elisaveta Bagryana', 'from_time' => '8:00', 'to_time' => '10.30', 'service_id' => 16],
-            ['id' => 39, 'location_from' => 'Kableshkov Blvd. - Bulgaria Blvd.', 'location_to' => 'Kableshkov Blvd. - Bulgaria Blvd.', 'from_time' => '8:50', 'to_time' => '16:10', 'service_id' => 11],
-            ['id' => 41, 'location_from' => 'National History Museum Boyana', 'location_to' => 'National History Museum Boyana', 'from_time' => '9:00', 'to_time' => '17:00', 'service_id' => 17],
-            ['id' => 42, 'location_from' => 'National History Museum Boyana', 'location_to' => 'National History Museum Boyana', 'from_time' => '9:00', 'to_time' => '17:00', 'service_id' => 14],
+        $routes = [
+            [1, 'Central Station', 'Pine Ridge Ski Centre', '07:45', '17:15'],
+            [1, 'Riverside School', 'Pine Ridge Ski Centre', '08:00', '17:30'],
+            [11, 'Central Station', 'Snow Valley Centre', '07:30', '17:45'],
+            [3, 'Town Library', 'Bluewater Pool', '09:00', '12:30'],
+            [4, 'Market Square', 'Oakwood Trail Centre', '08:30', '16:30'],
+            [4, 'Westside School', 'Oakwood Trail Centre', '08:45', '16:45'],
+            [5, 'Central Station', 'Private Training Centre', '09:00', '17:00'],
         ];
+        $districts = ['Northgate', 'Eastfield', 'Westbrook', 'Southbank', 'Oakwood', 'Lakeside', 'Riverside', 'Hillcrest'];
+        foreach ([
+            [1, 'Pine Ridge Ski Centre', 8, 17],
+            [11, 'Snow Valley Centre', 9, 16],
+            [3, 'Bluewater Pool', 7, 17],
+            [4, 'Oakwood Trail Centre', 8, 16],
+        ] as [$serviceId, $destination, $pickupHour, $returnHour]) {
+            foreach ($districts as $index => $district) {
+                $routes[] = [
+                    $serviceId, $district.' Community Centre', $destination,
+                    sprintf('%02d:%02d', $pickupHour, $index * 5),
+                    sprintf('%02d:%02d', $returnHour, $index * 5),
+                ];
+            }
+        }
+        $routes[] = [0, 'Example Valley Shuttle Stop', 'Example Valley Visitor Centre', '09:00', '15:30'];
+
+        return array_map(static fn (array $route, int $index): array => [
+            'id' => $index + 1,
+            'service_id' => $route[0],
+            'location_from' => $route[1],
+            'location_to' => $route[2],
+            'from_time' => $route[3],
+            'to_time' => $route[4],
+            'active' => true,
+        ], $routes, array_keys($routes));
     }
 
-    /**
-     * @return array<string,string>
-     */
+    /** @return array<string,string> */
     public static function roleTitles(): array
     {
         return [
@@ -256,28 +210,56 @@ final class SeedCatalog
         ];
     }
 
-    /**
-     * @return array<string,mixed>
-     */
-    public static function localizedTitlePayload(string $title): array
+    /** @return array<string,mixed> */
+    public static function localizedTitlePayload(string $title, ?string $german = null, ?string $spanish = null): array
     {
         return [
             'title' => $title,
             'title_bg' => $title,
             'title_en' => $title,
-            'title_translations' => self::translations($title),
+            'title_translations' => json_encode(['en' => $title, 'de' => $german ?? $title, 'es' => $spanish ?? $title], JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE),
         ];
     }
 
-    /**
-     * @return array<string,string>
-     */
+    /** @return array<string,string> */
     public static function translations(string $title): array
     {
-        return [
-            'en' => $title,
-            'de' => $title,
-            'es' => $title,
-        ];
+        return ['en' => $title, 'de' => $title, 'es' => $title];
+    }
+
+    /**
+     * @param  array<int,array{string,string,string,int,float}>  $products
+     * @return list<array<string,mixed>>
+     */
+    private static function products(array $products): array
+    {
+        $rows = [];
+        foreach ($products as $id => [$en, $de, $es, $serviceId]) {
+            $rows[] = ['id' => $id, ...self::localizedTitlePayload($en, $de, $es), 'service' => $serviceId, 'active' => true];
+        }
+
+        return $rows;
+    }
+
+    /**
+     * @param  array<int,array{string,string,string,int,float}>  $products
+     * @return list<array<string,int|float>>
+     */
+    private static function productPrices(array $products, string $foreignKey): array
+    {
+        $rows = [];
+        foreach ($products as $id => $product) {
+            foreach ([1, 3, 5] as $days) {
+                $rows[] = self::priceRow(count($rows) + 1, $foreignKey, $id, $days, $product[4] * $days);
+            }
+        }
+
+        return $rows;
+    }
+
+    /** @return array<string,int|float> */
+    private static function priceRow(int $id, string $foreignKey, int $parentId, int $days, float $amount): array
+    {
+        return ['id' => $id, $foreignKey => $parentId, 'days' => $days, 'price' => round($amount, 2), 'per_day' => round($amount / $days, 2)];
     }
 }

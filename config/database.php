@@ -33,6 +33,8 @@ return [
 
     'default' => env('DB_CONNECTION', 'sqlite'),
 
+    'development_database' => env('DB_DEVELOPMENT_DATABASE'),
+
     /*
     |--------------------------------------------------------------------------
     | Database Connections
@@ -82,7 +84,7 @@ return [
             'driver' => 'mysql',
             'host' => env('LEGACY_DB_HOST', '127.0.0.1'),
             'port' => env('LEGACY_DB_PORT', '3306'),
-            'database' => env('LEGACY_DB_DATABASE', 'briliabg_shadmin'),
+            'database' => env('LEGACY_DB_DATABASE'),
             'username' => env('LEGACY_DB_USERNAME'),
             'password' => env('LEGACY_DB_PASSWORD'),
             'charset' => 'utf8mb4',

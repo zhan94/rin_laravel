@@ -195,12 +195,8 @@ export interface BookingPaymentApplyResult {
     payment: {
         mode: 'increment' | 'set';
         amount_eur: number;
-        amount_bgn: number;
         paid_eur: number | null;
-        paid_bgn: number;
         sum_paid_eur: number | null;
-        sum_paid_bgn: number | null;
         remaining_eur: number | null;
-        remaining_bgn: number | null;
     };
 }

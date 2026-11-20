@@ -30,8 +30,8 @@ class CardApiTest extends TestCase
         ]);
         $card->prices()->create([
             'days' => 2,
-            'price' => 39.12,
-            'per_day' => 19.56,
+            'price' => 20.25,
+            'per_day' => 10.13,
         ]);
 
         $response = $this->getJson('/api/v1/cards');
@@ -62,7 +62,7 @@ class CardApiTest extends TestCase
             ],
             'service' => $service->id,
             'prices' => [
-                ['days' => 2, 'price_eur' => 20],
+                ['days' => 2, 'price_eur' => 20.25],
                 ['days' => 4, 'price_eur' => 36.5],
             ],
         ]);
@@ -73,7 +73,7 @@ class CardApiTest extends TestCase
             ->assertJsonPath('data.translations.de', 'Skikarte')
             ->assertJsonPath('data.service_id', $service->id)
             ->assertJsonPath('data.prices.0.days', 2)
-            ->assertJsonPath('data.prices.0.price_bgn', 39.12)
+            ->assertJsonPath('data.prices.0.price_eur', 20.25)
             ->assertJsonPath('errors', []);
 
         $this->assertDatabaseHas('cards', [
@@ -83,8 +83,8 @@ class CardApiTest extends TestCase
 
         $this->assertDatabaseHas('cards_price', [
             'days' => 2,
-            'price' => 39.12,
-            'per_day' => 19.56,
+            'price' => 20.25,
+            'per_day' => 10.13,
         ]);
     }
 
@@ -103,7 +103,7 @@ class CardApiTest extends TestCase
             ],
         ]);
         $card->prices()->createMany([
-            ['days' => 1, 'price' => 19.56, 'per_day' => 19.56],
+            ['days' => 1, 'price' => 10.13, 'per_day' => 10.13],
             ['days' => 2, 'price' => 29.34, 'per_day' => 14.67],
         ]);
 
@@ -128,8 +128,8 @@ class CardApiTest extends TestCase
         $this->assertDatabaseHas('cards_price', [
             'card_id' => $card->id,
             'days' => 3,
-            'price' => 58.67,
-            'per_day' => 19.56,
+            'price' => 30,
+            'per_day' => 10,
         ]);
     }
 

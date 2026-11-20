@@ -65,11 +65,11 @@ final readonly class BookingService
         BookingData $data,
         ?User $actor = null,
         bool $preservePaid = false,
-        ?int $expectedPaid = null,
+        ?float $expectedPaid = null,
     ): Booking {
         return DB::transaction(function () use ($booking, $data, $actor, $preservePaid, $expectedPaid): Booking {
             $current = Booking::query()->lockForUpdate()->findOrFail($booking->id);
-            if ($actor !== null && ! $preservePaid && ($current->paid ?? 0) !== $expectedPaid) {
+            if ($actor !== null && ! $preservePaid && (float) ($current->paid ?? 0) !== $expectedPaid) {
                 throw new ApiException('booking_payment_changed', 'The paid balance changed. Reload the booking and try again.', 409);
             }
 
@@ -132,7 +132,11 @@ final readonly class BookingService
             $this->repository->syncBookingDates((int) $booking->id, []);
         }
 
-        $this->repository->syncPaymentTotals((int) $booking->id, $booking->sum_paid, $booking->paid);
+        $this->repository->syncPaymentTotals(
+            (int) $booking->id,
+            $booking->sum_paid !== null ? (float) $booking->sum_paid : null,
+            $booking->paid !== null ? (float) $booking->paid : null,
+        );
 
         $resolvedNote = $this->skiWorkflow->resolveNote($booking, $data, $customerId);
 

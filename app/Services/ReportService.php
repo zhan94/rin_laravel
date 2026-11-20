@@ -7,6 +7,7 @@ namespace App\Services;
 use App\DTOs\Reports\ReportFilterData;
 use App\Repositories\Contracts\Reports\ReportRepositoryInterface;
 use App\Support\Bookings\SkiNoteMeta;
+use App\Support\Pricing\EurCurrency;
 use App\Support\Reports\ReportPresenter;
 
 final readonly class ReportService
@@ -59,7 +60,7 @@ final readonly class ReportService
             'summary' => [
                 'sum_total' => $sumTotal,
                 'paid_total' => $paidTotal,
-                'due_total' => max(0, $sumTotal - $paidTotal),
+                'due_total' => EurCurrency::balance($sumTotal, $paidTotal),
                 'due_count' => $totals['due_count'],
                 'total_count' => $total,
             ],

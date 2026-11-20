@@ -6,6 +6,7 @@ namespace Database\Factories;
 
 use App\Models\Booking;
 use App\Models\BookingDate;
+use App\Models\Location;
 use App\Models\ServiceDate;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -22,8 +23,16 @@ class BookingDateFactory extends Factory
     public function definition(): array
     {
         return [
-            'booking_id' => Booking::factory(),
             'service_date_id' => ServiceDate::factory(),
+            'booking_id' => function (array $attributes): int {
+                $date = ServiceDate::query()->with('slot')->findOrFail($attributes['service_date_id']);
+                $serviceId = $date->slot?->service_id;
+
+                return (int) Booking::factory()->create([
+                    'service' => $serviceId,
+                    'location' => Location::factory()->state(['service_id' => $serviceId]),
+                ])->id;
+            },
         ];
     }
 }

@@ -13,7 +13,7 @@ class RoleSeeder extends Seeder
 {
     public function run(): void
     {
-        DatabaseSeeder::assertIsolatedDatabase();
+        DatabaseSeeder::assertDevelopmentDatabase();
 
         $roles = [
             [

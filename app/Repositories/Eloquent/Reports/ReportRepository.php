@@ -94,8 +94,8 @@ final class ReportRepository implements ReportRepositoryInterface
                     'customer_id' => (int) ($row->customer_id ?? 0),
                     'service_id' => (int) ($row->service_id ?? 0),
                     'location_id' => (int) ($row->location_id ?? 0),
-                    'sum_paid' => $row->sum_paid !== null ? (int) $row->sum_paid : null,
-                    'paid' => $row->paid !== null ? (int) $row->paid : null,
+                    'sum_paid' => $row->sum_paid !== null ? (float) $row->sum_paid : null,
+                    'paid' => $row->paid !== null ? (float) $row->paid : null,
                     'note' => $row->note !== null ? (string) $row->note : null,
                     'firstname' => $row->firstname !== null ? (string) $row->firstname : null,
                     'surname' => $row->surname !== null ? (string) $row->surname : null,
@@ -136,8 +136,8 @@ final class ReportRepository implements ReportRepositoryInterface
             ->first();
 
         return [
-            'sum_total' => (int) ($row->sum_total ?? 0),
-            'paid_total' => (int) ($row->paid_total ?? 0),
+            'sum_total' => round((float) ($row->sum_total ?? 0), 2),
+            'paid_total' => round((float) ($row->paid_total ?? 0), 2),
             'due_count' => (int) ($row->due_count ?? 0),
         ];
     }

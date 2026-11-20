@@ -50,8 +50,8 @@ final class BookingConfirmationMail extends Mailable
                 'customerName' => $customerName !== '' ? $customerName : 'Customer',
                 'serviceName' => $serviceName,
                 'dates' => $dates,
-                'totalEur' => number_format(((int) $this->booking->sum_paid) / 1.96, 2, '.', ''),
-                'paidEur' => number_format(((int) $this->booking->paid) / 1.96, 2, '.', ''),
+                'totalEur' => number_format((float) $this->booking->sum_paid, 2, '.', ''),
+                'paidEur' => number_format((float) $this->booking->paid, 2, '.', ''),
             ],
         );
     }

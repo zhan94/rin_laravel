@@ -4,7 +4,7 @@ import {
     formatGermanDate as formatDateLabel,
 } from '@/modules/calendar/dateDisplay';
 import { formatIsoDate } from '@/modules/calendar/dateUtils';
-import { formatEurBgnPairFromBgn } from '@/modules/money/currency';
+import { formatEur } from '@/modules/money/currency';
 import { renderPrintReport, reportCsv } from '@/modules/reports/reportOutput';
 import {
     listReports,
@@ -158,7 +158,7 @@ export function useReportsPage() {
 
     function formatRow(row: ReportRow): DisplayRow {
         const dueRaw = Number(row.due ?? 0);
-        const paymentLabel = `${formatCurrencyPair(Number(row.paid ?? 0))} / ${formatCurrencyPair(Number(row.sum_paid ?? 0))}`;
+        const paymentLabel = `${formatCurrency(Number(row.paid ?? 0))} / ${formatCurrency(Number(row.sum_paid ?? 0))}`;
 
         return {
             bookingId: row.booking_id,
@@ -170,7 +170,7 @@ export function useReportsPage() {
             due:
                 dueRaw <= 0.01
                     ? t('reports.paid')
-                    : `${t('reports.remaining')}: ${formatCurrencyPair(dueRaw)}`,
+                    : `${t('reports.remaining')}: ${formatCurrency(dueRaw)}`,
             dueRaw,
             payment: paymentLabel,
             parent: row.parent_name ?? '—',
@@ -213,7 +213,7 @@ export function useReportsPage() {
     });
 
     const tfootSummaryLabel = computed(() => {
-        return `${t('reports.total_amount')}: ${formatCurrencyPair(stats.value.sum)} · ${t('reports.paid')}: ${formatCurrencyPair(stats.value.paid)} · ${t('reports.remaining')}: ${formatCurrencyPair(stats.value.due)}`;
+        return `${t('reports.total_amount')}: ${formatCurrency(stats.value.sum)} · ${t('reports.paid')}: ${formatCurrency(stats.value.paid)} · ${t('reports.remaining')}: ${formatCurrency(stats.value.due)}`;
     });
 
     const visibleColumnCount = computed(
@@ -333,8 +333,8 @@ export function useReportsPage() {
         }
     }
 
-    function formatCurrencyPair(bgnValue: number): string {
-        return formatEurBgnPairFromBgn(bgnValue, localeTag.value);
+    function formatCurrency(amount: number): string {
+        return formatEur(amount, localeTag.value);
     }
 
     function applyLinkedFilters(): void {
@@ -620,7 +620,7 @@ export function useReportsPage() {
         canLoadNextPage,
         applyPreset,
         formatDateLabel,
-        formatCurrencyPair,
+        formatCurrency,
         generateReport,
         goToPage,
         onPerPageChange,

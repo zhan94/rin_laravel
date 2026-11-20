@@ -9,7 +9,7 @@ use App\Models\Booking;
 use App\Models\User;
 use App\Repositories\Contracts\Bookings\BookingRepositoryInterface;
 use App\Support\Auth\StaffAudit;
-use App\Support\Pricing\BgnCurrency;
+use App\Support\Pricing\EurCurrency;
 use Illuminate\Support\Facades\DB;
 
 final readonly class BookingPaymentService
@@ -24,25 +24,18 @@ final readonly class BookingPaymentService
      */
     public function validateAmount(Booking $booking, float $amountEur): array
     {
-        $amountBgn = $this->eurToBgn($amountEur);
-        $sumPaidBgn = $booking->sum_paid !== null ? (int) $booking->sum_paid : null;
-        $paidBgn = $booking->paid !== null ? (int) $booking->paid : 0;
-        $remainingBeforeBgn = $sumPaidBgn !== null ? max(0, $sumPaidBgn - $paidBgn) : null;
-
-        $valid = $remainingBeforeBgn === null || $amountBgn <= $remainingBeforeBgn;
-        $remainingAfterBgn = $remainingBeforeBgn !== null
-            ? max(0, $remainingBeforeBgn - $amountBgn)
+        $amountEur = EurCurrency::normalizeAmount($amountEur) ?? 0.0;
+        $remaining = $booking->sum_paid !== null
+            ? EurCurrency::balance((float) $booking->sum_paid, (float) $booking->paid)
             : null;
+        $valid = $remaining === null || $amountEur <= $remaining;
 
         return [
             'booking_id' => (int) $booking->id,
             'valid' => $valid,
-            'amount_eur' => $this->normalizeEur($amountEur),
-            'amount_bgn' => $amountBgn,
-            'remaining_before_eur' => $this->bgnToEur($remainingBeforeBgn),
-            'remaining_before_bgn' => $remainingBeforeBgn,
-            'remaining_after_eur' => $this->bgnToEur($remainingAfterBgn),
-            'remaining_after_bgn' => $remainingAfterBgn,
+            'amount_eur' => $amountEur,
+            'remaining_before_eur' => $remaining,
+            'remaining_after_eur' => $remaining !== null ? EurCurrency::balance($remaining, $amountEur) : null,
             'message' => $valid
                 ? 'Payment amount is valid.'
                 : 'The amount is greater than the remaining balance.',
@@ -52,7 +45,7 @@ final readonly class BookingPaymentService
     /**
      * @return array<string,mixed>
      */
-    public function apply(int $bookingId, float $amountEur, string $mode, User $actor, ?int $expectedPaid): array
+    public function apply(int $bookingId, float $amountEur, string $mode, User $actor, ?float $expectedPaid): array
     {
         $mode = strtolower(trim($mode));
 
@@ -64,35 +57,32 @@ final readonly class BookingPaymentService
             );
         }
 
-        $amountBgn = $this->eurToBgn($amountEur);
+        $amountEur = EurCurrency::normalizeAmount($amountEur) ?? 0.0;
 
-        return DB::transaction(function () use ($bookingId, $amountBgn, $amountEur, $mode, $actor, $expectedPaid): array {
+        return DB::transaction(function () use ($bookingId, $amountEur, $mode, $actor, $expectedPaid): array {
             $locked = Booking::query()->lockForUpdate()->find($bookingId);
             if ($locked === null) {
                 throw new ApiException('booking_not_found', 'Booking not found.', 404);
             }
 
-            $total = $locked->sum_paid;
-            $currentPaid = $locked->paid ?? 0;
+            $total = $locked->sum_paid !== null ? (float) $locked->sum_paid : null;
+            $currentPaid = (float) ($locked->paid ?? 0);
             if ($mode === 'set' && $currentPaid !== $expectedPaid) {
                 throw new ApiException('booking_payment_changed', 'The paid balance changed. Reload the booking and try again.', 409);
             }
 
-            $nextPaid = $mode === 'set' ? $amountBgn : $currentPaid + $amountBgn;
-            if ($nextPaid > 2147483647 || ($total !== null && $nextPaid > $total)) {
+            $nextPaid = $mode === 'set' ? $amountEur : round($currentPaid + $amountEur, 2);
+            if ($nextPaid > EurCurrency::MAX_BOOKING_AMOUNT || ($total !== null && $nextPaid > $total)) {
                 throw new ApiException(
                     errorCode: 'booking_payment_exceeds_remaining',
                     message: 'Payment exceeds remaining balance.',
-                    details: ['sum_paid_bgn' => $total, 'paid_bgn' => $currentPaid, 'requested_paid_bgn' => $nextPaid],
+                    details: ['sum_paid_eur' => $total, 'paid_eur' => $currentPaid, 'requested_paid_eur' => $nextPaid],
                 );
             }
 
-            $locked->paid = $nextPaid;
-            $locked->save();
+            $locked->update(['paid' => $nextPaid]);
             $this->repository->syncPaymentTotals($bookingId, $total, $nextPaid);
             StaffAudit::committed('booking.payment.updated', $actor->id, $bookingId);
-            $remaining = $total !== null ? max(0, $total - $nextPaid) : null;
-            $paidEur = $this->bgnToEur($nextPaid);
             $bookingLabel = $locked->displayLabel();
 
             $this->managerActionNotifier->notifyAdminsForManagerAction(
@@ -101,10 +91,10 @@ final readonly class BookingPaymentService
                 actionKey: 'updated',
                 title: sprintf('Payment updated for booking %s', $bookingLabel),
                 message: sprintf(
-                    '%s updated payment for booking %s to %s EUR.',
+                    '%s updated payment for booking %s to %.2F EUR.',
                     $this->managerActionNotifier->actorLabel($actor),
                     $bookingLabel,
-                    $paidEur,
+                    $nextPaid,
                 ),
                 entityType: 'booking',
                 entityId: $bookingId,
@@ -113,30 +103,11 @@ final readonly class BookingPaymentService
 
             return [
                 'mode' => $mode,
-                'amount_eur' => $this->normalizeEur($amountEur),
-                'amount_bgn' => $amountBgn,
-                'paid_eur' => $paidEur,
-                'paid_bgn' => $nextPaid,
-                'sum_paid_eur' => $this->bgnToEur($total),
-                'sum_paid_bgn' => $total,
-                'remaining_eur' => $this->bgnToEur($remaining),
-                'remaining_bgn' => $remaining,
+                'amount_eur' => $amountEur,
+                'paid_eur' => $nextPaid,
+                'sum_paid_eur' => $total,
+                'remaining_eur' => $total !== null ? EurCurrency::balance($total, $nextPaid) : null,
             ];
         }, 3);
-    }
-
-    private function eurToBgn(float $amountEur): int
-    {
-        return BgnCurrency::intFromEurValue($amountEur) ?? 0;
-    }
-
-    private function bgnToEur(?int $amountBgn): ?float
-    {
-        return BgnCurrency::toEur($amountBgn);
-    }
-
-    private function normalizeEur(float $amountEur): float
-    {
-        return round(max(0, $amountEur), 2);
     }
 }

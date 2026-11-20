@@ -146,8 +146,8 @@ final class SeasonRepository implements SeasonRepositoryInterface
 
             $bookingSets[$slotId][$bookingId] = true;
             $stats[$slotId]['bookings_count']++;
-            $stats[$slotId]['sum_total'] += (float) ($row->sum_paid ?? 0);
-            $stats[$slotId]['paid_total'] += (float) ($row->paid ?? 0);
+            $stats[$slotId]['sum_total'] = round($stats[$slotId]['sum_total'] + (float) ($row->sum_paid ?? 0), 2);
+            $stats[$slotId]['paid_total'] = round($stats[$slotId]['paid_total'] + (float) ($row->paid ?? 0), 2);
 
             $customerId = (int) ($row->customer_id ?? 0);
             if ($customerId > 0 && ! isset($customerSets[$slotId][$customerId])) {
@@ -213,8 +213,8 @@ final class SeasonRepository implements SeasonRepositoryInterface
             $stats[$bonusId] = [
                 'bookings_count' => (int) ($row->bookings_count ?? 0),
                 'customers_count' => (int) ($row->customers_count ?? 0),
-                'sum_total' => (float) ($row->sum_total ?? 0),
-                'paid_total' => (float) ($row->paid_total ?? 0),
+                'sum_total' => round((float) ($row->sum_total ?? 0), 2),
+                'paid_total' => round((float) ($row->paid_total ?? 0), 2),
             ];
         }
 

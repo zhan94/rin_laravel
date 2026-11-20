@@ -12,7 +12,7 @@ class TestLocationsSeeder extends Seeder
 {
     public function run(): void
     {
-        DatabaseSeeder::assertIsolatedDatabase();
+        DatabaseSeeder::assertDevelopmentDatabase();
 
         if (! Schema::hasTable('locations')) {
             return;
@@ -42,15 +42,15 @@ class TestLocationsSeeder extends Seeder
             [
                 'id' => 9002,
                 'location_from' => 'Business Park',
-                'location_to' => 'Mountain School Base',
+                'location_to' => 'Mountain Walking Centre',
                 'from_time' => '08:00',
                 'to_time' => '17:15',
-                'service_id' => 2,
+                'service_id' => 4,
             ],
             [
                 'id' => 9003,
                 'location_from' => 'City Mall',
-                'location_to' => 'Summer Club Base',
+                'location_to' => 'Swimming Centre',
                 'from_time' => '08:30',
                 'to_time' => '15:30',
                 'service_id' => 3,
@@ -66,10 +66,10 @@ class TestLocationsSeeder extends Seeder
             [
                 'id' => 9005,
                 'location_from' => 'Airport Terminal 2',
-                'location_to' => 'Swim Camp Hall',
+                'location_to' => 'Training Centre',
                 'from_time' => '09:00',
                 'to_time' => '18:00',
-                'service_id' => 14,
+                'service_id' => 5,
             ],
             [
                 'id' => 9006,
@@ -77,7 +77,7 @@ class TestLocationsSeeder extends Seeder
                 'location_to' => 'Student Swimming Pool',
                 'from_time' => '13:15',
                 'to_time' => '16:00',
-                'service_id' => 16,
+                'service_id' => 3,
             ],
         ];
     }

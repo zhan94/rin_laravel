@@ -22,8 +22,8 @@ class BookingPaymentFactory extends Factory
     {
         return [
             'booking_id' => Booking::factory(),
-            'sum_paid' => fake()->numberBetween(0, 2000),
-            'paid' => fake()->numberBetween(0, 1000),
+            'sum_paid' => fn (array $attributes): ?string => Booking::query()->findOrFail($attributes['booking_id'])->sum_paid,
+            'paid' => fn (array $attributes): ?string => Booking::query()->findOrFail($attributes['booking_id'])->paid,
             'created_at' => now(),
             'updated_at' => now(),
         ];

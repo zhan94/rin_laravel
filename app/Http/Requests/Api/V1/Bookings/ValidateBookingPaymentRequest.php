@@ -19,16 +19,7 @@ class ValidateBookingPaymentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'amount' => ['required', 'numeric', 'min:0'],
+            'amount' => ['required', 'numeric', 'min:0', 'max:1000000000'],
         ];
-    }
-
-    protected function prepareForValidation(): void
-    {
-        $this->merge([
-            'amount' => $this->input('amount') !== null
-                ? (float) $this->input('amount')
-                : null,
-        ]);
     }
 }

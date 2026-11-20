@@ -1,4 +1,5 @@
 import type { UiTranslationKey } from '@/composables/useUiI18n';
+import { formatEur } from '@/modules/money/currency';
 
 export interface ParsedInlinePayment {
     valid: boolean;
@@ -34,12 +35,13 @@ export function parseInlinePaymentAmount(
 
 export function buildPaymentAppliedMessage(
     remainingEur: number | null,
+    localeTag?: string,
 ): BookingPaymentMessage {
     if (remainingEur !== null) {
         return {
             messageKey: 'bookings.payment_remaining',
             params: {
-                amount: remainingEur.toFixed(2),
+                amount: formatEur(remainingEur, localeTag),
             },
         };
     }

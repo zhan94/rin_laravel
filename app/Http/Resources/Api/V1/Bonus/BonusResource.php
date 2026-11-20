@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Resources\Api\V1\Bonus;
 
 use App\Http\Resources\Concerns\FormatsResourceValues;
-use App\Support\Pricing\BgnCurrency;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -19,7 +18,6 @@ class BonusResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $priceBgn = $this->price !== null ? (float) $this->price : null;
         $translations = $this->displayTranslations();
 
         return [
@@ -32,8 +30,7 @@ class BonusResource extends JsonResource
             'date_from' => $this->formatDate($this->date_from),
             'date_to' => $this->formatDate($this->date_to),
             'description' => $this->description !== null ? (string) $this->description : null,
-            'price_bgn' => $priceBgn !== null ? round($priceBgn, 2) : null,
-            'price_eur' => BgnCurrency::toEur($priceBgn),
+            'price_eur' => $this->price !== null ? (float) $this->price : null,
             'prices' => BonusPriceResource::collection($this->whenLoaded('prices'))->resolve(),
             'prices_count' => $this->relationLoaded('prices') ? $this->prices->count() : null,
         ];

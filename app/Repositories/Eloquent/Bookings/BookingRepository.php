@@ -290,7 +290,7 @@ final class BookingRepository implements BookingRepositoryInterface
         }
     }
 
-    public function syncPaymentTotals(int $bookingId, ?int $sumPaid, ?int $paid): void
+    public function syncPaymentTotals(int $bookingId, ?float $sumPaid, ?float $paid): void
     {
         BookingPayment::query()->updateOrCreate(
             ['booking_id' => $bookingId],

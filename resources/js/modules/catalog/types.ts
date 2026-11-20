@@ -3,8 +3,6 @@ import type { LocalizedText } from '@/modules/localization';
 export interface CatalogPrice {
     id: number;
     days: number;
-    price_bgn: number;
-    per_day_bgn: number;
     price_eur: number;
     per_day_eur: number;
 }

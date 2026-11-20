@@ -30,8 +30,8 @@ class EquipApiTest extends TestCase
         ]);
         $equip->prices()->create([
             'days' => 2,
-            'price' => 58.67,
-            'per_day' => 29.34,
+            'price' => 30.25,
+            'per_day' => 15.13,
         ]);
 
         $response = $this->getJson('/api/v1/equips');
@@ -62,7 +62,7 @@ class EquipApiTest extends TestCase
             ],
             'service' => $service->id,
             'prices' => [
-                ['days' => 2, 'price_eur' => 30],
+                ['days' => 2, 'price_eur' => 30.25],
                 ['days' => 4, 'price_eur' => 54.5],
             ],
         ]);
@@ -73,7 +73,7 @@ class EquipApiTest extends TestCase
             ->assertJsonPath('data.translations.de', 'Ausrüstung')
             ->assertJsonPath('data.service_id', $service->id)
             ->assertJsonPath('data.prices.0.days', 2)
-            ->assertJsonPath('data.prices.0.price_bgn', 58.67)
+            ->assertJsonPath('data.prices.0.price_eur', 30.25)
             ->assertJsonPath('errors', []);
 
         $this->assertDatabaseHas('equips', [
@@ -83,8 +83,8 @@ class EquipApiTest extends TestCase
 
         $this->assertDatabaseHas('equips_price', [
             'days' => 2,
-            'price' => 58.67,
-            'per_day' => 29.34,
+            'price' => 30.25,
+            'per_day' => 15.13,
         ]);
     }
 
@@ -128,8 +128,8 @@ class EquipApiTest extends TestCase
         $this->assertDatabaseHas('equips_price', [
             'equip_id' => $equip->id,
             'days' => 3,
-            'price' => 88.01,
-            'per_day' => 29.34,
+            'price' => 45,
+            'per_day' => 15,
         ]);
     }
 

@@ -14,7 +14,7 @@ class TestUsersSeeder extends Seeder
 {
     public function run(): void
     {
-        DatabaseSeeder::assertIsolatedDatabase();
+        DatabaseSeeder::assertDevelopmentDatabase();
 
         $password = Hash::make('password');
 

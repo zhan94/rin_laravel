@@ -33,7 +33,6 @@ function bonus(id: number, title: string): BonusRecord {
         date_from: null,
         date_to: null,
         description: null,
-        price_bgn: null,
         price_eur: null,
         prices: [],
         prices_count: 0,

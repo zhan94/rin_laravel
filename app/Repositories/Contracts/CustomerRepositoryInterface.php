@@ -25,9 +25,9 @@ interface CustomerRepositoryInterface
      *     service_id:?int,
      *     service_type:?int,
      *     service_title:string,
-     *     sum_paid:int,
-     *     paid:int,
-     *     due:int
+     *     sum_paid:float,
+     *     paid:float,
+     *     due:float
      * }>
      */
     public function unpaidRows(?string $search = null): array;

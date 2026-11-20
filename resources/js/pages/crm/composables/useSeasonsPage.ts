@@ -1,5 +1,5 @@
 import { useUiI18n } from '@/composables/useUiI18n';
-import { formatEurBgnPairFromEur } from '@/modules/money/currency';
+import { formatEur } from '@/modules/money/currency';
 import {
     formatSeasonDayMonth,
     parseSeasonDayMonth,
@@ -58,7 +58,7 @@ export function useSeasonsPage() {
     const showDatesColumn = computed(() => state.selectedType === 'service');
 
     function formatCurrency(amount: number): string {
-        return formatEurBgnPairFromEur(amount, localeTag.value);
+        return formatEur(amount, localeTag.value);
     }
 
     function hydrateDefaultsForm(overview: SeasonOverview): void {

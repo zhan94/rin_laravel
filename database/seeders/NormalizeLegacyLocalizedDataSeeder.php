@@ -17,6 +17,8 @@ class NormalizeLegacyLocalizedDataSeeder extends Seeder
 {
     public function run(): void
     {
+        DatabaseSeeder::assertDevelopmentDatabase();
+
         $this->normalizeServices();
         $this->normalizeBonus();
         $this->normalizeCards();
@@ -69,7 +71,7 @@ class NormalizeLegacyLocalizedDataSeeder extends Seeder
                 ->update([
                     'title_bg' => $title,
                     'title_en' => $title,
-                    'title_translations' => SeedCatalog::translations($title),
+                    'title_translations' => json_encode(SeedCatalog::translations($title), JSON_THROW_ON_ERROR),
                 ]);
         }
     }
@@ -88,10 +90,9 @@ class NormalizeLegacyLocalizedDataSeeder extends Seeder
                 $serviceTitle = SeedCatalog::serviceTitles()[(int) $service->id]
                     ?? $this->resolveFallbackTitle($service);
 
-                $range = $this->yearRange(
-                    $slot->date_start?->format('Y-m-d'),
-                    $slot->date_end?->format('Y-m-d'),
-                );
+                $start = $slot->getRawOriginal('date_start');
+                $end = $slot->getRawOriginal('date_end');
+                $range = $this->yearRange(is_string($start) ? $start : null, is_string($end) ? $end : null);
 
                 $currentName = trim((string) $slot->name);
 

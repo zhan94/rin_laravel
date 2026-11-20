@@ -116,7 +116,7 @@ class ManagerActionNotificationApiTest extends TestCase
         $admin = $this->createUserWithRole(RoleKey::ADMIN);
         $superAdmin = $this->createUserWithRole(RoleKey::SUPER_ADMIN);
 
-        $booking = $this->makeBooking(sumPaidBgn: 196, paidBgn: 0);
+        $booking = $this->makeBooking(sumPaid: 100, paid: 0);
 
         $this->actingAs($manager);
 
@@ -159,7 +159,7 @@ class ManagerActionNotificationApiTest extends TestCase
         ]);
     }
 
-    private function makeBooking(int $sumPaidBgn, int $paidBgn): Booking
+    private function makeBooking(int $sumPaid, int $paid): Booking
     {
         $service = Service::factory()->create();
         $customer = Customer::factory()->create();
@@ -169,8 +169,8 @@ class ManagerActionNotificationApiTest extends TestCase
             'customer_id' => $customer->id,
             'service' => $service->id,
             'service_type' => Booking::SERVICE_TYPE_SERVICE,
-            'sum_paid' => $sumPaidBgn,
-            'paid' => $paidBgn,
+            'sum_paid' => $sumPaid,
+            'paid' => $paid,
             'location' => $location->id,
             'approved' => false,
             'active' => true,

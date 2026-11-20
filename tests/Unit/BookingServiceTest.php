@@ -32,8 +32,8 @@ it('creates booking records with customer, dates, and payment totals', function 
         'service_id' => $catalogService->id,
         'location_id' => $location->id,
         'dates' => ['2026-02-22', '2026-02-21'],
-        'sum_paid' => 100,
-        'paid' => 30,
+        'sum_paid' => 100.25,
+        'paid' => 30.5,
         'skill_id' => 1,
     ]);
 
@@ -42,8 +42,8 @@ it('creates booking records with customer, dates, and payment totals', function 
     expect($booking->id)->toBeInt()
         ->and((int) $booking->service)->toBe((int) $catalogService->id)
         ->and((int) $booking->location)->toBe((int) $location->id)
-        ->and((int) $booking->sum_paid)->toBe(196)
-        ->and((int) $booking->paid)->toBe(59)
+        ->and($booking->sum_paid)->toBe('100.25')
+        ->and($booking->paid)->toBe('30.50')
         ->and($booking->customer)->not()->toBeNull()
         ->and($booking->bookingDates)->toHaveCount(2);
 
@@ -79,8 +79,8 @@ it('updates an existing booking and keeps relations synchronized', function (): 
     ]));
 
     expect((int) $updated->id)->toBe((int) $created->id)
-        ->and((int) $updated->sum_paid)->toBe(117)
-        ->and((int) $updated->paid)->toBe(39)
+        ->and($updated->sum_paid)->toBe('60.00')
+        ->and($updated->paid)->toBe('20.00')
         ->and($updated->bookingDates)->toHaveCount(2);
 });
 

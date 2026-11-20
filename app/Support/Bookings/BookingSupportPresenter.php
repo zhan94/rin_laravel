@@ -180,8 +180,8 @@ final class BookingSupportPresenter
                 'equip_enabled' => $equipEnabled,
                 'approved' => (bool) ($booking['approved'] ?? false),
                 'lunch' => (bool) ($booking['lunch'] ?? false),
-                'sum_paid' => $booking['sum_paid'] !== null ? (int) $booking['sum_paid'] : null,
-                'paid' => $booking['paid'] !== null ? (int) $booking['paid'] : null,
+                'sum_paid' => $booking['sum_paid'] !== null ? (float) $booking['sum_paid'] : null,
+                'paid' => $booking['paid'] !== null ? (float) $booking['paid'] : null,
                 'note' => $skiMeta->note,
                 'ski_form' => [
                     'shoe_size' => $shoeSize,

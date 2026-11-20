@@ -150,8 +150,8 @@ test('protects staff pages and serves the synthetic dashboard and catalogs', asy
 
     for (const [path, value] of [
         ['customers', 'Sample Customer 060'],
-        ['locations', 'Example Central Station'],
-        ['cards', 'Ski school day pass'],
+        ['locations', 'Central Station'],
+        ['cards', 'Ski day pass'],
     ]) {
         const api = page.waitForResponse(
             (response) =>
@@ -334,7 +334,7 @@ test('keeps the selected service pickup options when an older response arrives l
         .getByRole('option', { name: 'Ski school', exact: true })
         .getAttribute('value');
     const hikingId = await service
-        .getByRole('option', { name: 'Mountain hiking', exact: true })
+        .getByRole('option', { name: 'Mountain walks', exact: true })
         .getAttribute('value');
     const skiPath = `booking-support/services/${skiId}/availability`;
     const hikingPath = `booking-support/services/${hikingId}/availability`;
@@ -355,7 +355,7 @@ test('keeps the selected service pickup options when an older response arrives l
         await service.selectOption({ label: 'Ski school' });
         await intercepted.promise;
         const hikingResponse = apiResponse(page, hikingPath, 'GET');
-        await service.selectOption({ label: 'Mountain hiking' });
+        await service.selectOption({ label: 'Mountain walks' });
         expect((await hikingResponse).status()).toBe(200);
         const trigger = page.locator('.booking-location-trigger');
         await expect(trigger).toBeEnabled();
@@ -366,10 +366,10 @@ test('keeps the selected service pickup options when an older response arrives l
         await trigger.click();
         const options = page.locator('.booking-location-option');
         await expect(
-            options.filter({ hasText: 'Mountain hiking Centre' }),
+            options.filter({ hasText: 'Oakwood Trail Centre' }).first(),
         ).toBeVisible();
         await expect(
-            options.filter({ hasText: 'Ski school Centre' }),
+            options.filter({ hasText: 'Pine Ridge Ski Centre' }),
         ).toHaveCount(0);
     } finally {
         held.resolve();
@@ -537,7 +537,7 @@ test('shows distinct service seasons with prices, status filters, sorting, and m
         exact: true,
     });
     const rows = seasons.locator('tbody tr');
-    await expect(rows).toHaveCount(6);
+    await expect(rows).toHaveCount(15);
     await expect(rows.first()).toContainText(
         /\d{2}\.\d{2}\.\d{4} – \d{2}\.\d{2}\.\d{4}/,
     );
@@ -546,7 +546,7 @@ test('shows distinct service seasons with prices, status filters, sorting, and m
         .getByRole('searchbox', { name: 'Search', exact: true })
         .fill('Ski school');
     await expect(rows).toHaveCount(3);
-    await expect(rows.filter({ hasText: 'Active' })).toContainText('42.00€');
+    await expect(rows.filter({ hasText: 'Active' })).toContainText('€30.68');
     await expect(rows.filter({ hasText: 'Upcoming' })).toContainText('12');
     await expect(rows.filter({ hasText: 'Expired' })).toHaveCount(1);
 
@@ -799,7 +799,7 @@ test('completes the customer and booking workflow with the synthetic ski service
     await page.locator('.booking-location-trigger').click();
     await page
         .locator('.booking-location-option')
-        .filter({ hasText: 'Example Central Station' })
+        .filter({ hasText: 'Central Station' })
         .click();
     await toggleDate(page, today);
     await toggleDate(page, gapDay);
@@ -827,7 +827,7 @@ test('completes the customer and booking workflow with the synthetic ski service
 
     await page.goto('/crm/bookings?lang=en');
     const row = page.getByRole('row').filter({ hasText: fullName });
-    await row.getByPlaceholder('Amount', { exact: true }).fill('24');
+    await row.getByPlaceholder('Amount', { exact: true }).fill('24.15');
     const paymentResponse = apiResponse(
         page,
         `bookings/${booking.id}/payments/apply`,
@@ -836,7 +836,7 @@ test('completes the customer and booking workflow with the synthetic ski service
     await row.getByRole('button', { name: 'Apply', exact: true }).click();
     const payment = await paymentResponse;
     expect(payment.status()).toBe(200);
-    expect((await payment.json()).data.payment.paid_bgn).toBe(47);
+    expect((await payment.json()).data.payment.paid_eur).toBe(24.15);
 
     await row.getByRole('button', { name: 'Edit', exact: true }).click();
     await expect(
@@ -864,8 +864,8 @@ test('completes the customer and booking workflow with the synthetic ski service
     expect(updated.status()).toBe(200);
     const beforeCancellation = (await updated.json()).data;
     expect(beforeCancellation.approved).toBe(true);
-    expect(beforeCancellation.paid).toBe(47);
-    expect(beforeCancellation.sum_paid).toBe(282);
+    expect(beforeCancellation.paid).toBe(24.15);
+    expect(beforeCancellation.sum_paid).toBe(144);
     expect(beforeCancellation.winter_detail.card_id).toBeGreaterThan(0);
     expect(beforeCancellation.winter_detail.equip_id).toBeGreaterThan(0);
     expect(
@@ -914,7 +914,7 @@ test('completes the customer and booking workflow with the synthetic ski service
     expect(cancellation.status()).toBe(200);
     expect((await cancellation.json()).data).toMatchObject({
         active: false,
-        paid: 47,
+        paid: 24.15,
     });
     await expect(row).toContainText('Cancelled');
 
@@ -951,11 +951,11 @@ test('completes the customer and booking workflow with the synthetic ski service
     await form
         .locator('select')
         .first()
-        .selectOption({ label: 'Mountain hiking' });
+        .selectOption({ label: 'Mountain walks' });
     await page.locator('.booking-location-trigger').click();
     await page
         .locator('.booking-location-option')
-        .filter({ hasText: 'Example Central Station' })
+        .filter({ hasText: 'Market Square' })
         .click();
     await toggleDate(page, today);
     const hikingResponse = apiResponse(page, 'bookings', 'POST');

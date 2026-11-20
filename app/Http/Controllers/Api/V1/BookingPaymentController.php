@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Services\BookingPaymentService;
 use App\Services\BookingService;
 use App\Support\Bookings\BookingMutationReceipt;
+use App\Support\Pricing\EurCurrency;
 use Illuminate\Http\JsonResponse;
 
 final class BookingPaymentController extends Controller
@@ -41,14 +42,14 @@ final class BookingPaymentController extends Controller
         /** @var User $actor */
         $actor = $request->user();
 
-        $amount = (float) $request->validated('amount');
+        $amount = round((float) $request->validated('amount'), 2);
         $mode = (string) $request->validated('mode', 'increment');
-        $expectedPaid = $mode === 'set' ? $request->integer('expected_paid_bgn') : null;
+        $expectedPaid = $mode === 'set' ? EurCurrency::normalizeAmount($request->validated('expected_paid_eur')) : null;
         $payment = $receipts->run($actor, 'booking.payment', $request->validated('request_key'), [
             'booking_id' => $booking,
             'amount' => $amount,
             'mode' => $mode,
-            'expected_paid_bgn' => $expectedPaid,
+            'expected_paid_eur' => $expectedPaid,
         ], fn (): array => $this->paymentService->apply(
             $booking, $amount, $mode, $actor, $expectedPaid,
         ));

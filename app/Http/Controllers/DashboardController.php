@@ -9,6 +9,7 @@ use App\Models\BookingDate;
 use App\Models\SeasonDefault;
 use App\Models\Service;
 use App\Models\User;
+use App\Support\Pricing\EurCurrency;
 use App\Support\Seasons\SeasonCalendar;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -69,9 +70,9 @@ final class DashboardController extends Controller
                 'records' => (int) ($totals->records ?? 0),
                 'clients' => (int) ($totals->clients ?? 0),
                 'dates' => (clone $seasonDates)->where('dates.is_active', true)->count(),
-                'sum' => (int) ($totals->total ?? 0),
-                'paid' => (int) ($totals->paid ?? 0),
-                'due' => max(0, (int) ($totals->total ?? 0) - (int) ($totals->paid ?? 0)),
+                'sum' => round((float) ($totals->total ?? 0), 2),
+                'paid' => round((float) ($totals->paid ?? 0), 2),
+                'due' => EurCurrency::balance((float) ($totals->total ?? 0), (float) ($totals->paid ?? 0)),
                 'today' => $dailyCount,
             ],
             'byService' => $serviceCounts->map(fn (object $row): array => [

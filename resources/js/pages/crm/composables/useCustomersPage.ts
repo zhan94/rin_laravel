@@ -21,7 +21,7 @@ import type {
     CustomerUnpaidTab,
     PaginationMeta,
 } from '@/modules/customers/types';
-import { formatEurBgnPairFromBgn } from '@/modules/money/currency';
+import { formatEur } from '@/modules/money/currency';
 import { readFirstDeepLinkParam } from '@/modules/notifications/deepLinkQuery';
 import { firstApiErrorMessage, normalizeApiErrors } from '@/services/apiErrors';
 import type { ApiError } from '@/services/http';
@@ -206,7 +206,7 @@ export function useCustomersPage() {
     }
 
     function formatAmount(value: number): string {
-        return formatEurBgnPairFromBgn(value, localeTag.value);
+        return formatEur(value, localeTag.value);
     }
 
     async function loadCustomers(): Promise<void> {

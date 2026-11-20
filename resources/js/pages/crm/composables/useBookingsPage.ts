@@ -78,7 +78,6 @@ import {
     formatMonthCursor,
     uniqueSortedDateTokens,
 } from '@/modules/calendar/dateUtils';
-import { bgnToEur } from '@/modules/money/currency';
 import { readFirstDeepLinkParam } from '@/modules/notifications/deepLinkQuery';
 import { listServices } from '@/modules/services/serviceService';
 import { firstApiErrorMessage, normalizeApiErrors } from '@/services/apiErrors';
@@ -98,7 +97,7 @@ export type CalendarCell = BookingCalendarCell;
 
 export function useBookingsPage() {
     const { info } = useToast();
-    const { formatMonthYear, t, weekdayShortLabels } = useUiI18n();
+    const { formatMonthYear, localeTag, t, weekdayShortLabels } = useUiI18n();
 
     const WEEKDAY_LABELS = weekdayShortLabels;
     const todayIso = formatIsoDate(new Date());
@@ -622,8 +621,8 @@ export function useBookingsPage() {
             service_id: booking.service_id ?? 0,
             location_id: booking.location_id ?? 0,
             approved: booking.approved,
-            sum_paid: bgnToEur(booking.sum_paid),
-            paid: bgnToEur(booking.paid),
+            sum_paid: booking.sum_paid,
+            paid: booking.paid,
             note: (booking.note ?? '').replace(
                 /\n*\[\[SKI_META\]\][\s\S]*\[\[\/SKI_META\]\]\s*$/,
                 '',
@@ -774,6 +773,7 @@ export function useBookingsPage() {
             state.paymentDrafts[booking.id] = '';
             const successMessage = buildPaymentAppliedMessage(
                 applied.data.payment.remaining_eur,
+                localeTag.value,
             );
             state.paymentMessages[booking.id] = t(
                 successMessage.messageKey,

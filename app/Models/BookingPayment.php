@@ -32,8 +32,8 @@ class BookingPayment extends Model
     {
         return [
             'booking_id' => 'integer',
-            'sum_paid' => 'integer',
-            'paid' => 'integer',
+            'sum_paid' => 'decimal:2',
+            'paid' => 'decimal:2',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];

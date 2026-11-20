@@ -6,6 +6,9 @@ namespace App\Services\LegacyImport;
 
 use App\Enums\RoleKey;
 use App\Enums\SeasonType;
+use Brick\Math\BigDecimal;
+use Brick\Math\Exception\RoundingNecessaryException;
+use Brick\Math\RoundingMode;
 use DomainException;
 use stdClass;
 
@@ -85,6 +88,18 @@ final class LegacyImportPlan
                 ? (int) $key : null;
         }
 
+        $moneyColumns = match ($table->source) {
+            'bookings', 'booking_payments' => ['sum_paid', 'paid'],
+            'cards_price', 'equips_price', 'bonus_price' => ['price', 'per_day'],
+            'bonus' => ['price'],
+            default => [],
+        };
+        foreach ($moneyColumns as $column) {
+            if ($row[$column] !== null) {
+                $row[$column] = $this->convertLegacyAmount((string) $row[$column], $column);
+            }
+        }
+
         return match ($table->source) {
             'roles' => $this->role($row),
             'users' => $this->user($row),
@@ -95,6 +110,21 @@ final class LegacyImportPlan
             'user_notifications' => $row + ['link_path' => $this->notificationPath($row['legacy_link_path'])],
             default => $row,
         };
+    }
+
+    private function convertLegacyAmount(string $value, string $column): string
+    {
+        if (preg_match('/^-?[0-9]+(?:\.[0-9]+)?$/D', $value) !== 1) {
+            throw new DomainException($column.' must be an exact number');
+        }
+
+        try {
+            $amount = BigDecimal::of($value)->toScale(2);
+        } catch (RoundingNecessaryException) {
+            throw new DomainException($column.' must have at most two decimal places in the source');
+        }
+
+        return (string) $amount->dividedBy('1.95583', 2, RoundingMode::HalfUp);
     }
 
     private function legacyDate(?string $value, string $column): ?string

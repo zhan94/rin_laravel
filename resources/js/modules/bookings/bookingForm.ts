@@ -4,7 +4,6 @@ import type {
     BookingSupportOption,
     BookingSupportPrefillBooking,
 } from '@/modules/bookings/types';
-import { bgnToEur } from '@/modules/money/currency';
 
 export interface BookingFormState {
     customer_id: number | null;
@@ -138,7 +137,7 @@ export function applyCustomerPrefillToBookingForm(
         Number.isFinite(shoeSize) && shoeSize > 0 ? shoeSize : null;
     form.ski_height = Number.isFinite(height) && height > 0 ? height : null;
 
-    form.sum_paid = bgnToEur(booking.sum_paid);
+    form.sum_paid = booking.sum_paid;
 
     if (form.note.trim() === '' && booking.note !== null) {
         form.note = booking.note;

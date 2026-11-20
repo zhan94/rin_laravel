@@ -4,4 +4,5 @@ declare(strict_types=1);
 
 return [
     'attachment_directory' => env('LEGACY_ATTACHMENT_DIRECTORY'),
+    'destination_database' => env('LEGACY_IMPORT_DATABASE'),
 ];

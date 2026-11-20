@@ -140,7 +140,7 @@ describe('bookingForm', () => {
             equip_enabled: true,
             approved: false,
             lunch: false,
-            sum_paid: 195.583,
+            sum_paid: 100.25,
             paid: 97.7915,
             note: 'Existing booking note',
             ski_form: {
@@ -164,7 +164,7 @@ describe('bookingForm', () => {
             equip_enabled: true,
             ski_shoe_size: 32,
             ski_height: 120,
-            sum_paid: 100,
+            sum_paid: 100.25,
             paid: null,
             note: 'Manual note',
         });
