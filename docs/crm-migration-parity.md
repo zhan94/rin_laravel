@@ -61,7 +61,7 @@
   - `/api/v1/bookings/{booking}/payments/*`
 - Added cards/equips APIs:
   - card and equipment CRUD with service relation loading
-  - price row normalization (`EUR -> BGN` + `per_day` calculation)
+  - EUR price normalization and `per_day` calculation
   - price-row replacement semantics on update
   - typed requests/DTOs/resources/services/repositories
 - Added seasons APIs:

@@ -10,16 +10,30 @@ Screenshots show the isolated synthetic demo.
 
 ## Run the demo
 
-Clone the repository. From its root, with Docker Desktop and Docker Compose running, use:
+From the repository root, run the following with Docker running, the Compose plugin available, and internet access for image and dependency downloads.
 
 ```sh
 docker compose up --build --detach --wait
-docker compose exec -T app cat /run/rin/demo-password
+docker compose exec -T app sh -c 'cat /run/rin/demo-password && printf "\n"'
 ```
 
 Open [localhost:8081](http://localhost:8081) and sign in as `demo.super_admin` using the generated password. The same local password works for `demo.admin`, `demo.manager`, `demo.group_leader`, and `demo.driver`. Each role has a different access level.
 
-Compose installs locked dependencies, builds the frontend, migrates its own MySQL database, and seeds 60 synthetic customers and 16 bookings. The checkout supplies the schema and seeders for the standalone Laravel demo. The demo database and generated credentials persist across `docker compose down`. [Native setup, restart, and isolation instructions](docs/operations.md)
+Compose supplies PHP and Node, builds the frontend, and initializes its own MySQL database. A fresh demo includes five core services, 40 pickup routes, 60 synthetic customers, and 22 bookings. Compose generates the app key and passwords. The Laravel seeders carry all required configuration. [Core catalog mapping and native installation](docs/operations.md#core-business-seeding)
+
+Use `docker compose ps` to check health, `docker compose logs --tail=100 app` to see startup logs, and `docker compose down` to shut down. The named volumes retain the database, credentials, uploads, and logs for the next start. [Port configuration and local operations](docs/operations.md)
+
+## Run the relational benchmark
+
+Start the optional benchmark in a separate Compose project on port 8082. It seeds 100,000 customers, 100 services, and 150,000 bookings with their dates, payments, and rental relationships.
+
+```sh
+RIN_LARAVEL_PORT=8082 docker compose -f compose.yaml -f compose.benchmark.yaml up --build --detach --wait --wait-timeout 300
+docker compose -f compose.yaml -f compose.benchmark.yaml exec -T app sh -c 'cat /run/rin/demo-password && printf "\n"'
+docker compose -f compose.yaml -f compose.benchmark.yaml exec -T app php scripts/verify-synthetic-dataset.php
+```
+
+Open [localhost:8082](http://localhost:8082) and use the same staff usernames with the password generated for the benchmark. For an untouched standard demo, run `docker compose exec -T app php scripts/verify-synthetic-dataset.php` to check its data and measure the same operations. [Dataset counts, timings, and measurement method](docs/operations.md#relational-dataset-verification)
 
 ## Features and architecture
 
@@ -30,7 +44,7 @@ Compose installs locked dependencies, builds the frontend, migrates its own MySQ
 
 The application uses PHP 8.5, Laravel 12, MySQL 8.4, Fortify, Sanctum, Inertia 2, Vue 3, TypeScript, Tailwind CSS 4, and Vite 7. Form Requests validate input, and middleware and policies enforce staff access. Booking and payment services own their transaction boundaries. Row locks protect capacity and balances, and request receipts make supported retries safe. Report repositories keep role-aware queries together. Logs and notifications use Laravel's concrete injection and share their row filters across reads and writes. [Architecture and trade-offs](docs/architecture.md) · [Final architectural review](docs/architectural-review.md)
 
-The interface and signed-in staff manual support [English](http://localhost:8081/manual/en), [Deutsch](http://localhost:8081/manual/de), and [Español](http://localhost:8081/manual/es). Dates display as DD.MM.YYYY.
+The interface defaults to German. The language switcher and staff manual support [Deutsch](http://localhost:8081/manual/de), [English](http://localhost:8081/manual/en), and [Español](http://localhost:8081/manual/es). Dates display as DD.MM.YYYY.
 
 ## Verify the application
 
@@ -40,9 +54,9 @@ sh scripts/ci-verify.sh quality
 
 This runs the GitHub Actions quality gate locally, including locked dependency audits, static analysis, PHP and frontend tests, and Chromium on an isolated synthetic demo. The separate MySQL race harness verifies booking and payment contention using independent processes. GitHub Actions also scans source and Git history for secrets. [Test and benchmark commands](docs/operations.md)
 
-On ARM64 with 100,000 synthetic customers, MySQL median repository calls took 3.65 ms for the first page, 20.59 ms for page 3,900, and 82.79 ms for a substring match. Each median uses seven samples after a warm-up. The benchmark excludes HTTP, browser rendering, and concurrent workloads. [Performance results and SQLite comparison](docs/product-quality-review.md#performance)
+The relational MySQL benchmark measured a 3.7 ms median for the first customer page, 20.2 ms for page 3,900, and 83.9 ms for a customer search on ARM64. Booking search, availability, dashboard, and report timings are recorded in the operations guide. [Full benchmark results](docs/operations.md#relational-dataset-verification)
 
-Deep customer pages use offset pagination, and full report exports assemble server pages in the browser. The local demo was verified on ARM64. Hosted CI, x86-64 execution, physical passkeys, and full accessibility conformance remain open. [Local product acceptance](docs/product-quality-review.md) · [Publication readiness and handover](docs/publication-readiness.md)
+Deep customer pages use offset pagination, and full report exports assemble server pages in the browser. Docker installation was verified on ARM64 and with AMD64 emulation on Docker Desktop. Native AMD64 hardware, hosted CI, physical passkeys, and full accessibility conformance remain outside those checks. [Local product acceptance](docs/product-quality-review.md) · [Publication readiness and handover](docs/publication-readiness.md)
 
 ## AI-assisted development
 

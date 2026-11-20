@@ -8,7 +8,7 @@ Staff provisioning starts from an authorized administrator. The user policy chec
 
 ## Booking and payments
 
-The booking transaction locks the affected service before checking capacity and customer/date conflicts. Slot and season writes coordinate on that same row. Slot updates retain existing date IDs and reject a change that would remove a booked date or reduce capacity below the number of bookings. Payment writes lock the booking row and update the payment mirror in the same transaction. Booking edits preserve the paid amount when the client omits it. Changing a paid amount or applying a correction requires the previously loaded BGN balance.
+The booking transaction locks the affected service before checking capacity and customer/date conflicts. Slot and season writes coordinate on that same row. Slot updates retain existing date IDs and reject a change that would remove a booked date or reduce capacity below the number of bookings. Payment writes lock the booking row and update the payment mirror in the same transaction. Booking edits preserve the paid amount when the client omits it. Changing a paid amount or applying a correction requires the previously loaded EUR balance.
 
 The web client supplies a UUID `request_key` for booking creation and payment application and reuses it when retrying the same pending request. The server records the request hash and result atomically, scoped to the staff account and operation. Reusing a key with different input returns HTTP 409. Calls from older integrations can omit the key and retain their existing single-request behavior. Persisted payment receipts contain amounts, while booking creation receipts store the booking ID only. Confirmation email dispatch waits for the transaction to commit.
 
