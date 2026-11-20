@@ -96,7 +96,14 @@ const {
                     </article>
                 </section>
 
-                <section class="table-shell">
+                <section
+                    v-if="
+                        state.loading ||
+                        mainLocations.length > 0 ||
+                        customLocationGroups.length === 0
+                    "
+                    class="table-shell"
+                >
                     <div class="table-head">
                         <span class="badge badge--info">{{
                             t('locations.badge_main')
